@@ -1,4 +1,4 @@
-using Lexicon_LMS_G1.Data.Data;
+using Lexicon_LMS_G1.Data;
 using Lexicon_LMS_G1.Entities.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
