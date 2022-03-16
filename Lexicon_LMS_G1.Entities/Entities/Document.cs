@@ -26,7 +26,7 @@ namespace Lexicon_LMS_G1.Entities.Entities
         public string Path { get; set; }
 
         //Navprop
-        public Guid UserId { get; set; }
+        public string UserId { get; set; }
         public ApplicationUser User { get; set; }
 
         public int? CourseId { get; set; }

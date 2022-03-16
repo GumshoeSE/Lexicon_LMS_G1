@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Lexicon_LMS_G1.Data;
 using Lexicon_LMS_G1.Entities.Entities;
+using Lexicon_LMS_G1.Data.Data;
 
 namespace Lexicon_LMS_G1.Controllers
 {
