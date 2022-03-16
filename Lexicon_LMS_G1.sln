@@ -5,6 +5,8 @@ VisualStudioVersion = 17.1.32228.430
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexicon_LMS_G1", "Lexicon_LMS_G1\Lexicon_LMS_G1.csproj", "{66B64C34-9D1B-4BB8-BF55-1CCDB7DDB73B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lexicon_LMS_G1.Tests", "Lexicon_LMS_G1.Tests\Lexicon_LMS_G1.Tests.csproj", "{2200C02A-32E8-4711-B224-6EA716110B29}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{66B64C34-9D1B-4BB8-BF55-1CCDB7DDB73B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{66B64C34-9D1B-4BB8-BF55-1CCDB7DDB73B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{66B64C34-9D1B-4BB8-BF55-1CCDB7DDB73B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2200C02A-32E8-4711-B224-6EA716110B29}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2200C02A-32E8-4711-B224-6EA716110B29}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2200C02A-32E8-4711-B224-6EA716110B29}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2200C02A-32E8-4711-B224-6EA716110B29}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
