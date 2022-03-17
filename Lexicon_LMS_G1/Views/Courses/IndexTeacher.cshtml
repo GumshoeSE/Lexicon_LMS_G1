@@ -1,0 +1,39 @@
+﻿@model IEnumerable<Lexicon_LMS_G1.Entities.Entities.Course>
+
+@{
+    ViewData["Title"] = "Course Overview Teacher";
+}
+
+
+<div class="container">
+    <h1>Course Overview Teacher</h1>
+    <div class="row">
+        <div id="courseList" class="col-6">
+            <div class="accordion" id="courseAccordion">
+                @foreach (var item in Model)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)" aria-expanded="false" aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </button>
+                        </h2>
+                        <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)" class="accordion-collapse collapse" aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)" data-bs-parent="#courseAccordion">
+                            <div class="accordion-body">
+                                @foreach (var module in item.Modules)
+                                {
+                                    <div>@Html.DisplayFor(m => module.Name)</div>
+                                    <hr />
+                                }
+                            </div>
+                        </div>
+                    </div>
+                   
+                }
+            </div>
+        </div>
+
+        <div id="activitiesList" class="col-6">
+        </div>
+    </div>
+</div>
