@@ -119,56 +119,23 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
 
+                if (Input.Role == "Student" && !string.IsNullOrEmpty(Input.CourseId))
+                {
+                    user.CourseId = int.Parse(Input.CourseId);
+                    user.Course = _courseRepo.GetById(user.CourseId);
+                }
+
                 var result = await _userManager.CreateAsync(user, "password");
-                
-                if (Input.Role == "Student")
-                {
-                    await _userManager.AddToRoleAsync(user, "Student");
-
-                    if (!string.IsNullOrEmpty(Input.CourseId))
-                    {
-                        user.CourseId = int.Parse(Input.CourseId);
-                        user.Course = _courseRepo.GetById(user.CourseId);
-                    }
-                }
-
-                else if(Input.Role == "Teacher")
-                {
-                    await _userManager.AddToRoleAsync(user, "Teacher");
-                }
-
-                else
-                {
-                    throw new NotSupportedException($"Role: '{Input.Role}' is not supported");
-                }
-
 
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
                     TempData["message"] = "User successfully created!";
 
-                    var userId = await _userManager.GetUserIdAsync(user);
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
+                    if(!(await _userManager.AddToRoleAsync(user, Input.Role)).Succeeded) throw new Exception($"Failed to set {Input.FirstName} as a {Input.Role}");
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                    if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                    {
-                        return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
-                    }
-                    else
-                    {
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
-                    }
+                    return LocalRedirect(returnUrl);
+                    
                 }
                 foreach (var error in result.Errors)
                 {
