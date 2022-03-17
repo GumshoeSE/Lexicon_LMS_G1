@@ -148,7 +148,7 @@ namespace Lexicon_LMS_G1.Data.Data
                 Description = faker.Lorem.Paragraph(),
                 StartDate = start,
                 EndDate = start.AddDays(faker.Random.Int(2, 5)),
-                ActivityType = activityTypes.ElementAt(faker.Random.Int(0, activityTypeSize))
+                ActivityType = activityTypes.ElementAt(faker.Random.Int(0, activityTypeSize - 1))
             };
 
             activities.Add(firstActivity);
@@ -163,7 +163,7 @@ namespace Lexicon_LMS_G1.Data.Data
                     Description = faker.Lorem.Paragraph(),
                     StartDate = activities.Last().EndDate,
                     EndDate = activities.Last().EndDate.AddDays(faker.Random.Int(2, 5)),
-                    ActivityType = activityTypes.ElementAt(faker.Random.Int(0, activityTypeSize))
+                    ActivityType = activityTypes.ElementAt(faker.Random.Int(0, activityTypeSize - 1))
                 };
 
                 activities.Add(activityToAdd);
