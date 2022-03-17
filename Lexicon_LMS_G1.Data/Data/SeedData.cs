@@ -27,6 +27,8 @@ namespace Lexicon_LMS_G1.Data.Data
 
             faker = new Faker("sv");
 
+            await GenerateRoles();
+            
             await GenerateTeacher();
 
             await GenerateCourses();
@@ -37,40 +39,31 @@ namespace Lexicon_LMS_G1.Data.Data
 
 
 
-        private static async Task<ICollection<IdentityRole>> GenerateAndGetRoles()
+        private static async Task GenerateRoles()
         {
-            ICollection<IdentityRole> identityRoles = await context.Roles.ToListAsync();
+            if(await context.Roles.AnyAsync()) return;
 
-            if(identityRoles.Any()) return identityRoles;
-
-            identityRoles.Add(new IdentityRole { Name = "Student" });
-            identityRoles.Add(new IdentityRole { Name = "Teacher" });
-
-            await context.AddRangeAsync(identityRoles);
-
-            return identityRoles;
+            await roleManager.CreateAsync(new IdentityRole { Name = "Student" });
+            await roleManager.CreateAsync(new IdentityRole { Name = "Teacher" });
         }
 
         private static async Task GenerateTeacher()
         {
             if (await HasTeacherAsync()) return;
 
-            IdentityRole teacherRole = (await GenerateAndGetRoles()).First(i => i.Name == "Teacher");
-
             ApplicationUser teacher = new ApplicationUser
             {
                 Email = "dimitris@banana.se",
                 FirstName = "Dimitris",
-                LastName = "BananaMaster III"
+                LastName = "BananaMaster III",
+                UserName = "Dimitris"
             };
 
             string teacherPassword = "banan";
 
             if (!(await userManager.CreateAsync(teacher, teacherPassword)).Succeeded) throw new Exception($"Failed to seed Teacher {teacher.FirstName} with password \"{teacherPassword}\"");
 
-            if (!(await userManager.AddToRoleAsync(teacher, teacherRole.Name)).Succeeded) throw new Exception($"Failed to set {teacher.FirstName} as a {teacherRole.Name}");
-
-            await context.AddAsync(teacher);
+            if (!(await userManager.AddToRoleAsync(teacher, "Teacher")).Succeeded) throw new Exception($"Failed to set {teacher.FirstName} as a teacher");
         }
 
         private static async Task GenerateCourses()
