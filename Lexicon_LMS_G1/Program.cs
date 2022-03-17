@@ -13,10 +13,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-//builder.Services
-builder.Services.AddScoped<IBaseRepository<Course>, CourseRepository>();
-builder.Services.AddScoped<ICourseSelectListService, CourseSelectListService>();
-
+builder.Services.AddTransient<IBaseRepository<Course>, CourseRepository>();
+builder.Services.AddTransient<ICourseSelectListService, CourseSelectListService>();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
