@@ -1,5 +1,7 @@
 using Lexicon_LMS_G1.Data.Data;
+using Lexicon_LMS_G1.Data.Repositores;
 using Lexicon_LMS_G1.Entities.Entities;
+using Lexicon_LMS_G1.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,10 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+//builder.Services
+builder.Services.AddScoped<IBaseRepository<Course>, CourseRepository>();
+builder.Services.AddScoped<ICourseSelectListService, CourseSelectListService>();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {

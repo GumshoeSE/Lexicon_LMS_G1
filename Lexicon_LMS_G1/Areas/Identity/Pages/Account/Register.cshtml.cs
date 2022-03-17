@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using Lexicon_LMS_G1.Data.Repositores;
 
 namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
 {
@@ -30,13 +31,15 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly IBaseRepository<Course> _courseRepo;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            IBaseRepository<Course> courseRepo)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -44,6 +47,7 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _courseRepo = courseRepo;
         }
 
         /// <summary>
@@ -81,8 +85,8 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
 
-            [Display(Name = "Course")]
-            public Course? Course { get; set; }
+            [Display(Name = "Course (Optional)")]
+            public string CourseId { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -92,6 +96,9 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
+
+            [Required]
+            public string Role { get; set; }
 
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -131,6 +138,34 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
+
+                //user.Course = Input.Course;
+                if (Input.Role == "Student")
+                {
+                    //ToDo: Uncomment when we have a Student Role
+                    //await _userManager.AddToRoleAsync(user, "Student");
+
+                    if (!string.IsNullOrEmpty(Input.CourseId))
+                    {
+                        user.CourseId = int.Parse(Input.CourseId);
+                        user.Course = _courseRepo.GetById(user.CourseId);
+                    }
+                }
+
+                else if(Input.Role == "Teacher")
+                {
+                    //ToDo: Uncomment when we have a Teacher Role
+                    //await _userManager.AddToRoleAsync(user, "Teacher");
+                }
+
+                else
+                {
+                    throw new NotSupportedException($"Role: '{Input.Role}' is not supported");
+                }
+
                 var result = await _userManager.CreateAsync(user);
 
                 if (result.Succeeded)
