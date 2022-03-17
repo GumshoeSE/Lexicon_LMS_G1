@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Data.Repositores;
+using System.Linq.Expressions;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -32,6 +33,7 @@ namespace Lexicon_LMS_G1.Controllers
         public async Task<IActionResult> IndexTeacher()
         {
             var module = await repo.GetIncludeAsync(c => c.Modules);
+            module = module.OrderBy(m => m.StartTime);
             return View(module);
 
         }
