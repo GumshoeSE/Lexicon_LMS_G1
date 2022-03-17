@@ -17,6 +17,7 @@ namespace Lexicon_LMS_G1.Data.Data
         private static ApplicationDbContext context = null!;
         private static RoleManager<IdentityRole> roleManager = null!;
         private static UserManager<ApplicationUser> userManager = null!;
+        private static bool activityTypesAdded = false;
 
         public static async Task InitAsync(ApplicationDbContext _context, IServiceProvider services)
         {
@@ -78,7 +79,7 @@ namespace Lexicon_LMS_G1.Data.Data
             {
                 Course courseToAdd = new Course
                 {
-                    Name = faker.Company.CompanyName(),
+                    Name = faker.Commerce.Department(),
                     Description = faker.Lorem.Paragraphs(),
                     StartTime = DateTime.Now.AddDays(faker.Random.Int(10 * (i + 1), 10 * (i + 7)))
                 };
@@ -97,7 +98,7 @@ namespace Lexicon_LMS_G1.Data.Data
 
             Module firstModule = new Module 
             { 
-                Name = faker.Company.CompanyName(),
+                Name = faker.Commerce.Product(),
                 Description = faker.Lorem.Paragraphs(),
                 StartTime = start
             };
@@ -185,7 +186,11 @@ namespace Lexicon_LMS_G1.Data.Data
             activityTypes.Add(new ActivityType { Name = "Lecture" });
             activityTypes.Add(new ActivityType { Name = "Excersize" });
 
+            if(activityTypesAdded) return activityTypes;
+
             await context.AddRangeAsync(activityTypes);
+
+            activityTypesAdded = true;
 
             return activityTypes;
         }
