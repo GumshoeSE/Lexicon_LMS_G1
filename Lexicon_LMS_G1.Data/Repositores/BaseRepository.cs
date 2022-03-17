@@ -8,11 +8,12 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
 {
     protected readonly ApplicationDbContext db;
     //private readonly IMapper mapper;
+    protected readonly DbSet<T> dbSet;
 
     public BaseRepository(ApplicationDbContext context)
     {
         db = context;
-
+        dbSet = db.Set<T>();
     }
 
 
@@ -20,15 +21,17 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         return await db.Set<T>().ToListAsync();
     }
-    //public virtual async Task<IEnumerable<T>> GetIncludeAsync<Q>(params Expression<Func<T, Q>>[] expressions)
-    //{
-    //    DbSet<T> toReturn = db;
-    //    foreach (var expr in expressions)
-    //    {
-    //        toReturn.Include(expr);
-    //    }
-    //    return await toReturn.ToListAsync();
-    //}
+    public virtual async Task<IEnumerable<T>> GetIncludeAsync<Q>(params Expression<Func<T, Q>>[] expressions)
+    {
+        IQueryable<T> res = null;
+
+        foreach (var expr in expressions)
+        {
+            res = dbSet.Include(expr);
+        }
+
+        return res.ToList();
+    }
     public T? GetById(params object?[]? keyValues)
     {
 #pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
