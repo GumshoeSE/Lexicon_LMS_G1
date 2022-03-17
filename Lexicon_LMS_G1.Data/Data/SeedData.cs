@@ -27,12 +27,9 @@ namespace Lexicon_LMS_G1.Data.Data
 
             faker = new Faker("sv");
 
-
-            await GenerateRoles();
-
             await GenerateTeacher();
 
-
+            await GenerateCourses();
 
 
             await context.SaveChangesAsync();
@@ -40,23 +37,25 @@ namespace Lexicon_LMS_G1.Data.Data
 
 
 
-        private static async Task GenerateRoles()
+        private static async Task<ICollection<IdentityRole>> GenerateAndGetRoles()
         {
             ICollection<IdentityRole> identityRoles = await context.Roles.ToListAsync();
 
-            if(identityRoles.Any()) return;
+            if(identityRoles.Any()) return identityRoles;
 
             identityRoles.Add(new IdentityRole { Name = "Student" });
             identityRoles.Add(new IdentityRole { Name = "Teacher" });
 
             await context.AddRangeAsync(identityRoles);
+
+            return identityRoles;
         }
 
         private static async Task GenerateTeacher()
         {
             if (await HasTeacherAsync()) return;
 
-            IdentityRole teacherRole = (await GetRoles()).First(i => i.Name == "Teacher");
+            IdentityRole teacherRole = (await GenerateAndGetRoles()).First(i => i.Name == "Teacher");
 
             ApplicationUser teacher = new ApplicationUser
             {
@@ -230,11 +229,6 @@ namespace Lexicon_LMS_G1.Data.Data
             }
 
             return false;
-        }
-
-        private static async Task<ICollection<IdentityRole>> GetRoles()
-        {
-            return await context.Roles.ToListAsync();
         }
 
     }
