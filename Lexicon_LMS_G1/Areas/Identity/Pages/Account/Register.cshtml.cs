@@ -119,11 +119,11 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
 
-                //user.Course = Input.Course;
+                var result = await _userManager.CreateAsync(user, "password");
+                
                 if (Input.Role == "Student")
                 {
-                    //ToDo: Uncomment when we have a Student Role
-                    //await _userManager.AddToRoleAsync(user, "Student");
+                    await _userManager.AddToRoleAsync(user, "Student");
 
                     if (!string.IsNullOrEmpty(Input.CourseId))
                     {
@@ -134,8 +134,7 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
 
                 else if(Input.Role == "Teacher")
                 {
-                    //ToDo: Uncomment when we have a Teacher Role
-                    //await _userManager.AddToRoleAsync(user, "Teacher");
+                    await _userManager.AddToRoleAsync(user, "Teacher");
                 }
 
                 else
@@ -143,7 +142,6 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
                     throw new NotSupportedException($"Role: '{Input.Role}' is not supported");
                 }
 
-                var result = await _userManager.CreateAsync(user, "Password");
 
                 if (result.Succeeded)
                 {
