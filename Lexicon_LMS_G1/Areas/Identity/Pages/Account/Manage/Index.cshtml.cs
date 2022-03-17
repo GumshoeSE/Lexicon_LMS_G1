@@ -59,6 +59,12 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "First name")]
+            public string FirstName { get; set; }
+
+            [Display(Name = "Last name")]
+            public string LastName { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -66,11 +72,17 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
+            //var firstName = await _userManager.GetUserName();
+            var firstName = _userManager.GetUserAsync(User).Result.FirstName;
+            var lastName = _userManager.GetUserAsync(User).Result.LastName;
+
             Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FirstName = firstName,
+                LastName = lastName
             };
         }
 
@@ -107,6 +119,21 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account.Manage
                 if (!setPhoneResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";
+                    return RedirectToPage();
+                }
+            }
+
+            var firstName = _userManager.GetUserAsync(User).Result.FirstName;
+            var lastName = _userManager.GetUserAsync(User).Result.LastName;
+
+            if (firstName != Input.FirstName || lastName != Input.LastName)
+            {
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
+                var updateUser = await _userManager.UpdateAsync(user);
+                if (!updateUser.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to set name.";
                     return RedirectToPage();
                 }
             }
