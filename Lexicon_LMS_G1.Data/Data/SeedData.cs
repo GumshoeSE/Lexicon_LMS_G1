@@ -18,6 +18,7 @@ namespace Lexicon_LMS_G1.Data.Data
         private static RoleManager<IdentityRole> roleManager = null!;
         private static UserManager<ApplicationUser> userManager = null!;
         private static bool activityTypesAdded = false;
+        private static ICollection<ActivityType> activityTypes = null!;
 
         public static async Task InitAsync(ApplicationDbContext _context, IServiceProvider services)
         {
@@ -27,6 +28,8 @@ namespace Lexicon_LMS_G1.Data.Data
             userManager = services.GetRequiredService<UserManager<ApplicationUser>>() ?? throw new ArgumentNullException(nameof(services));
 
             faker = new Faker("sv");
+
+            activityTypes = await GenerateAndOrGetActivityTypes();
 
             await GenerateRoles();
             
@@ -140,7 +143,6 @@ namespace Lexicon_LMS_G1.Data.Data
         {
             ICollection<Activity> activities = new List<Activity>();
 
-            ICollection<ActivityType> activityTypes = await GenerateAndOrGetActivityTypes();
             int activityTypeSize = activityTypes.Count;
 
             Activity firstActivity = new Activity
