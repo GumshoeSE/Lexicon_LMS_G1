@@ -25,6 +25,22 @@ builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
 
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    IServiceProvider services = scope.ServiceProvider;
+
+    ApplicationDbContext db = services.GetRequiredService<ApplicationDbContext>();
+
+    try
+    {
+        SeedData.InitAsync(db, services).GetAwaiter().GetResult();
+    }
+    catch (Exception ex)
+    {
+        throw;
+    }
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
