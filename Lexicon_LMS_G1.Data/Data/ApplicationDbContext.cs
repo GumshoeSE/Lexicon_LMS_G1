@@ -7,19 +7,16 @@ namespace Lexicon_LMS_G1.Data.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
+        public DbSet<Activity> Activities { get; set; }
+        public DbSet<ActivityType> ActivitiesTypes { get; set; }
+        public DbSet<Course> Courses { get; set; }
+        public DbSet<Document> Documents { get; set; }
+        public DbSet<Module> Modules { get; set; }
+
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
         }
 
-        public DbSet<Activity> Activities { get; set; }
-
-        public DbSet<ActivityType> ActivitiesTypes { get; set; }
-
-        public DbSet<Course> Courses { get; set; }
-
-        public DbSet<Document> Documents { get; set; }
-
-        public DbSet<Module> Modules { get; set; }
     }
 }
