@@ -10,6 +10,9 @@ using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Data.Repositores;
 using System.Linq.Expressions;
+using Lexicon_LMS_G1.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -17,11 +20,13 @@ namespace Lexicon_LMS_G1.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IBaseRepository<Course> repo;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public CoursesController(ApplicationDbContext context, IBaseRepository<Course> repo)
+        public CoursesController(ApplicationDbContext context, IBaseRepository<Course> repo, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             this.repo = repo;
+            this.userManager = userManager;
         }
 
         // GET: Courses
@@ -162,5 +167,47 @@ namespace Lexicon_LMS_G1.Controllers
         {
             return _context.Courses.Any(e => e.Id == id);
         }
+
+        [HttpGet]
+        [Authorize]
+        public async Task<IActionResult> StudentIndex()
+        {
+            ApplicationUser user = await userManager.GetUserAsync(User);
+
+            StudentViewCourseViewModel viewModel = await GetStudentViewCourseViewModel(user.CourseId);
+
+            return View("IndexStudent", viewModel);
+        }
+        
+        private async Task<StudentViewCourseViewModel> GetStudentViewCourseViewModel(int? courseId)
+        {
+            if (courseId == null)
+                return new StudentViewCourseViewModel 
+                { 
+                    Assignments = new List<Activity>(),
+                    Attendees = new List<ApplicationUser>(),
+                    Modules = new List<Module>()
+                };
+
+            StudentViewCourseViewModel viewModel = new StudentViewCourseViewModel
+            {
+                Assignments = await _context.Activities
+                    .Include(a => a.ActivityType)
+                    .Include(a => a.Module)
+                    .Where(a => a.Module.CourseId == courseId)
+                    .Where(a => a.ActivityType.Name == "Assignment")
+                    .ToListAsync(),
+                Attendees = await _context.Users
+                    .Where(u => u.CourseId == courseId)
+                    .ToListAsync(),
+                Modules = await _context.Modules
+                    .Where(m => m.CourseId == courseId)
+                    .ToListAsync()
+            };
+
+            return viewModel;
+        }
+
+
     }
 }
