@@ -18,6 +18,7 @@ builder.Services.AddTransient<IBaseRepository<Course>, CourseRepository>();
 builder.Services.AddTransient<ICourseSelectListService, CourseSelectListService>();
 
 builder.Services.AddAutoMapper(typeof(CourseProfile));
+builder.Services.AddAutoMapper(typeof(ModuleProfile));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
