@@ -1,3 +1,4 @@
+using Lexicon_LMS_G1.Automapper;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Data.Repositores;
 using Lexicon_LMS_G1.Entities.Entities;
@@ -15,6 +16,9 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddTransient<IBaseRepository<Course>, CourseRepository>();
 builder.Services.AddTransient<ICourseSelectListService, CourseSelectListService>();
+
+builder.Services.AddAutoMapper(typeof(CourseProfile));
+
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -67,7 +71,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Courses}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();
