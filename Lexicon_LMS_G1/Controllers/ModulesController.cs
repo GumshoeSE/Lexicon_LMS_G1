@@ -10,7 +10,8 @@ using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
 using AutoMapper;
 using Lexicon_LMS_G1.Data.Repositores;
-using Lexicon_LMS_G1.Models.ViewModels;
+using Lexicon_LMS_G1.Entities.ViewModels;
+using Lexicon_LMS_G1.Entities.Helpers;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -66,7 +67,7 @@ namespace Lexicon_LMS_G1.Controllers
 
             var viewModel = new ModuleCreateViewModel
             {
-                Course = _courseRepo.GetById(id)
+                CourseId = (int)id
             };
 
             return View(viewModel);
@@ -77,16 +78,28 @@ namespace Lexicon_LMS_G1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartTime,EndTime,CourseId")] Module @module)
+        public async Task<IActionResult> Create(ModuleCreateViewModel viewModel)
         {
+
+            var course = _courseRepo.GetById(viewModel.CourseId);
+            var thing = _courseRepo.GetIncludeAsync(c => c.Modules);
+
+            var endTime = viewModel.StartTime + viewModel.Duration;
+            var overlap = DateTimeChecker.IsOverlappingWithList(viewModel.StartTime, endTime, course.Modules);
+
+            if (overlap)
+            {
+                ModelState.AddModelError("Duration", "Overlapping module duration, not allowed");
+            }
+
             if (ModelState.IsValid)
             {
-                _context.Add(@module);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                //_context.Add(@module);
+                //await _context.SaveChangesAsync();
+                //return RedirectToAction(nameof(Index));
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description", @module.CourseId);
-            return View(@module);
+
+            return View();
         }
 
         // GET: Modules/Edit/5

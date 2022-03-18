@@ -1,7 +1,7 @@
 ﻿using Lexicon_LMS_G1.Entities.Entities;
 using System.ComponentModel.DataAnnotations;
 
-namespace Lexicon_LMS_G1.Models.ViewModels
+namespace Lexicon_LMS_G1.Entities.ViewModels
 {
     public class ModuleCreateViewModel
     {
@@ -13,12 +13,13 @@ namespace Lexicon_LMS_G1.Models.ViewModels
         public string Description { get; set; } = string.Empty;
 
         [Required]
-        public DateTime? StartTime { get; set; }
+        [Display(Name = "Start Time")]
+        public DateTime StartTime { get; set; } = DateTime.Today;
 
         [Required]
-        public TimeSpan? Duration { get; set; }
+        public TimeSpan Duration { get; set; }
 
         [Required]
-        public Course Course { get; set; }
+        public int CourseId { get; set; }
     }
 }
