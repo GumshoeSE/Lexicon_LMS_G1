@@ -8,7 +8,8 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-6" id="assignments">
+        <div class="col-6 border-5" id="assignments">
+            <h2> Assignments </h2>
             <ul class="list-group">
                 @foreach (var assignment in Model!.Assignments)
                 {
@@ -18,7 +19,8 @@
                 }
             </ul>
         </div>
-        <div class="col-6" id="modules">
+        <div class="col-6 border-5" id="modules">
+            <h2> Modules </h2>
             <ul class="list-group">
                 @foreach (var assignment in Model!.Modules)
                 {
@@ -29,9 +31,37 @@
             </ul>
         </div>
     </div>
-    <div class="row">
-        <div class="col-6" id="attendeesbutton">
-
+    <div class="row justify-content-end ">
+        <div class="col-6" id="attendeesButton">
+            <button class="btn btn-primary list-group-item w-100" data-bs-toggle="modal" data-bs-target="#attendeesModal">
+                Make me look nice plz
+            </button>
+            <div class="modal fade" id="attendeesModal" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title">
+                                Attendees
+                            </h2>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="list-group">
+                                @foreach (var attendee in Model!.Attendees)
+                                {
+                                    <li class="list-group-item">
+                                        @Html.DisplayFor(a => attendee.FirstName)
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" data-bs-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
