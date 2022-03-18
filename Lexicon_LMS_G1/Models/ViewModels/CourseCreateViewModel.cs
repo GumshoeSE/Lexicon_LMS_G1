@@ -12,6 +12,7 @@ namespace Lexicon_LMS_G1.Models.ViewModels
         public string Description { get; set; } = string.Empty;
 
         [Required]
+        [Display(Name = "Start Time")]
         public DateTime StartTime { get; set; }
     }
 }
