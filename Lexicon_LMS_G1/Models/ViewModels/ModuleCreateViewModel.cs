@@ -13,10 +13,10 @@ namespace Lexicon_LMS_G1.Models.ViewModels
         public string Description { get; set; } = string.Empty;
 
         [Required]
-        public DateTime StartTime { get; set; }
+        public DateTime? StartTime { get; set; }
 
         [Required]
-        public TimeSpan Duration { get; set; }
+        public TimeSpan? Duration { get; set; }
 
         [Required]
         public Course Course { get; set; }

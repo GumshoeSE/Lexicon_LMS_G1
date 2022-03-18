@@ -8,16 +8,26 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
+using AutoMapper;
+using Lexicon_LMS_G1.Data.Repositores;
+using Lexicon_LMS_G1.Models.ViewModels;
 
 namespace Lexicon_LMS_G1.Controllers
 {
     public class ModulesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly IBaseRepository<Module> _moduleRepo;
+        private readonly IBaseRepository<Course> _courseRepo;
 
-        public ModulesController(ApplicationDbContext context)
+        public ModulesController(ApplicationDbContext context, IMapper mapper,
+            IBaseRepository<Module> moduleRepo, IBaseRepository<Course> courseRepo)
         {
             _context = context;
+            _mapper = mapper;
+            _moduleRepo = moduleRepo;
+            _courseRepo = courseRepo;
         }
 
         // GET: Modules
@@ -47,10 +57,19 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         // GET: Modules/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int? id)
         {
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description");
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var viewModel = new ModuleCreateViewModel
+            {
+                Course = _courseRepo.GetById(id)
+            };
+
+            return View(viewModel);
         }
 
         // POST: Modules/Create
