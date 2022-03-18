@@ -72,9 +72,13 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
-            //var firstName = await _userManager.GetUserName();
+            //ToDo Check if not have to getUserName many times, why so many call to userManager?
             var firstName = _userManager.GetUserAsync(User).Result.FirstName;
             var lastName = _userManager.GetUserAsync(User).Result.LastName;
+
+            var user2 = await _userManager.GetUserAsync(User);
+            var f = user2.FirstName;
+            var l = user2.LastName;
 
             Username = userName;
 
