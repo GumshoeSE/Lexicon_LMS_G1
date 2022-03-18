@@ -60,7 +60,7 @@ namespace Lexicon_LMS_G1.Data.Data
                 Email = "dimitris@banana.se",
                 FirstName = "Dimitris",
                 LastName = "BananaMaster III",
-                UserName = "Dimitris"
+                UserName = "dimitris@banana.se"
             };
 
             string teacherPassword = "banan";
