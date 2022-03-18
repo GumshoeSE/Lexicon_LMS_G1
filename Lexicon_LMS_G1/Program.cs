@@ -1,5 +1,7 @@
 using Lexicon_LMS_G1.Data.Data;
+using Lexicon_LMS_G1.Data.Repositores;
 using Lexicon_LMS_G1.Entities.Entities;
+using Lexicon_LMS_G1.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +13,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddTransient<IBaseRepository<Course>, CourseRepository>();
+builder.Services.AddTransient<ICourseSelectListService, CourseSelectListService>();
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
     options.SignIn.RequireConfirmedAccount = false;
@@ -24,6 +28,22 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+
+using (IServiceScope scope = app.Services.CreateScope())
+{
+    IServiceProvider services = scope.ServiceProvider;
+
+    ApplicationDbContext db = services.GetRequiredService<ApplicationDbContext>();
+
+    try
+    {
+        SeedData.InitAsync(db, services).GetAwaiter().GetResult();
+    }
+    catch (Exception ex)
+    {
+        throw;
+    }
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
