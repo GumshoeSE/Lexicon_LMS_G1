@@ -67,6 +67,12 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
         db.Remove(item);
         return true;
     }
+
+    public virtual async Task SaveChangesAsync()
+    {
+        await db.SaveChangesAsync();
+    }
+
     //public bool Patch<Q>(JsonPatchDocument<Q> patchDocument, params object?[]? keyValues) where Q : class
     //{
     //    if (patchDocument == null)
