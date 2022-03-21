@@ -184,23 +184,37 @@ namespace Lexicon_LMS_G1.Controllers
             if (courseId == null)
                 return new StudentViewCourseViewModel 
                 { 
+                    Name = "Nothing lmao",
                     Assignments = new List<Activity>(),
                     Attendees = new List<ApplicationUser>(),
                     Modules = new List<Module>()
                 };
+/*
+            var model = _context.Courses.FirstOrDefault(c => c.Id ==courseId).Where //new StudentViewCourseViewModel
+            //{
+            //   // Assignments = c.Modules.Select(m => m.Activities).Where(a => )//Where(a => a.ActivityType.Name == "Assignment"))
+               
+            //}).FirstOrDefault(c => c.)  
+            
+            var modelt = _context.Courses.Select(c => new StudentViewCourseViewModel
+            {
+                Assignments = c.Modules.Select(m => m.Activities.Where(a => a.ActivityType.Name == "Assignment"))
+            });
+*/
 
             StudentViewCourseViewModel viewModel = new StudentViewCourseViewModel
             {
-                Assignments = await _context.Activities
+                Name = "FIN TNAMN",
+                Assignments = await _context.Activities         //TODO bool to know if its done or not for each student
                     .Include(a => a.ActivityType)
                     .Include(a => a.Module)
                     .Where(a => a.Module.CourseId == courseId)
                     .Where(a => a.ActivityType.Name == "Assignment")
                     .ToListAsync(),
-                Attendees = await _context.Users
+                Attendees = await _context.Users                
                     .Where(u => u.CourseId == courseId)
                     .ToListAsync(),
-                Modules = await _context.Modules
+                Modules = await _context.Modules                
                     .Where(m => m.CourseId == courseId)
                     .ToListAsync()
             };

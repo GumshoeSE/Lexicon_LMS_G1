@@ -4,45 +4,74 @@
     ViewData["Title"] = "Course";
 }
 
-<h1>Course</h1>
+<h1> @Html.DisplayFor(m => m.Name) </h1>
 
 <div class="container">
     <div class="row">
-        <div class="col-6 border-5" id="assignments">
-            <h2> Assignments </h2>
-            <ul class="list-group">
-                @foreach (var assignment in Model!.Assignments)
+        <div class="border rounded col-5 p-0">
+            <h2 class="px-3"> Assignments </h2>
+            <h5 class="px-3">Late Assignments</h5>
+            <div class="accordion" id="lateAssignments">
+                @foreach (var assignment in Model!.LateAssignments)
                 {
-                    <li class="list-group-item">
-                        @Html.DisplayFor(a => assignment.Name)
-                    </li>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
+                                @Html.DisplayFor(a => assignment.Name)
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#lateAssignments">
+                            <div class="accordion-body">
+                                @Html.DisplayFor(a => assignment.Description)
+                            </div>
+                        </div>
+                    </div>
                 }
-            </ul>
+            </div>
+            <h5 class="px-3">Upcomming</h5>
+            <div class="accordion" id="assignments">
+                @foreach (var assignment in Model!.UpcomingAssignments)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
+                                @Html.DisplayFor(a => assignment.Name)
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
+                            <div class="accordion-body">
+                                @Html.DisplayFor(a => assignment.Description)
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
-        <div class="col-6 border-5" id="modules">
-            <h2> Modules </h2>
-            <ul class="list-group">
-                @foreach (var assignment in Model!.Modules)
+        <div class="col-2"></div>
+        <div class="col-5 border rounded p-0 bg-light" id="modules">
+            <h2 class="px-3"> Modules </h2>
+            <div class="list-group">
+                @foreach (var module in Model!.Modules)
                 {
-                    <li class="list-group-item">
-                        @Html.DisplayFor(a => assignment.Name)
-                    </li>
+                    <a class="list-group-item" asp-controller="Modules" asp-action="Details" asp-route-id="@module.Id"> @Html.DisplayFor(a => module.Name) </a>
                 }
-            </ul>
+            </div>
         </div>
     </div>
     <div class="row justify-content-end ">
-        <div class="col-6" id="attendeesButton">
+        <div class="col-5 p-0" id="attendeesButton">
             <button class="btn btn-primary list-group-item w-100" data-bs-toggle="modal" data-bs-target="#attendeesModal">
                 Make me look nice plz
             </button>
             <div class="modal fade" id="attendeesModal" tabindex="-1">
-                <div class="modal-dialog">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h2 class="modal-title">
                                 Attendees
                             </h2>
+                            <button class="btn-close" data-bs-dismiss="modal">
+                            </button>
                         </div>
                         <div class="modal-body">
                             <ul class="list-group">
@@ -53,11 +82,6 @@
                                     </li>
                                 }
                             </ul>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-secondary" data-bs-dismiss="modal">
-                                Close
-                            </button>
                         </div>
                     </div>
                 </div>
