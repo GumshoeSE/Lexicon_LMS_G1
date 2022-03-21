@@ -10,11 +10,13 @@ using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Data.Repositores;
 using System.Linq.Expressions;
+using Microsoft.AspNetCore.Authorization;
 using Lexicon_LMS_G1.Models.ViewModels;
 using AutoMapper;
 
 namespace Lexicon_LMS_G1.Controllers
 {
+    [Authorize]
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -31,9 +33,14 @@ namespace Lexicon_LMS_G1.Controllers
         // GET: Courses
         public async Task<IActionResult> Index()
         {
+            if (User.IsInRole("Teacher"))
+            {
+                return RedirectToAction(nameof(IndexTeacher));
+            }
             return View(await _context.Courses.ToListAsync());
         }
 
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> IndexTeacher()
         {
             var module = await repo.GetIncludeAsync(c => c.Modules);
@@ -61,6 +68,7 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         // GET: Courses/Create
+        [Authorize(Roles = "Teacher")]
         public IActionResult Create()
         {
             return View();
@@ -71,6 +79,7 @@ namespace Lexicon_LMS_G1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create(CourseCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -84,6 +93,7 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         // GET: Courses/Edit/5
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -104,6 +114,7 @@ namespace Lexicon_LMS_G1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,StartTime")] Course course)
         {
             if (id != course.Id)
@@ -135,6 +146,7 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         // GET: Courses/Delete/5
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -155,6 +167,7 @@ namespace Lexicon_LMS_G1.Controllers
         // POST: Courses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var course = await _context.Courses.FindAsync(id);

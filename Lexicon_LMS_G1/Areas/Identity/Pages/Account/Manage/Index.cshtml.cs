@@ -59,6 +59,12 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+
+            [Display(Name = "First name")]
+            public string FirstName { get; set; }
+
+            [Display(Name = "Last name")]
+            public string LastName { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -66,11 +72,21 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account.Manage
             var userName = await _userManager.GetUserNameAsync(user);
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
 
+            //ToDo Check if not have to getUserName many times, why so many call to userManager?
+            var firstName = _userManager.GetUserAsync(User).Result.FirstName;
+            var lastName = _userManager.GetUserAsync(User).Result.LastName;
+
+            var user2 = await _userManager.GetUserAsync(User);
+            var f = user2.FirstName;
+            var l = user2.LastName;
+
             Username = userName;
 
             Input = new InputModel
             {
-                PhoneNumber = phoneNumber
+                PhoneNumber = phoneNumber,
+                FirstName = firstName,
+                LastName = lastName
             };
         }
 
@@ -107,6 +123,21 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account.Manage
                 if (!setPhoneResult.Succeeded)
                 {
                     StatusMessage = "Unexpected error when trying to set phone number.";
+                    return RedirectToPage();
+                }
+            }
+
+            var firstName = _userManager.GetUserAsync(User).Result.FirstName;
+            var lastName = _userManager.GetUserAsync(User).Result.LastName;
+
+            if (firstName != Input.FirstName || lastName != Input.LastName)
+            {
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
+                var updateUser = await _userManager.UpdateAsync(user);
+                if (!updateUser.Succeeded)
+                {
+                    StatusMessage = "Unexpected error when trying to set name.";
                     return RedirectToPage();
                 }
             }
