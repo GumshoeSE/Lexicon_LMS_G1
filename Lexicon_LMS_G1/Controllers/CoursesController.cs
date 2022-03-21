@@ -13,6 +13,8 @@ using System.Linq.Expressions;
 using Microsoft.AspNetCore.Authorization;
 using Lexicon_LMS_G1.Models.ViewModels;
 using AutoMapper;
+using Lexicon_LMS_G1.Entities.Paging;
+using Lexicon_LMS_G1.Entities.ViewModels;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -20,14 +22,16 @@ namespace Lexicon_LMS_G1.Controllers
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ICourseRepository courseRepo;
         private readonly IBaseRepository<Course> repo;
         private readonly IMapper _mapper;
 
-        public CoursesController(ApplicationDbContext context, IBaseRepository<Course> repo, IMapper mapper)
+        public CoursesController(ApplicationDbContext context, ICourseRepository courseRepo, IMapper mapper, IBaseRepository<Course> repo)
         {
             _context = context;
             this.repo = repo;
             _mapper = mapper;
+            this.courseRepo = courseRepo;
         }
 
         // GET: Courses
@@ -41,13 +45,26 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> IndexTeacher()
+        public async Task<IActionResult> IndexTeacher(int? pageIndex)
         {
-            var module = await repo.GetIncludeAsync(c => c.Modules);
-            module = module.OrderBy(m => m.StartTime);
-            return View(module);
+            var paging = new CoursePagingParams
+            {
+                PageIndex = pageIndex ?? 1
+            };
+            var model = await courseRepo.GetCourseAsync();
+            var viewModel = model.Select(c => new CourseViewModel
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Description = c.Description,
+                StartTime = c.StartTime,
+                Modules = c.Modules
+            }).AsEnumerable();
+
+            return View(await PaginatedList<CourseViewModel>.CreateAsync(viewModel.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize));
 
         }
+        
 
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id)

@@ -1,5 +1,6 @@
 ﻿using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Entities.Entities;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace Lexicon_LMS_G1.Data.Repositores
     {
         public DocumentRepository(ApplicationDbContext context) : base(context)
         {
+            
         }
+        
     }
 }
