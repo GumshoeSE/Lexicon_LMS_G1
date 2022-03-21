@@ -6,7 +6,7 @@ namespace Lexicon_LMS_G1.ViewComponents
     public class ToastViewComponent : ViewComponent
     {
 
-        public async Task<IViewComponentResult> InvokeAsync(string message)
+        public IViewComponentResult Invoke(string message)
         {
             var model = new ToastViewModel
             {
