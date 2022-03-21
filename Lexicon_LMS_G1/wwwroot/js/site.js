@@ -1,7 +1,4 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
+﻿
 
 
 (() => {
@@ -20,4 +17,8 @@ $(document).ready(function (){
         var name = $(this).attr("data-name");
         $(".modal-title").text("Do you really want to remove this " + name + " course");
     });
+});
+
+$(document).ready(function () {
+    $(".toast").toast('show');
 });

@@ -20,3 +20,9 @@ body {
 .hidden {
     display: none;
 }
+
+ul.timeline {
+    list-style-type: none;
+    position: relative;
+    max-height: 58vh
+}

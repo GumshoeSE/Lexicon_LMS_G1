@@ -1,22 +1,17 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Data.Repositores;
-using System.Linq.Expressions;
-using Lexicon_LMS_G1.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using AutoMapper;
 using Lexicon_LMS_G1.Entities.Paging;
 using Lexicon_LMS_G1.Entities.ViewModels;
 
 namespace Lexicon_LMS_G1.Controllers
 {
+    [Authorize]
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -35,9 +30,14 @@ namespace Lexicon_LMS_G1.Controllers
         // GET: Courses
         public async Task<IActionResult> Index()
         {
+            if (User.IsInRole("Teacher"))
+            {
+                return RedirectToAction(nameof(IndexTeacher));
+            }
             return View(await _context.Courses.ToListAsync());
         }
 
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> IndexTeacher(int? pageIndex)
         {
             var paging = new CoursePagingParams
@@ -78,6 +78,7 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         // GET: Courses/Create
+        [Authorize(Roles = "Teacher")]
         public IActionResult Create()
         {
             return View();
@@ -88,6 +89,7 @@ namespace Lexicon_LMS_G1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create(CourseCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
@@ -95,12 +97,15 @@ namespace Lexicon_LMS_G1.Controllers
                 var course = _mapper.Map<Course>(viewModel);
                 repo.Add(course);
                 await repo.SaveChangesAsync();
+
+                TempData["message"] = "Course successfully created!";
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);
         }
 
         // GET: Courses/Edit/5
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -121,6 +126,7 @@ namespace Lexicon_LMS_G1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,StartTime")] Course course)
         {
             if (id != course.Id)
@@ -152,7 +158,8 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         // GET: Courses/Delete/5
-        public async Task<IActionResult> DeletePOSt(int? id)
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
