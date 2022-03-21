@@ -13,6 +13,8 @@ using System.Linq.Expressions;
 using Lexicon_LMS_G1.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Lexicon_LMS_G1.Models.ViewModels;
+using AutoMapper;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -21,12 +23,14 @@ namespace Lexicon_LMS_G1.Controllers
         private readonly ApplicationDbContext _context;
         private readonly IBaseRepository<Course> repo;
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IMapper _mapper;
 
-        public CoursesController(ApplicationDbContext context, IBaseRepository<Course> repo, UserManager<ApplicationUser> userManager)
+        public CoursesController(ApplicationDbContext context, IBaseRepository<Course> repo, UserManager<ApplicationUser> userManager, IMapper mapper)
         {
             _context = context;
             this.repo = repo;
             this.userManager = userManager;
+            _mapper = mapper;
         }
 
         // GET: Courses
@@ -72,15 +76,16 @@ namespace Lexicon_LMS_G1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartTime")] Course course)
+        public async Task<IActionResult> Create(CourseCreateViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(course);
-                await _context.SaveChangesAsync();
+                var course = _mapper.Map<Course>(viewModel);
+                repo.Add(course);
+                await repo.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(course);
+            return View(viewModel);
         }
 
         // GET: Courses/Edit/5

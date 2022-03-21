@@ -11,5 +11,6 @@ namespace Lexicon_LMS_G1.Data.Repositores
         T? GetById(params object?[]? keyValues);
         IEnumerable<T> GetByPredicate(Expression<Func<T, bool>> predicate);
         bool Update(T newItem, params object?[]? keyValues);
+        Task SaveChangesAsync();
     }
 }
