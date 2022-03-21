@@ -157,26 +157,8 @@ namespace Lexicon_LMS_G1.Controllers
             return View(course);
         }
 
-        // GET: Courses/Delete/5
-        [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var course = await _context.Courses
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (course == null)
-            {
-                return NotFound();
-            }
-
-            return View(course);
-        }
-
         // POST: Courses/Delete/5
+        [Authorize(Roles = "Teacher")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int? deleteId)

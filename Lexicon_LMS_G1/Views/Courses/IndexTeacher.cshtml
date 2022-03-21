@@ -8,19 +8,6 @@
 <div class="container">
     <h1>Course Overview For Teacher</h1>
 
-    @if (TempData["Error"] != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert" id="error">
-            <i class="fas fa-exclamation-triangle pe-1"></i>@TempData["Error"]
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-lable="Close"></button>
-        </div>
-    }
-    @if (TempData["message"] != null)
-    {
-        <div class="alert alert-success" id="message">
-            <i class="fas fa-check-circle pe-1"></i>@TempData["Message"]
-        </div>
-    }
     <div class="row">
         <div id="courseList" class="col-6">
             <div class="accordion" id="courseAccordion">
@@ -58,39 +45,17 @@
                                     </div>
                                     <div class="text-end col">
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
-                                        <button type="button" data-ref="@item.Id" data-name="@item.Name" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#delete">Delete</button>
+                                        <button type="button" data-ref="@item.Id" data-name="@item.Name" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#delete">Delete</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                     </div>
-                    @*Delete Modal logic*@
-
                 }
-                <div class="modal" tabindex="-1" id="delete">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title"></h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body text-center">
-                                <p>This action can not be reversed!</p>
-                            </div>
-                            <div class="modal-footer text-center">
-                                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
-                                <form asp-action="Delete">
-                                    <input type="hidden" name="deleteId" value="" id="deleteId" />
-                                    <input type="submit" value="Yes" class="btn btn-primary" />
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
 
-
+             <vc:delete></vc:delete>
 
             @*Paginating puttons*@
             @{

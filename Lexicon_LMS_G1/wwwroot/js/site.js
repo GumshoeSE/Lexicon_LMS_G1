@@ -15,7 +15,8 @@ $(document).ready(function (){
             $(this).attr("data-ref")
         );
         var name = $(this).attr("data-name");
-        $(".modal-title").text("Do you really want to remove this " + name + " course");
+        var type = $(this).attt("data-type");
+        $(".modal-title").text("Do you really want to remove " + name + " " + type);
     });
 });
 
