@@ -174,46 +174,54 @@ namespace Lexicon_LMS_G1.Controllers
         {
             ApplicationUser user = await userManager.GetUserAsync(User);
 
-            StudentViewCourseViewModel viewModel = await GetStudentViewCourseViewModel(user.CourseId);
+            StudentViewCourseViewModel viewModel = await GetStudentViewCourseViewModel(user.CourseId, user.Id);
 
             return View("IndexStudent", viewModel);
         }
         
-        private async Task<StudentViewCourseViewModel> GetStudentViewCourseViewModel(int? courseId)
+        private async Task<StudentViewCourseViewModel> GetStudentViewCourseViewModel(int? courseId, string userId)
         {
             if (courseId == null)
                 return new StudentViewCourseViewModel 
                 { 
                     Name = "Nothing lmao",
                     Assignments = new List<Activity>(),
+                    FinishedAssignments = new List<Activity>(),
                     Attendees = new List<ApplicationUser>(),
                     Modules = new List<Module>()
                 };
-/*
-            var model = _context.Courses.FirstOrDefault(c => c.Id ==courseId).Where //new StudentViewCourseViewModel
-            //{
-            //   // Assignments = c.Modules.Select(m => m.Activities).Where(a => )//Where(a => a.ActivityType.Name == "Assignment"))
-               
-            //}).FirstOrDefault(c => c.)  
-            
-            var modelt = _context.Courses.Select(c => new StudentViewCourseViewModel
-            {
-                Assignments = c.Modules.Select(m => m.Activities.Where(a => a.ActivityType.Name == "Assignment"))
-            });
-*/
+            /*
+                        var model = _context.Courses.FirstOrDefault(c => c.Id ==courseId).Where //new StudentViewCourseViewModel
+                        //{
+                        //   // Assignments = c.Modules.Select(m => m.Activities).Where(a => )//Where(a => a.ActivityType.Name == "Assignment"))
+
+                        //}).FirstOrDefault(c => c.)  
+
+                        var modelt = _context.Courses.Select(c => new StudentViewCourseViewModel
+                        {
+                            Assignments = c.Modules.Select(m => m.Activities.Where(a => a.ActivityType.Name == "Assignment"))
+                        });
+            */
+
+            var finishedAssignments = (await _context.Users
+                    .FindAsync(userId))
+                    .FinishedActivities;
 
             StudentViewCourseViewModel viewModel = new StudentViewCourseViewModel
             {
-                Name = "FIN TNAMN",
-                Assignments = await _context.Activities         //TODO bool to know if its done or not for each student
+                Name = (await _context.Courses.FindAsync(courseId)).Name,
+                Assignments = await _context.Activities         
                     .Include(a => a.ActivityType)
                     .Include(a => a.Module)
+                    .ThenInclude(m => m.Activities)
                     .Where(a => a.Module.CourseId == courseId)
                     .Where(a => a.ActivityType.Name == "Assignment")
+                    //.Where(a => !finishedAssignments.Contains(a.Id))
                     .ToListAsync(),
-                Attendees = await _context.Users                
-                    .Where(u => u.CourseId == courseId)
-                    .ToListAsync(),
+                FinishedAssignments = (IEnumerable<Activity>)finishedAssignments,
+                Attendees = (await _context.Courses
+                    .FindAsync(courseId))
+                    .Attendees,
                 Modules = await _context.Modules                
                     .Where(m => m.CourseId == courseId)
                     .ToListAsync()
@@ -221,7 +229,5 @@ namespace Lexicon_LMS_G1.Controllers
 
             return viewModel;
         }
-
-
     }
 }
