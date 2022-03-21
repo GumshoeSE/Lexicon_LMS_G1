@@ -12,20 +12,24 @@ using Lexicon_LMS_G1.Data.Repositores;
 using System.Linq.Expressions;
 using Lexicon_LMS_G1.Models.ViewModels;
 using AutoMapper;
+using Lexicon_LMS_G1.Entities.Paging;
+using Lexicon_LMS_G1.Entities.ViewModels;
 
 namespace Lexicon_LMS_G1.Controllers
 {
     public class CoursesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly ICourseRepository courseRepo;
         private readonly IBaseRepository<Course> repo;
         private readonly IMapper _mapper;
 
-        public CoursesController(ApplicationDbContext context, IBaseRepository<Course> repo, IMapper mapper)
+        public CoursesController(ApplicationDbContext context, ICourseRepository courseRepo, IMapper mapper, IBaseRepository<Course> repo)
         {
             _context = context;
             this.repo = repo;
             _mapper = mapper;
+            this.courseRepo = courseRepo;
         }
 
         // GET: Courses
@@ -34,13 +38,34 @@ namespace Lexicon_LMS_G1.Controllers
             return View(await _context.Courses.ToListAsync());
         }
 
-        public async Task<IActionResult> IndexTeacher()
+        public async Task<IActionResult> IndexTeacher(CoursePagingParams pagingParams)
         {
-            var module = await repo.GetIncludeAsync(c => c.Modules);
-            module = module.OrderBy(m => m.StartTime);
-            return View(module);
+            var model = await courseRepo.GetCourseAsync();
+            var viewModel = model.Select(c => new CourseViewModel
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Description = c.Description,
+                StartTime = c.StartTime,
+                Modules = c.Modules
+            }).AsEnumerable();
+
+            return View(await PaginatedList<CourseViewModel>.CreateAsync(viewModel.AsEnumerable().ToList(), pagingParams.PageIndex, pagingParams.PageSize));
 
         }
+        //private async Task<CourseViewModel> GetCourses(CoursePagingParams pagingParams)
+        //{
+        //    CourseViewModel courseViewModel = new CourseViewModel();
+        //    double pageCount = (double)((decimal)repo.GetCount() / Convert.ToDecimal(pagingParams.PageSize));
+        //    courseViewModel.PageCount = (int)Math.Ceiling(pageCount);
+        //    var pagingResult = await courseRepo.GetCourseAsync(pagingParams);
+
+        //    courseViewModel.Courses = pagingResult;
+        //    courseViewModel.CurrentPageIndex = pagingParams.PageIndex;
+
+        //    return courseViewModel;
+
+        //}
 
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id)

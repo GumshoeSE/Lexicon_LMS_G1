@@ -17,7 +17,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     }
 
 
-    public async Task<IEnumerable<T>> GetAsync()
+    public virtual async Task<IEnumerable<T>> GetAsync()
     {
         return await db.Set<T>().ToListAsync();
     }
@@ -42,6 +42,12 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     public IEnumerable<T> GetByPredicate(Expression<Func<T, bool>> predicate)
     {
         return db.Set<T>().AsQueryable().Where(predicate).ToList();
+    }
+
+    public int GetCount()
+    {
+        int count = db.Set<T>().Count();
+        return count;
     }
     public bool Update(T newItem, params object?[]? keyValues)
     {

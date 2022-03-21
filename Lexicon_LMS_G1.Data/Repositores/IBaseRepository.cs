@@ -10,6 +10,7 @@ namespace Lexicon_LMS_G1.Data.Repositores
         Task<IEnumerable<T>> GetIncludeAsync<Q>(params Expression<Func<T, Q>>[] expression);
         T? GetById(params object?[]? keyValues);
         IEnumerable<T> GetByPredicate(Expression<Func<T, bool>> predicate);
+        public int GetCount();
         bool Update(T newItem, params object?[]? keyValues);
         Task SaveChangesAsync();
     }

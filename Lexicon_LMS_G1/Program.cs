@@ -14,7 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddTransient<IBaseRepository<Course>, CourseRepository>();
+builder.Services.AddTransient<ICourseRepository, CourseRepository>();
 builder.Services.AddTransient<ICourseSelectListService, CourseSelectListService>();
 
 builder.Services.AddAutoMapper(typeof(CourseProfile));
