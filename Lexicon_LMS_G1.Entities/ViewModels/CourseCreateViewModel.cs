@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Lexicon_LMS_G1.Models.ViewModels
+namespace Lexicon_LMS_G1.Entities.ViewModels
 {
     public class CourseCreateViewModel
     {

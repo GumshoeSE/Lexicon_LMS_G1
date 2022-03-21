@@ -1,17 +1,10 @@
 ﻿#nullable disable
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Data.Repositores;
-using System.Linq.Expressions;
 using Microsoft.AspNetCore.Authorization;
-using Lexicon_LMS_G1.Models.ViewModels;
 using AutoMapper;
 using Lexicon_LMS_G1.Entities.Paging;
 using Lexicon_LMS_G1.Entities.ViewModels;
@@ -104,6 +97,8 @@ namespace Lexicon_LMS_G1.Controllers
                 var course = _mapper.Map<Course>(viewModel);
                 repo.Add(course);
                 await repo.SaveChangesAsync();
+
+                TempData["message"] = "Course successfully created!";
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);

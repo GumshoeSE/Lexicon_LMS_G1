@@ -1,6 +1,6 @@
 ﻿using Lexicon_LMS_G1.Entities.Entities;
 
-namespace Lexicon_LMS_G1.Entities.ViewModels
+namespace Lexicon_LMS_G1.Entities.Paging
 {
     public class PaginatedList<T> : List<T>
     {
@@ -22,7 +22,7 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
             CurrentPageIndex = pageIndex;
             TotalPages = (int)Math.Ceiling(count / (double)pageSize);
 
-            this.AddRange(items);
+            AddRange(items);
         }
 
         public static async Task<PaginatedList<T>> CreateAsync(List<T> source, int pageIndex, int pageSize)

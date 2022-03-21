@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Lexicon_LMS_G1.Entities.Entities;
-using Lexicon_LMS_G1.Models.ViewModels;
+using Lexicon_LMS_G1.Entities.ViewModels;
 
 namespace Lexicon_LMS_G1.Automapper
 {
