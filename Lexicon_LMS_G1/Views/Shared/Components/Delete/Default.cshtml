@@ -1,0 +1,23 @@
+﻿
+<div class="modal" tabindex="-1" id="delete">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <p>This action can not be reversed!</p>
+            </div>
+            <div class="modal-footer text-center">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                <form asp-action="Delete">
+                    <input type="hidden" name="deleteId" value="" id="deleteId" />
+                    <input type="submit" value="Yes" class="btn btn-primary" />
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
