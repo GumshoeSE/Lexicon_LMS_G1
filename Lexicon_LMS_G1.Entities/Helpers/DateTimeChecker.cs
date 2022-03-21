@@ -9,6 +9,13 @@ namespace Lexicon_LMS_G1.Entities.Helpers
 
             foreach (var module in modules)
             {
+                // Remove seconds or less 
+                module.StartTime = module.StartTime.Date.Add(
+                    new TimeSpan(module.StartTime.TimeOfDay.Hours, module.StartTime.TimeOfDay.Minutes, 0));
+
+                module.EndTime = module.EndTime.Date.Add(
+                    new TimeSpan(module.EndTime.TimeOfDay.Hours, module.EndTime.TimeOfDay.Minutes, 0));
+
                 // Starts inside the timespan of another module
                 if (startTime.Ticks > module.StartTime.Ticks && startTime.Ticks < module.EndTime.Ticks)
                 {

@@ -14,7 +14,6 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
 
         [Required]
         [Display(Name = "Start Date")]
-        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime StartTime { get; set; }
 
         [Required]
