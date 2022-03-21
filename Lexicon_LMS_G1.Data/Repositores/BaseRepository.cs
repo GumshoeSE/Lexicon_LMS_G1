@@ -17,7 +17,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     }
 
 
-    public async Task<IEnumerable<T>> GetAsync()
+    public virtual async Task<IEnumerable<T>> GetAsync()
     {
         return await db.Set<T>().ToListAsync();
     }

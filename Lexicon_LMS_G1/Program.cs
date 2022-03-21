@@ -14,6 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddTransient<ICourseRepository, CourseRepository>();
 builder.Services.AddTransient<IBaseRepository<Course>, CourseRepository>();
 builder.Services.AddTransient<IBaseRepository<Module>, ModuleRepository>();
 builder.Services.AddTransient<ICourseSelectListService, CourseSelectListService>();
@@ -73,7 +74,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Courses}/{action=IndexTeacher}/{id?}");
+    pattern: "{controller=Courses}/{action=Index}/{id?}");
 app.MapRazorPages();
 
 app.Run();
