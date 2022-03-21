@@ -13,12 +13,13 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
         public string Description { get; set; } = string.Empty;
 
         [Required]
-        [Display(Name = "Start Time")]
+        [Display(Name = "Start Date")]
         [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime StartTime { get; set; }
 
         [Required]
-        public TimeSpan Duration { get; set; }
+        [Display(Name = "End Date")]
+        public DateTime EndTime { get; set; }
 
         [Required]
         public int CourseId { get; set; }

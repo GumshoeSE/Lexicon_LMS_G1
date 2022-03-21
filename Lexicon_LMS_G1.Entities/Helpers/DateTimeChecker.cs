@@ -10,7 +10,7 @@ namespace Lexicon_LMS_G1.Entities.Helpers
             foreach (var module in modules)
             {
                 // Starts inside the timespan of another module
-                if (startTime.Ticks >= module.StartTime.Ticks && startTime.Ticks < module.EndTime.Ticks)
+                if (startTime.Ticks > module.StartTime.Ticks && startTime.Ticks < module.EndTime.Ticks)
                 {
                     return (true, module);
                 }
@@ -20,7 +20,7 @@ namespace Lexicon_LMS_G1.Entities.Helpers
                     return (true, module);
                 }
                 // Starts before and ends after the timespan of another module
-                else if (startTime.Ticks <= module.StartTime.Ticks && endTime.Ticks >= module.EndTime.Ticks)
+                else if (startTime.Ticks < module.StartTime.Ticks && endTime.Ticks > module.EndTime.Ticks)
                 {
                     return (true, module);
                 }

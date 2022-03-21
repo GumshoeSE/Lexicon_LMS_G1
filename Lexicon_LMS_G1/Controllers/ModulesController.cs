@@ -83,7 +83,8 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 CourseId = course.Id,
                 Course = course,
-                StartTime = defaultStartTime
+                StartTime = defaultStartTime,
+                EndTime = defaultStartTime,
             };
 
             return View(viewModel);
@@ -105,26 +106,25 @@ namespace Lexicon_LMS_G1.Controllers
                 return View(viewModel);
             }
 
-            var endTime = viewModel.StartTime.Add(viewModel.Duration);
-
-            if (viewModel.StartTime == endTime)
+            if (viewModel.StartTime.Ticks >= viewModel.EndTime.Ticks)
             {
-                ModelState.AddModelError("Duration", $"The module's duration has to be above 0.");
+                ModelState.AddModelError("EndTime", $"The module has to start before it ends.");
+                ModelState.AddModelError("StartTime", $"The module has to start before it ends.");
                 return View(viewModel);
             }
 
-            var (isOverlap, conMod) = DateTimeChecker.IsOverlappingWithList(viewModel.StartTime, endTime, course.Modules);
+            var (isOverlap, conMod) = DateTimeChecker.IsOverlappingWithList(viewModel.StartTime, viewModel.EndTime, course.Modules);
 
             if (isOverlap)
             {
-                ModelState.AddModelError("Duration", $"Duration is overlapping with another module '{conMod.Name}'");
+                ModelState.AddModelError("EndTime", $"Duration is overlapping with another module '{conMod.Name}'");
+                ModelState.AddModelError("StartTime", $"Duration is overlapping with another module '{conMod.Name}'");
                 return View(viewModel);
             }
 
             if (ModelState.IsValid)
             {
                 var module = _mapper.Map<Module>(viewModel);
-                module.EndTime = endTime;
 
                 _moduleRepo.Add(module);
                 await _moduleRepo.SaveChangesAsync();
