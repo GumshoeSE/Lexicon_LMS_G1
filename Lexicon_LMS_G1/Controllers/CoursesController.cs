@@ -38,8 +38,12 @@ namespace Lexicon_LMS_G1.Controllers
             return View(await _context.Courses.ToListAsync());
         }
 
-        public async Task<IActionResult> IndexTeacher(CoursePagingParams pagingParams)
+        public async Task<IActionResult> IndexTeacher(int? pageIndex)
         {
+            var paging = new CoursePagingParams
+            {
+                PageIndex = pageIndex ?? 1
+            };
             var model = await courseRepo.GetCourseAsync();
             var viewModel = model.Select(c => new CourseViewModel
             {
@@ -50,22 +54,10 @@ namespace Lexicon_LMS_G1.Controllers
                 Modules = c.Modules
             }).AsEnumerable();
 
-            return View(await PaginatedList<CourseViewModel>.CreateAsync(viewModel.AsEnumerable().ToList(), pagingParams.PageIndex, pagingParams.PageSize));
+            return View(await PaginatedList<CourseViewModel>.CreateAsync(viewModel.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize));
 
         }
-        //private async Task<CourseViewModel> GetCourses(CoursePagingParams pagingParams)
-        //{
-        //    CourseViewModel courseViewModel = new CourseViewModel();
-        //    double pageCount = (double)((decimal)repo.GetCount() / Convert.ToDecimal(pagingParams.PageSize));
-        //    courseViewModel.PageCount = (int)Math.Ceiling(pageCount);
-        //    var pagingResult = await courseRepo.GetCourseAsync(pagingParams);
-
-        //    courseViewModel.Courses = pagingResult;
-        //    courseViewModel.CurrentPageIndex = pagingParams.PageIndex;
-
-        //    return courseViewModel;
-
-        //}
+        
 
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id)

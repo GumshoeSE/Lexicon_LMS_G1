@@ -11,7 +11,6 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
 
 
         public int CurrentPageIndex { get; private set; }
-        public int PageCount { get; private set; }
         public int TotalCount { get; private set; }
         public int TotalPages { get; private set; }
         public int PageSize { get; private set; }

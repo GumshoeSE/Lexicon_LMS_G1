@@ -43,12 +43,6 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         return db.Set<T>().AsQueryable().Where(predicate).ToList();
     }
-
-    public int GetCount()
-    {
-        int count = db.Set<T>().Count();
-        return count;
-    }
     public bool Update(T newItem, params object?[]? keyValues)
     {
         T? item = db.Set<T>().Find(keyValues);

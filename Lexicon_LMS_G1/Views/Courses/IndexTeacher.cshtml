@@ -8,81 +8,76 @@
 <div class="container">
     <h1>Course Overview For Teacher</h1>
     <div class="row">
-        <form asp-action="IndexTeacher method="post">
-            <div id="courseList" class="col-6">
-                <div class="accordion" id="courseAccordion">
-                    @foreach (var item in Model)
-                    {
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)" aria-expanded="false" aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
-                                    <div class="text-center ps-4" style="width:100%">
-                                        @Html.DisplayFor(modelItem => item.Name)
+        <div id="courseList" class="col-6">
+            <div class="accordion" id="courseAccordion">
+                @foreach (var item in Model)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)" aria-expanded="false" aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
+                                <div class="text-center ps-4" style="width:100%">
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)" class="accordion-collapse collapse" aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)" data-bs-parent="#courseAccordion">
+                            <div class="accordion-body p-0 pt-3">
+                                @if (item.Modules.Count == 0)
+                                {
+                                    <p class="ps-3">This course don't have any moduals</p>
+                                }
+                                else
+                                {
+                                    @foreach (var module in item.Modules)
+                                    {
+                                        <div class="ps-3">@Html.DisplayFor(m => module.Name)</div>
+                                        <hr />
+                                    }
+
+                                }
+                                <div class="px-3 pb-3 row">
+                                    <div class="col">
+                                        <a asp-controller="" asp-action="" class="btn btn-primary">View Documents</a>
+                                        <a asp-controller="Modules" asp-action="Create" class="btn btn-primary">Add Module</a>
+
                                     </div>
-                                </button>
-                            </h2>
-                            <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)" class="accordion-collapse collapse" aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)" data-bs-parent="#courseAccordion">
-                                <div class="accordion-body p-0 pt-3">
-                                    @if (item.Modules.Count == 0)
-                                    {
-                                        <p class="ps-3">This course don't have any moduals</p>
-                                    }
-                                    else
-                                    {
-                                        @foreach (var module in item.Modules)
-                                        {
-                                            <div class="ps-3">@Html.DisplayFor(m => module.Name)</div>
-                                            <hr />
-                                        }
-
-                                    }
-                                    <div class="px-3 pb-3 row">
-                                        <div class="col">
-                                            <a asp-controller="" asp-action="" class="btn btn-primary">View Documents</a>
-                                            <a asp-controller="Modules" asp-action="Create" class="btn btn-primary">Add Module</a>
-
-                                        </div>
-                                        <div class="text-end col">
-                                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
-                                            <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
-                                        </div>
+                                    <div class="text-end col">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
 
-                    }
-                    @{
-    var prevDisabled = !Model.HasPrevious ? "disabled" : "";
-    var nextDisabled = !Model.HasNext ? "disabled" : "";
-}
-                </div>
-                <a asp-route="IndexTeacher" asp-route-pagingParams="@(new {PageIndex = Model.CurrentPageIndex - 1})" class="btn btn-light @prevDisabled"><</a>
-                @for (int i = 1; 1 <= Model.PageCount; i++)
+                    </div>
+
+                }
+
+
+            </div>
+            @{
+                var prevDisabled = !Model.HasPrevious ? "disabled" : "";
+                var nextDisabled = !Model.HasNext ? "disabled" : "";
+            }
+            <div class="text-center pt-3">
+                <a asp-action="IndexTeacher" asp-route-pageIndex="@(Model.CurrentPageIndex - 1)" class="btn btn-light border border-secondary @prevDisabled"><</a>
+                @for (int i = 1; i <= Model.TotalPages; i++)
                 {
                     @if (i != Model.CurrentPageIndex)
                     {
-                        <a href="javascript:PageClick(@i);" class="btn btn-light">@i</a>
+                        <a asp-action="IndexTeacher" asp-route-pageIndex="@i" class="btn btn-light border border-secondary">@i</a>
                     }
                     else
                     {
                         <span class="btn btn-secondary">@i</span>
                     }
                 }
-                <a asp-rout="IndexTeacher" asp-route-pagingParams="@(new {PageIndex = Model.CurrentPageIndex + 1})" class="btn btn-light @nextDisabled"><</a>
+                <a asp-action="IndexTeacher" asp-route-pageIndex="@(Model.CurrentPageIndex + 1)" class="btn btn-light border border-secondary @nextDisabled">></a>
 
                 <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
             </div>
-        </form>
+        </div>
         <div id="activitiesList" class="col-6">
         </div>
     </div>
 </div>
-
-<script type="text/javascript">
-    function PageClick(index) {
-        document.getElementById("hfCurrentPageIndex").nodeValue = index;
-        document.forms[0].submit
-    }
-</script>

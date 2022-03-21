@@ -8,7 +8,7 @@ namespace Lexicon_LMS_G1.Entities.Paging
 {
     public class CoursePagingParams
     {
-        public int PageIndex { get; set; } = 1;
+        public int PageIndex { get; set; }
         public int PageSize { get; set; } = 5;
     }
 }
