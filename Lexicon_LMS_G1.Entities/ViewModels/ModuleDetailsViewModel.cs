@@ -1,7 +1,9 @@
+using Lexicon_LMS_G1.Entities.Entities;
+
 namespace Lexicon_LMS_G1.Entities.ViewModels
 {
     public class ModuleDetailsViewModel
     {
-        public ICollection MyProperty { get; set; }
+        public ICollection<Activity> MyProperty { get; set; }
     }
 }

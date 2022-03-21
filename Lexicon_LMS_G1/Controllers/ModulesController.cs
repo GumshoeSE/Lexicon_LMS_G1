@@ -83,8 +83,8 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 CourseId = course.Id,
                 Course = course,
-                StartTime = lastModuleEndDateTime,
-                EndTime = lastModuleEndDateTime,
+                StartTime = defaultStartTime,
+                EndTime = defaultStartTime,
             };
 
             return View(viewModel);
