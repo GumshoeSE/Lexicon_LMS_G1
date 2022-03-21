@@ -152,7 +152,7 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         // GET: Courses/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> DeletePOSt(int? id)
         {
             if (id == null)
             {
@@ -172,12 +172,25 @@ namespace Lexicon_LMS_G1.Controllers
         // POST: Courses/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int? deleteId)
         {
-            var course = await _context.Courses.FindAsync(id);
-            _context.Courses.Remove(course);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (deleteId == null)
+            {
+                return NotFound();
+            }
+
+            var course = repo.GetById(deleteId);
+            //var course = await _context.Courses.FindAsync(id);
+
+            if (repo.Delete(deleteId))
+            {
+                await repo.SaveChangesAsync();
+                TempData["message"] = $"The course {course.Name} has been removed!";
+                return RedirectToAction(nameof(IndexTeacher));
+            }
+            TempData["error"] = "Something went wrong while deleting!";
+            return RedirectToAction(nameof(IndexTeacher));
+            
         }
 
         private bool CourseExists(int id)
