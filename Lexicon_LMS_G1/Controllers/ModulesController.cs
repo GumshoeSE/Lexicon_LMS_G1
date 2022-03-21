@@ -46,15 +46,15 @@ namespace Lexicon_LMS_G1.Controllers
                 return NotFound();
             }
 
-            var @module = await _context.Modules
-                .Include(c => c.Course)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@module == null)
+            var module = await _moduleRepo.GetByIdWithIncludedAsync(m => m.Activities, m => m.Id == id);
+            if (module == null)
             {
                 return NotFound();
             }
 
-            return View(@module);
+            var viewModel = _mapper.Map<ModuleDetailsViewModel>(module);
+
+            return View(viewModel);
         }
 
         // GET: Modules/Create

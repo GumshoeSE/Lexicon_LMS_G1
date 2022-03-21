@@ -9,6 +9,7 @@ namespace Lexicon_LMS_G1.Automapper
         public ModuleProfile()
         {
             CreateMap<Module, ModuleCreateViewModel>().ReverseMap();
+            CreateMap<Module, ModuleDetailsViewModel>().ReverseMap();
         }
     }
 }
