@@ -65,9 +65,25 @@ namespace Lexicon_LMS_G1.Controllers
                 return NotFound();
             }
 
+            var course = await _courseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == id);
+
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            course.Modules = course.Modules.OrderBy(m => m.StartTime).ToList();
+
+            // set default start time to the when the last module ends and remove seconds.
+            var lastModuleEndDateTime = course.Modules.Last().EndTime;
+            var defaultStartTime = lastModuleEndDateTime.Date.Add(
+                new TimeSpan(lastModuleEndDateTime.TimeOfDay.Hours, lastModuleEndDateTime.TimeOfDay.Minutes, 0));
+
             var viewModel = new ModuleCreateViewModel
             {
-                CourseId = (int)id
+                CourseId = course.Id,
+                Course = course,
+                StartTime = defaultStartTime
             };
 
             return View(viewModel);
@@ -80,26 +96,44 @@ namespace Lexicon_LMS_G1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ModuleCreateViewModel viewModel)
         {
+            var course = await _courseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == viewModel.CourseId);
+            viewModel.Course = course;
 
-            var course = _courseRepo.GetById(viewModel.CourseId);
-            var thing = _courseRepo.GetIncludeAsync(c => c.Modules);
-
-            var endTime = viewModel.StartTime + viewModel.Duration;
-            var overlap = DateTimeChecker.IsOverlappingWithList(viewModel.StartTime, endTime, course.Modules);
-
-            if (overlap)
+            if (viewModel.StartTime.Ticks < course.StartTime.Ticks)
             {
-                ModelState.AddModelError("Duration", "Overlapping module duration, not allowed");
+                ModelState.AddModelError("StartTime", $"The module can not start before the course.");
+                return View(viewModel);
+            }
+
+            var endTime = viewModel.StartTime.Add(viewModel.Duration);
+
+            if (viewModel.StartTime == endTime)
+            {
+                ModelState.AddModelError("Duration", $"The module's duration has to be above 0.");
+                return View(viewModel);
+            }
+
+            var (isOverlap, conMod) = DateTimeChecker.IsOverlappingWithList(viewModel.StartTime, endTime, course.Modules);
+
+            if (isOverlap)
+            {
+                ModelState.AddModelError("Duration", $"Duration is overlapping with another module '{conMod.Name}'");
+                return View(viewModel);
             }
 
             if (ModelState.IsValid)
             {
-                //_context.Add(@module);
-                //await _context.SaveChangesAsync();
-                //return RedirectToAction(nameof(Index));
+                var module = _mapper.Map<Module>(viewModel);
+                module.EndTime = endTime;
+
+                _moduleRepo.Add(module);
+                await _moduleRepo.SaveChangesAsync();
+
+                TempData["message"] = "Module successfully created!";
+                return RedirectToAction("IndexTeacher", "Courses");
             }
 
-            return View();
+            return View(viewModel);
         }
 
         // GET: Modules/Edit/5

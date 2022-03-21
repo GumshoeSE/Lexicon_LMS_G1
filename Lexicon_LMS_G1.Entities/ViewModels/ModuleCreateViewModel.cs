@@ -14,12 +14,16 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
 
         [Required]
         [Display(Name = "Start Time")]
-        public DateTime StartTime { get; set; } = DateTime.Today;
+        [DisplayFormat(DataFormatString = "{0:yyyy/MM/dd}")]
+        public DateTime StartTime { get; set; }
 
         [Required]
         public TimeSpan Duration { get; set; }
 
         [Required]
         public int CourseId { get; set; }
+        public Course? Course { get; set; }
+
+        public bool ShowTimeLine { get; set; }
     }
 }

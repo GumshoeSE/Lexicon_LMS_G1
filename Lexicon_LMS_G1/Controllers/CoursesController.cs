@@ -78,6 +78,8 @@ namespace Lexicon_LMS_G1.Controllers
                 var course = _mapper.Map<Course>(viewModel);
                 repo.Add(course);
                 await repo.SaveChangesAsync();
+
+                TempData["message"] = "Course successfully created!";
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);
