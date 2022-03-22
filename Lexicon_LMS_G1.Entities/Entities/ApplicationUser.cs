@@ -16,6 +16,6 @@ namespace Lexicon_LMS_G1.Entities.Entities
         public int? CourseId { get; set; }
         public Course? Course { get; set; }
         public ICollection<Document> Documents { get; set; } = new List<Document>();
-
+        public ICollection<UserFinishedActivity> FinishedActivities { get; set; }
     }
 }

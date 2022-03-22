@@ -6,5 +6,6 @@ namespace Lexicon_LMS_G1.Data.Repositores
     public interface ICourseRepository : IBaseRepository<Course>
     {
         Task<IEnumerable<Course>> GetCourseAsync();
+        
     }
 }

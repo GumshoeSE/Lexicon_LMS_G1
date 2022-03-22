@@ -12,10 +12,18 @@ namespace Lexicon_LMS_G1.Data.Data
         public DbSet<Course> Courses { get; set; }
         public DbSet<Document> Documents { get; set; }
         public DbSet<Module> Modules { get; set; }
+        public DbSet<UserFinishedActivity> UserFinishedActivity { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
+        }
+
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            builder.Entity<UserFinishedActivity>().HasKey(ufa => new {ufa.ApplicationUserId, ufa.ActivityId});
         }
 
     }
