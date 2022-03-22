@@ -1,14 +1,14 @@
 ﻿@model Lexicon_LMS_G1.Models.StudentViewCourseViewModel
 
 @{
-    ViewData["Title"] = "Course";
+    ViewData["Title"] = @Html.DisplayFor(m => m.Name);
 }
 
 <h1> @Html.DisplayFor(m => m.Name) </h1>
 
 <div class="container">
     <div class="row">
-        <div class="border rounded col-5 p-0">
+        <div class="border rounded col-5 p-0 bg-light">
             <h2 class="px-3"> Assignments </h2>
             <h5 class="px-3">Late Assignments</h5>
             <div class="accordion" id="lateAssignments">
@@ -46,47 +46,59 @@
                     </div>
                 }
             </div>
+            <h5 class="px-3">Finished</h5>
+            <div class="accordion" id="finishedAssignments">
+                @foreach (var assignment in Model!.FinishedAssignments)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
+                                @Html.DisplayFor(a => assignment.Name)
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
+                            <div class="accordion-body">
+                                @Html.DisplayFor(a => assignment.Description)
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
         <div class="col-2"></div>
-        <div class="col-5 border rounded p-0 bg-light" id="modules">
+        <div class="col-5 border rounded p-0 bg-light d-flex flex-column" id="modules">
+            <div class="mb-auto">
+                <nav id="modulesNavBar" class="px-3 py-2" style="--bs-breadcrumb-divider: '>';">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active" id="breadcrumbModule" style="cursor: pointer" data-course="@Model.Id">
+                            Modules
+                        </li>
+                        <li class="breadcrumb-item hidden" id="breadcrumbActivity" style="cursor: pointer">
+                            Activities
+                        </li>
+                        <li class="breadcrumb-item hidden" id="breadcrumbDetail" style="cursor: pointer">
+                            Details
+                        </li>
+                    </ol>
+                </nav>
+                <div id="moduleview" class="overflow-auto">
 
-            <nav id="modulesNavBar" class="px-3 py-2" style="--bs-breadcrumb-divider: url('/wwwroot/css/bread.svg');">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        Modules
-                    </li>
-                    <li class="breadcrumb-item">
-                        Activity
-                    </li>
-                    <li class="breadcrumb-item active">
-                        Details
-                    </li>
-                </ol>
-            </nav>
-            <div id="first">
-                @* View all modules for the course *@
-                <div class="list-group">
-                    @foreach (var module in Model!.Modules)
-                    {
-                        <a class="list-group-item" asp-controller="Modules" asp-action="Details" asp-route-id="@module.Id"> @Html.DisplayFor(a => module.Name) </a>
-                    }
+                    <partial name="ModulePartialView" model="@Model.Modules" />
                 </div>
-            </div>
-            <div id="second">
-                @* View all activities for the chosen module *@
 
             </div>
-            <div id="third">
-                @* View details for the chosen activity *@
+            <div class="">
+                <button class="btn btn-primary list-group-item w-100" data-bs-toggle="modal" data-bs-target="#attendeesModal">
+                    View Attendees
+                </button>
 
             </div>
         </div>
+
     </div>
     <div class="row justify-content-end ">
         <div class="col-5 p-0" id="attendeesButton">
-            <button class="btn btn-primary list-group-item w-100" data-bs-toggle="modal" data-bs-target="#attendeesModal">
-                Make me look nice plz
-            </button>
+
             <div class="modal fade" id="attendeesModal" tabindex="-1">
                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                     <div class="modal-content">
@@ -99,7 +111,7 @@
                         </div>
                         <div class="modal-body">
                             <ul class="list-group">
-                                @foreach (var attendee in Model!.Attendees)
+                                @foreach (var attendee in Model!.OrderedAttendees)
                                 {
                                     <li class="list-group-item">
                                         @Html.DisplayFor(a => attendee.FirstName)

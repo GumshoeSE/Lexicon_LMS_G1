@@ -179,17 +179,18 @@ namespace Lexicon_LMS_G1.Controllers
         {
             ApplicationUser user = await userManager.GetUserAsync(User);
 
-            StudentViewCourseViewModel viewModel = await GetStudentViewCourseViewModel(user.CourseId, user.Id);
+            StudentViewCourseViewModel viewModel = await GetStudentViewCourseViewModel(user.CourseId);
 
             return View("IndexStudent", viewModel);
         }
         
-        private async Task<StudentViewCourseViewModel> GetStudentViewCourseViewModel(int? courseId, string userId)
+        private async Task<StudentViewCourseViewModel> GetStudentViewCourseViewModel(int? courseId)
         {
             if (courseId == null)
                 return new StudentViewCourseViewModel 
                 { 
                     Name = "Nothing lmao",
+                    Id = 0,
                     Assignments = new List<Activity>(),
                     FinishedAssignments = new List<Activity>(),
                     Attendees = new List<ApplicationUser>(),
@@ -207,14 +208,16 @@ namespace Lexicon_LMS_G1.Controllers
                             Assignments = c.Modules.Select(m => m.Activities.Where(a => a.ActivityType.Name == "Assignment"))
                         });
             */
+            string userId = (await userManager.GetUserAsync(User)).Id;
 
             var finishedAssignments = (await _context.Users
                     .FindAsync(userId))
-                    .FinishedActivities;
+                    .FinishedActivities.ToList();
 
             StudentViewCourseViewModel viewModel = new StudentViewCourseViewModel
             {
                 Name = (await _context.Courses.FindAsync(courseId)).Name,
+                Id = (int)courseId,
                 Assignments = await _context.Activities         
                     .Include(a => a.ActivityType)
                     .Include(a => a.Module)
@@ -223,7 +226,7 @@ namespace Lexicon_LMS_G1.Controllers
                     .Where(a => a.ActivityType.Name == "Assignment")
                     //.Where(a => !finishedAssignments.Contains(a.Id))
                     .ToListAsync(),
-                FinishedAssignments = (IEnumerable<Activity>)finishedAssignments,
+                FinishedAssignments = _mapper.ProjectTo<Activity>((IQueryable)finishedAssignments),
                 Attendees = (await _context.Courses
                     .FindAsync(courseId))
                     .Attendees,
@@ -233,6 +236,24 @@ namespace Lexicon_LMS_G1.Controllers
             };
 
             return viewModel;
+        }
+
+        public IActionResult GetModulesForCourse(int courseId)
+        {
+            Course course = _context.Courses.Include(m => m.Modules).FirstOrDefault(c => c.Id == courseId);
+            return PartialView("ModulePartialView", course.Modules);
+        }
+
+        public IActionResult GetActionsForModule(int moduleId)
+        {
+            Module module = _context.Modules.Include(m => m.Activities).FirstOrDefault(m => m.Id == moduleId);
+            return PartialView("ModuleDetailsPartialView", module);
+        }
+        
+        public IActionResult GetActionsForActivity(int activityId)
+        {
+            Activity activity = _context.Activities.FirstOrDefault(a => a.Id == activityId);
+            return PartialView("ActivityDetailsPartialView", activity);
         }
     }
 }
