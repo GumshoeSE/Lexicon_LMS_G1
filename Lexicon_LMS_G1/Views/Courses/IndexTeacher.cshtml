@@ -7,6 +7,7 @@
 
 <div class="container">
     <h1>Course Overview For Teacher</h1>
+
     <div class="row">
         <div id="courseList" class="col-6">
             <div class="accordion" id="courseAccordion">
@@ -29,6 +30,7 @@
                                 else
                                 {
                                     @foreach (var module in item.Modules)
+
                                     {
                                         <div class="ps-3">@Html.DisplayFor(m => module.Name)</div>
                                         <hr />
@@ -43,18 +45,19 @@
                                     </div>
                                     <div class="text-end col">
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
-                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">Delete</a>
+                                        <button type="button" data-ref="@item.Id" data-name="@item.Name" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#delete">Delete</button>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
                     </div>
-
                 }
-
-
             </div>
+
+             <vc:delete></vc:delete>
+
+            @*Paginating puttons*@
             @{
                 var prevDisabled = !Model.HasPrevious ? "disabled" : "";
                 var nextDisabled = !Model.HasNext ? "disabled" : "";

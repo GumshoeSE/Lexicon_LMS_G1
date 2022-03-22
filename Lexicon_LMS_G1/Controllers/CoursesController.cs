@@ -161,35 +161,29 @@ namespace Lexicon_LMS_G1.Controllers
             return View(course);
         }
 
-        // GET: Courses/Delete/5
-        [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var course = await _context.Courses
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (course == null)
-            {
-                return NotFound();
-            }
-
-            return View(course);
-        }
-
         // POST: Courses/Delete/5
+        [Authorize(Roles = "Teacher")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int? deleteId)
         {
-            var course = await _context.Courses.FindAsync(id);
-            _context.Courses.Remove(course);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            if (deleteId == null)
+            {
+                return NotFound();
+            }
+
+            var course = repo.GetById(deleteId);
+            //var course = await _context.Courses.FindAsync(id);
+
+            if (repo.Delete(deleteId))
+            {
+                await repo.SaveChangesAsync();
+                TempData["message"] = $"The course {course.Name} has been removed!";
+                return RedirectToAction(nameof(IndexTeacher));
+            }
+            TempData["error"] = "Something went wrong while deleting!";
+            return RedirectToAction(nameof(IndexTeacher));
+            
         }
 
         private bool CourseExists(int id)
