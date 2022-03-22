@@ -28,7 +28,14 @@
                 <li class="list-group-item align-items-center border rounded border-danger mb-4">           
                     <div class="fw-bold  text-center mb-3">Course Ends</div>
                     <div class="align-items-center d-flex justify-content-center">
-                        <span class="badge bg-danger rounded-pill">@Model.Course.Modules.Last().EndTime.ToString("g")</span>
+                        @if (Model.Course.Modules.Count > 0)
+                        {
+                            <span class="badge bg-danger rounded-pill">@Model.Course.Modules.Last().EndTime.ToString("g")</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger rounded-pill">@Model.Course!.StartTime.ToString("g")</span>
+                        }
                     </div>
                 </li>
 			</ul>

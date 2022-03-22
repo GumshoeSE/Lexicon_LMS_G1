@@ -1,7 +1,4 @@
-﻿
-
-
-(() => {
+﻿(() => {
     setTimeout(function () {
         $('#message').fadeOut('slow');
 
@@ -18,9 +15,11 @@ $(document).ready(function (){
         var type = $(this).attr("data-type");
         $(".modal-title").text("Do you really want to remove " + name + " " + type);
     });
-});
 
-// Write your JavaScript code.
+    $(".toast").toast('show');
+
+    reloadModule();
+});
 
 const target = document.getElementById("moduleview");
 
@@ -30,11 +29,7 @@ const breadcrumbDetail = document.getElementById("breadcrumbDetail");           
 
 let latestModuleId;
 
-$(document).ready(function () {
-    reloadModule();
-});
-
-breadcrumbModule.addEventListener("click", function () {
+breadcrumbModule?.addEventListener("click", function () {
     
     breadcrumbModule.classList.add("active");
 
@@ -47,7 +42,7 @@ breadcrumbModule.addEventListener("click", function () {
     reloadCourse();
 });
 
-breadcrumbActivity.addEventListener("click", function () {
+breadcrumbActivity?.addEventListener("click", function () {
     let params = [['moduleId', latestModuleId]];
     let url = new URL('https://localhost:7124/Courses/GetActionsForModule');
     url.search = new URLSearchParams(params).toString();
@@ -121,6 +116,3 @@ function reloadActivity() {
             });
     });
 }
-$(document).ready(function () {
-    $(".toast").toast('show');
-});
