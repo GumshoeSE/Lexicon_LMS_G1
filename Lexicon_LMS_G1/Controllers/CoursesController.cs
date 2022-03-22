@@ -1,17 +1,15 @@
 ﻿#nullable disable
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Lexicon_LMS_G1.Entities.Entities;
+using AutoMapper;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Data.Repositores;
-using System.Linq.Expressions;
-using Lexicon_LMS_G1.Models;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Authorization;
-using Lexicon_LMS_G1.Models.ViewModels;
-using AutoMapper;
+using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Entities.Paging;
 using Lexicon_LMS_G1.Entities.ViewModels;
+using Lexicon_LMS_G1.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -24,7 +22,7 @@ namespace Lexicon_LMS_G1.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly IMapper _mapper;
 
-        public CoursesController(ApplicationDbContext context, ICourseRepository courseRepo, IMapper mapper, IBaseRepository<Course> repo)
+        public CoursesController(ApplicationDbContext context, ICourseRepository courseRepo, IMapper mapper, IBaseRepository<Course> repo, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             this.repo = repo;
@@ -64,7 +62,7 @@ namespace Lexicon_LMS_G1.Controllers
             return View(await PaginatedList<CourseViewModel>.CreateAsync(viewModel.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize));
 
         }
-        
+
 
         // GET: Courses/Details/5
         public async Task<IActionResult> Details(int? id)
@@ -189,7 +187,7 @@ namespace Lexicon_LMS_G1.Controllers
             }
             TempData["error"] = "Something went wrong while deleting!";
             return RedirectToAction(nameof(IndexTeacher));
-            
+
         }
 
         private bool CourseExists(int id)
@@ -207,12 +205,12 @@ namespace Lexicon_LMS_G1.Controllers
 
             return View("IndexStudent", viewModel);
         }
-        
+
         private async Task<StudentViewCourseViewModel> GetStudentViewCourseViewModel(int? courseId)
         {
             if (courseId == null)
-                return new StudentViewCourseViewModel 
-                { 
+                return new StudentViewCourseViewModel
+                {
                     Name = "Nothing lmao",
                     Id = 0,
                     Assignments = new List<Activity>(),
@@ -244,7 +242,7 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 Name = (await _context.Courses.FindAsync(courseId)).Name,
                 Id = (int)courseId,
-                Assignments = await _context.Activities         
+                Assignments = await _context.Activities
                     .Include(a => a.ActivityType)
                     .Include(a => a.Module)
                     .ThenInclude(m => m.Activities)
@@ -253,10 +251,10 @@ namespace Lexicon_LMS_G1.Controllers
                     .ToListAsync(),
                 FinishedAssignments = finishedAssignments,
                 Attendees = (await _context.Courses
-                    .Include(c => c.Attendees)
+                    .Include(c => c.AttendingStudents)
                     .FirstOrDefaultAsync(a => a.Id == courseId))
-                    .Attendees,
-                Modules = await _context.Modules                
+                    .AttendingStudents,
+                Modules = await _context.Modules
                     .Where(m => m.CourseId == courseId)
                     .ToListAsync()
             };
@@ -275,7 +273,7 @@ namespace Lexicon_LMS_G1.Controllers
             Module module = _context.Modules.Include(m => m.Activities).FirstOrDefault(m => m.Id == moduleId);
             return PartialView("ModuleDetailsPartialView", module);
         }
-        
+
         public IActionResult GetActionsForActivity(int activityId)
         {
             Activity activity = _context.Activities.FirstOrDefault(a => a.Id == activityId);
