@@ -38,7 +38,8 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 return RedirectToAction(nameof(IndexTeacher));
             }
-            return View(await _context.Courses.ToListAsync());
+            
+            return RedirectToAction(nameof(StudentIndex));
         }
 
         [Authorize(Roles = "Teacher")]
