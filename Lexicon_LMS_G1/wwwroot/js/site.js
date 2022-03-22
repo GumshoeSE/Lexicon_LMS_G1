@@ -15,7 +15,7 @@ $(document).ready(function (){
             $(this).attr("data-ref")
         );
         var name = $(this).attr("data-name");
-        var type = $(this).attt("data-type");
+        var type = $(this).attr("data-type");
         $(".modal-title").text("Do you really want to remove " + name + " " + type);
     });
 });

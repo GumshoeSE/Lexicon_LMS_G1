@@ -57,7 +57,8 @@ namespace Lexicon_LMS_G1.Controllers
                 Name = c.Name,
                 Description = c.Description,
                 StartTime = c.StartTime,
-                Modules = c.Modules
+                Modules = c.Modules,
+                AttendingStudents = c.AttendingStudents,
             }).AsEnumerable();
 
             return View(await PaginatedList<CourseViewModel>.CreateAsync(viewModel.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize));
@@ -124,7 +125,8 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 return NotFound();
             }
-            return View(course);
+            var viewModel = _mapper.Map<CourseEditViewModel>(course);
+            return View(viewModel);
         }
 
         // POST: Courses/Edit/5
@@ -133,8 +135,9 @@ namespace Lexicon_LMS_G1.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,StartTime")] Course course)
+        public async Task<IActionResult> Edit(int id, CourseEditViewModel viewModel)
         {
+            var course = _mapper.Map<Course>(viewModel);
             if (id != course.Id)
             {
                 return NotFound();
@@ -144,8 +147,9 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 try
                 {
-                    _context.Update(course);
-                    await _context.SaveChangesAsync();
+                    courseRepo.Update(course);
+
+                    await repo.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
