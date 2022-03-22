@@ -4,11 +4,113 @@
 
 <div class="container">
     <div class="row">
-        <div class="col-md-6">
-            
+        <div class="col-md-6 border border-3 rounded-xl p-3">
+            <div class="row">
+                <h1 class="text-center col-md-4 offset-md-4">Activities</h1>
+                <div class="col-md-4 align-content-center text-end">
+                    <a asp-controller="Activities" asp-route-id="@Model.Id" asp-action="Create" class="btn btn-primary">Add</a>
+                </div>
+            </div>
+            <div class="accordion mt-3" id="courseAccordion">
+                @if (Model.Activities.Count == 0)
+                {
+                    <p class="ps-3">This module currently has no activities</p>
+                }
+                @foreach (var item in Model.Activities)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
+                            <button class="accordion-button collapsed" 
+                                    type="button" 
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)"
+                                    aria-expanded="false"
+                                    aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
+                                <div class="text-start" style="width:100%">
+                                    @item.ActivityType.Name
+                                </div>
+                                <div class="text-end me-3 fw-light" style="width:100%">
+                                    @{
+                                        var timeDiff = item.StartDate - DateTime.Now;
+                                        var isInThePast = timeDiff.CompareTo(TimeSpan.Zero) < 0;
+                                        var isToday = timeDiff.TotalDays == 0;
+                                        var isThisWeek = timeDiff.TotalDays <= 7;
+                                        var timeText = "";
+
+                                        if(isInThePast)
+                                        {
+                                            timeText = $"finished {item.EndDate.ToString("yyyy/MM/dd")}";
+                                        }
+                                        else
+                                        {
+                                            timeText = $"starts in ";
+
+                                            if (isToday)
+                                            {
+                                                timeText += (timeDiff.Hours > 0) ? $"{timeDiff.Hours} h " : $"";
+                                                timeText += (timeDiff.Minutes > 0) ? $"{timeDiff.Minutes} min " : $"";
+                                            }
+                                            else if(isThisWeek)
+                                            {
+                                                timeText += $"{timeDiff.Days} days";
+                                            }
+                                            else
+                                            {
+                                                timeText = $"starts {item.StartDate.ToString("yyyy/MM/dd")}";
+                                            }
+                                        }
+                                    }
+                                    @timeText
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)"
+                            class="accordion-collapse collapse" 
+                            aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)" 
+                            data-bs-parent="#courseAccordion">
+                            <div class="accordion-body p-0 pt-3">
+                                <div class="ps-3">
+                                    <h5>Duration:</h5>
+                                    <p class="fw-light">@item.StartDate.ToString("yyyy/MM/dd") - @item.EndDate.ToString("yyyy/MM/dd")</p>
+                                    <h5>Name:</h5>
+                                    <p class="fw-light">@Html.DisplayFor(modelItem => item.Name)</p>
+                                    <h5>Description:</h5>
+                                    <p class="fw-light">@Html.DisplayFor(modelItem => item.Description)</p>
+
+                                    @switch (item.ActivityType)
+                                    {
+                                        default :
+                                            //<div class="ps-3">@Html.DisplayFor(modelItem => item.ActivityType.Name)</div>
+                                            break;
+                                    }
+                                </div>
+                                <hr />
+                                <div class="form-group d-flex px-3 pb-3 justify-content-between">
+                                    <div>
+                                        <a class="btn btn-primary">Documents</a>
+                                    </div>
+                                    <div>
+                                        <a asp-controller="Activities" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
+                                        <button type="button" 
+                                            data-ref="@item.Id"
+                                            data-name="@item.Name"
+                                            data-type="Activity"
+                                            class="btn btn-danger deleter"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#delete">
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         </div>
     </div>
 </div>
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+
+<a href="javascript:history.go(-1)" class="btn btn-primary mt-3">Back</a>
+
+<vc:delete></vc:delete>

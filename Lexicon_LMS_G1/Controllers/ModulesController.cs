@@ -19,16 +19,19 @@ namespace Lexicon_LMS_G1.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IBaseRepository<Module> _moduleRepo;
-        private readonly IBaseRepository<Course> _courseRepo;
+        private readonly IBaseRepository<Module> _baseModuleRepo;
+        private readonly IBaseRepository<Course> _baseCourseRepo;
+        private readonly IModuleRepository _moduleRepo;
 
         public ModulesController(ApplicationDbContext context, IMapper mapper,
-            IBaseRepository<Module> moduleRepo, IBaseRepository<Course> courseRepo)
+            IBaseRepository<Module> baseModuleRepo, IBaseRepository<Course> baseCourseRepo,
+            IModuleRepository moduleRepo)
         {
             _context = context;
             _mapper = mapper;
+            _baseModuleRepo = baseModuleRepo;
+            _baseCourseRepo = baseCourseRepo;
             _moduleRepo = moduleRepo;
-            _courseRepo = courseRepo;
         }
 
         // GET: Modules
@@ -46,7 +49,7 @@ namespace Lexicon_LMS_G1.Controllers
                 return NotFound();
             }
 
-            var module = await _moduleRepo.GetByIdWithIncludedAsync(m => m.Activities, m => m.Id == id);
+            var module = await _moduleRepo.GetModuleByIdAsync(id);
             if (module == null)
             {
                 return NotFound();
@@ -65,7 +68,7 @@ namespace Lexicon_LMS_G1.Controllers
                 return NotFound();
             }
 
-            var course = await _courseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == id);
+            var course = await _baseCourseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == id);
 
             if (course == null)
             {
@@ -98,7 +101,7 @@ namespace Lexicon_LMS_G1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ModuleCreateViewModel viewModel)
         {
-            var course = await _courseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == viewModel.CourseId);
+            var course = await _baseCourseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == viewModel.CourseId);
             viewModel.Course = course;
 
             if (viewModel.StartTime.Ticks < course.StartTime.Ticks)
@@ -127,8 +130,8 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 var module = _mapper.Map<Module>(viewModel);
 
-                _moduleRepo.Add(module);
-                await _moduleRepo.SaveChangesAsync();
+                _baseModuleRepo.Add(module);
+                await _baseModuleRepo.SaveChangesAsync();
 
                 TempData["message"] = "Module successfully added!";
                 return RedirectToAction("IndexTeacher", "Courses");
