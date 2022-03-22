@@ -49,14 +49,8 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         return db.Set<T>().AsQueryable().Where(predicate).ToList();
     }
-    public bool Update(T newItem, params object?[]? keyValues)
+    public virtual bool Update(T newItem)
     {
-        T? item = db.Set<T>().Find(keyValues);
-        if (item == null) return false;
-        if (newItem == null) return false;
-        object itemPKvalue = GetPKeyValue(item);
-        object newItemPKvalue = GetPKeyValue(newItem);
-        if (newItemPKvalue != itemPKvalue) return false;
         db.Update(newItem);
         return true;
     }
@@ -99,7 +93,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     {
         return db.Set<T>().Find(keyValue) != null;
     }
-    private object GetPKeyValue(T entity)
+    internal object GetPKeyValue(T entity)
     {
         //IEntityType entityType = db.GetService<IDbContextServices>().Model.FindEntityType(typeof(T));
         //IEnumerable<IProperty> properties = entityType.GetProperties();
