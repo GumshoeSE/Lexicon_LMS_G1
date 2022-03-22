@@ -8,16 +8,27 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
+using AutoMapper;
+using Lexicon_LMS_G1.Data.Repositores;
+using Lexicon_LMS_G1.Entities.ViewModels;
+using Lexicon_LMS_G1.Entities.Helpers;
 
 namespace Lexicon_LMS_G1.Controllers
 {
     public class ModulesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly IBaseRepository<Module> _moduleRepo;
+        private readonly IBaseRepository<Course> _courseRepo;
 
-        public ModulesController(ApplicationDbContext context)
+        public ModulesController(ApplicationDbContext context, IMapper mapper,
+            IBaseRepository<Module> moduleRepo, IBaseRepository<Course> courseRepo)
         {
             _context = context;
+            _mapper = mapper;
+            _moduleRepo = moduleRepo;
+            _courseRepo = courseRepo;
         }
 
         // GET: Modules
@@ -47,10 +58,36 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         // GET: Modules/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create(int? id)
         {
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description");
-            return View();
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var course = await _courseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == id);
+
+            if (course == null)
+            {
+                return NotFound();
+            }
+
+            course.Modules = course.Modules.OrderBy(m => m.StartTime).ToList();
+
+            // set default start time to the when the last module ends and remove seconds.
+            var lastModuleEndDateTime = course.Modules.Last().EndTime;
+            var defaultStartTime = lastModuleEndDateTime.Date.Add(
+                new TimeSpan(lastModuleEndDateTime.TimeOfDay.Hours, lastModuleEndDateTime.TimeOfDay.Minutes, 0));
+
+            var viewModel = new ModuleCreateViewModel
+            {
+                CourseId = course.Id,
+                Course = course,
+                StartTime = lastModuleEndDateTime,
+                EndTime = lastModuleEndDateTime,
+            };
+
+            return View(viewModel);
         }
 
         // POST: Modules/Create
@@ -58,16 +95,45 @@ namespace Lexicon_LMS_G1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartTime,EndTime,CourseId")] Module @module)
+        public async Task<IActionResult> Create(ModuleCreateViewModel viewModel)
         {
+            var course = await _courseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == viewModel.CourseId);
+            viewModel.Course = course;
+
+            if (viewModel.StartTime.Ticks < course.StartTime.Ticks)
+            {
+                ModelState.AddModelError("StartTime", $"The module can not start before the course.");
+                return View(viewModel);
+            }
+
+            if (viewModel.StartTime.Ticks >= viewModel.EndTime.Ticks)
+            {
+                ModelState.AddModelError("EndTime", $"The module has to start before it ends.");
+                ModelState.AddModelError("StartTime", $"The module has to start before it ends.");
+                return View(viewModel);
+            }
+
+            var (isOverlap, conMod) = DateTimeChecker.IsOverlappingWithList(viewModel.StartTime, viewModel.EndTime, course.Modules);
+
+            if (isOverlap)
+            {
+                ModelState.AddModelError("EndTime", $"Duration is overlapping with another module '{conMod.Name}'");
+                ModelState.AddModelError("StartTime", $"Duration is overlapping with another module '{conMod.Name}'");
+                return View(viewModel);
+            }
+
             if (ModelState.IsValid)
             {
-                _context.Add(@module);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                var module = _mapper.Map<Module>(viewModel);
+
+                _moduleRepo.Add(module);
+                await _moduleRepo.SaveChangesAsync();
+
+                TempData["message"] = "Module successfully created!";
+                return RedirectToAction("IndexTeacher", "Courses");
             }
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description", @module.CourseId);
-            return View(@module);
+
+            return View(viewModel);
         }
 
         // GET: Modules/Edit/5

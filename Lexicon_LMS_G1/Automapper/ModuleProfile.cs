@@ -4,11 +4,11 @@ using Lexicon_LMS_G1.Entities.ViewModels;
 
 namespace Lexicon_LMS_G1.Automapper
 {
-    public class CourseProfile : Profile
+    public class ModuleProfile : Profile
     {
-        public CourseProfile()
+        public ModuleProfile()
         {
-            CreateMap<Course, CourseCreateViewModel>().ReverseMap();
+            CreateMap<Module, ModuleCreateViewModel>().ReverseMap();
         }
     }
 }

@@ -1,52 +1,91 @@
-﻿@model Lexicon_LMS_G1.Entities.Entities.Module
+﻿@model ModuleCreateViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    string? showTimeLine = !Model.ShowTimeLine ? "hidden" : default;
 }
 
-<h1>Create</h1>
-
-<h4>Module</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Name" class="control-label"></label>
-                <input asp-for="Name" class="form-control" />
-                <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" class="form-control" />
-                <span asp-validation-for="StartTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" class="form-control" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CourseId" class="control-label"></label>
-                <select asp-for="CourseId" class ="form-control" asp-items="ViewBag.CourseId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 mt-4 text-center">
+			<h4 class="text-center @showTimeLine" id="timelineHeading">Course Timeline</h4>
+			<ul class="list-group timeline @showTimeLine overflow-auto mt-3 pe-2" id="timelineList">
+				<li class="list-group-item align-items-center border rounded border-danger mb-4">           
+                    <div class="fw-bold  text-center mb-3">Course Starts</div>
+                    <div class="align-items-center d-flex justify-content-center">
+                        <span class="badge bg-danger rounded-pill">@Model.Course!.StartTime.ToString("g")</span>
+                    </div>
+                </li>
+                @foreach (var item in Model.Course!.Modules)
+                {
+                    <li class="list-group-item align-items-center border rounded border-primary mb-4">           
+                        <div class="fw-bold  text-center mb-3">@(item.Name)</div>
+                        <div class="align-items-center d-flex justify-content-between">
+                            <span class="badge bg-primary rounded-pill">@item.StartTime.ToString("g")</span>
+                            <span class="badge bg-primary rounded-pill">@item.EndTime.ToString("g")</span>
+                        </div>
+                    </li>
+                }
+                <li class="list-group-item align-items-center border rounded border-danger mb-4">           
+                    <div class="fw-bold  text-center mb-3">Course Ends</div>
+                    <div class="align-items-center d-flex justify-content-center">
+                        <span class="badge bg-danger rounded-pill">@Model.Course.Modules.Last().EndTime.ToString("g")</span>
+                    </div>
+                </li>
+			</ul>
+		</div>
+        <div class="col-md-4">
+            <h1 class="text-center text-wrap">Add Module to Course</h1>
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="CourseId" />
+                <input type="hidden" asp-for="ShowTimeLine" id="ShowTimeLine" />
+                <div class="form-group mb-3">
+                    <label asp-for="Name" class="control-label"></label>
+                    <input asp-for="Name" class="form-control" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="Description" class="control-label"></label>
+                    <input asp-for="Description" class="form-control" />
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="StartTime" class="control-label"></label>
+                    <input asp-for="StartTime" class="form-control" />
+                    <span asp-validation-for="StartTime" class="text-danger"></span>
+                </div>
+                <div class="form-group mb-3">
+                    <label asp-for="EndTime" class="control-label"></label>
+                    <input asp-for="EndTime" class="form-control" />
+                    <span asp-validation-for="EndTime" class="text-danger"></span>
+                </div>
+                <div class="form-group d-flex justify-content-evenly">
+                    <a href="javascript:history.go(-1)" class="btn btn-lg btn-danger ">Cancel</a>
+                    <button class="btn btn-lg btn-outline-primary" type="button" id="toggleTimeLine">Show Timeline</button>
+                    <input type="submit" value="Add" class="btn btn-lg btn-primary" />
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function () {
+            $("#toggleTimeLine").on("click", function(){
+                if($("#timelineList").hasClass("hidden")){
+                    $(this).html('Hide Timeline');
+                    $("#ShowTimeLine").val(true);
+                }
+                else{
+                    $(this).html('Show Timeline');
+                    $("#ShowTimeLine").val(false);
+                }
+                $("#timelineList").toggleClass("hidden");
+                $("#timelineHeading").toggleClass("hidden");
+            });
+        });
+    </script>
 }

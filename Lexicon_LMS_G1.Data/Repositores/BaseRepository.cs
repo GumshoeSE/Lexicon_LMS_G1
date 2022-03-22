@@ -17,7 +17,7 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
     }
 
 
-    public async Task<IEnumerable<T>> GetAsync()
+    public virtual async Task<IEnumerable<T>> GetAsync()
     {
         return await db.Set<T>().ToListAsync();
     }
@@ -39,6 +39,12 @@ public abstract class BaseRepository<T> : IBaseRepository<T> where T : class
 #pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
         return item;
     }
+
+    public async Task<T?> GetByIdWithIncludedAsync<Q>(Expression<Func<T, Q>> includeExpression, Expression<Func<T, bool>> idExpression)
+    {
+        return await dbSet.Include(includeExpression).FirstOrDefaultAsync(idExpression);
+    }
+
     public IEnumerable<T> GetByPredicate(Expression<Func<T, bool>> predicate)
     {
         return db.Set<T>().AsQueryable().Where(predicate).ToList();
