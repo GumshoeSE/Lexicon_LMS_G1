@@ -98,7 +98,7 @@ namespace Lexicon_LMS_G1.Controllers
                 repo.Add(course);
                 await repo.SaveChangesAsync();
 
-                TempData["message"] = "Course successfully created!";
+                TempData["message"] = "Course successfully added!";
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);

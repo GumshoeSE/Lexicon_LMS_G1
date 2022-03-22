@@ -74,6 +74,7 @@ namespace Lexicon_LMS_G1.Controllers
 
             course.Modules = course.Modules.OrderBy(m => m.StartTime).ToList();
 
+            // ToDo: Check if seconds is needed or not (validation)
             // set default start time to the when the last module ends and remove seconds.
             var lastModuleEndDateTime = course.Modules.Last().EndTime;
             var defaultStartTime = lastModuleEndDateTime.Date.Add(
@@ -129,7 +130,7 @@ namespace Lexicon_LMS_G1.Controllers
                 _moduleRepo.Add(module);
                 await _moduleRepo.SaveChangesAsync();
 
-                TempData["message"] = "Module successfully created!";
+                TempData["message"] = "Module successfully added!";
                 return RedirectToAction("IndexTeacher", "Courses");
             }
 
