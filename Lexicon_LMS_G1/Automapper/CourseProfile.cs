@@ -10,6 +10,7 @@ namespace Lexicon_LMS_G1.Automapper
         {
             CreateMap<Course, CourseCreateViewModel>().ReverseMap();
             CreateMap<Course, CourseEditViewModel>().ReverseMap();
+
         }
     }
 }
