@@ -211,8 +211,10 @@ namespace Lexicon_LMS_G1.Controllers
             string userId = (await userManager.GetUserAsync(User)).Id;
 
             var finishedAssignments = (await _context.Users
-                    .FindAsync(userId))
-                    .FinishedActivities.ToList();
+                    .Include(u => u.FinishedActivities)
+                    .FirstOrDefaultAsync(u => u.Id == userId))
+                    .FinishedActivities
+                    .Select(f => f.Activity);
 
             StudentViewCourseViewModel viewModel = new StudentViewCourseViewModel
             {
@@ -224,11 +226,11 @@ namespace Lexicon_LMS_G1.Controllers
                     .ThenInclude(m => m.Activities)
                     .Where(a => a.Module.CourseId == courseId)
                     .Where(a => a.ActivityType.Name == "Assignment")
-                    //.Where(a => !finishedAssignments.Contains(a.Id))
                     .ToListAsync(),
-                FinishedAssignments = _mapper.ProjectTo<Activity>((IQueryable)finishedAssignments),
+                FinishedAssignments = finishedAssignments,
                 Attendees = (await _context.Courses
-                    .FindAsync(courseId))
+                    .Include(c => c.Attendees)
+                    .FirstOrDefaultAsync(a => a.Id == courseId))
                     .Attendees,
                 Modules = await _context.Modules                
                     .Where(m => m.CourseId == courseId)

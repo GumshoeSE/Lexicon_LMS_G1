@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lexicon_LMS_G1.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220321084602_UserFinishedActivity")]
-    partial class UserFinishedActivity
+    [Migration("20220322150910_ReInit")]
+    partial class ReInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -493,7 +493,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
                         .IsRequired();
 
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "ApplicationUser")
-                        .WithMany()
+                        .WithMany("FinishedActivities")
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -562,6 +562,8 @@ namespace Lexicon_LMS_G1.Data.Migrations
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
                 {
                     b.Navigation("Documents");
+
+                    b.Navigation("FinishedActivities");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Course", b =>

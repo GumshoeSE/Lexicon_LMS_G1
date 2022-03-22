@@ -15,4 +15,8 @@
     <ProjectReference Include="..\Lexicon_LMS_G1.Entities\Lexicon_LMS_G1.Entities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Data\Migrations\" />
+  </ItemGroup>
+
 </Project>

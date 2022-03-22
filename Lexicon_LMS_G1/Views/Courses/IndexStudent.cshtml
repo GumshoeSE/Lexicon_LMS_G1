@@ -23,6 +23,7 @@
                         <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#lateAssignments">
                             <div class="accordion-body">
                                 @Html.DisplayFor(a => assignment.Description)
+                                <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
                             </div>
                         </div>
                     </div>
@@ -41,6 +42,7 @@
                         <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
                             <div class="accordion-body">
                                 @Html.DisplayFor(a => assignment.Description)
+                                <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
                             </div>
                         </div>
                     </div>
