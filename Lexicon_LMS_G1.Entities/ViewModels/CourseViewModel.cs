@@ -17,6 +17,6 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
 
         public ICollection<Module> Modules { get; set; } = new List<Module>();
         //public ICollection<Document> Documents { get; set; } = new List<Document>();
-        //public ICollection<ApplicationUser> AttendingStudents { get; set; } = new List<ApplicationUser>();
+        public ICollection<ApplicationUser> AttendingStudents { get; set; } = new List<ApplicationUser>();
     }
 }
