@@ -8,8 +8,14 @@
 <div class="container">
     <h1 class="text-center pb-3">Courses Overview For Teacher</h1>
 
-    <div class="row">
-        <div id="courseList" class="col-6">
+    <div class="row mt-3">
+        <div id="courseList" class="col-6 border border-3 rounded">
+            <div class="row p-2">
+                <h2 class="text-center col-md-4 offset-md-4">Courses</h2>
+                <div class="col-md-4 align-content-center text-end">
+                    <a asp-action="Create" class="btn btn-outline-primary">Add</a>
+                </div>
+            </div>
             <div class="accordion" id="courseAccordion">
                 @foreach (var item in Model)
                 {
@@ -42,9 +48,11 @@
                                     @foreach (var module in item.Modules)
                                     {
                                         <div class="row bg-light py-3 mx-0">
-                                            <div class="col-12"><strong>Module @num:</strong> @Html.DisplayFor(m => module.Name)</div>                                      
-                                            <div class="col "><strong>Duration:</strong> @module.StartTime.ToString("yy/MM/dd") 
-                                                <strong>-</strong> @module.EndTime.ToString("yy/MM/dd")</div>
+                                            <div class="col-12"><strong>Module @num:</strong> @Html.DisplayFor(m => module.Name)</div>
+                                            <div class="col ">
+                                                <strong>Duration:</strong> @module.StartTime.ToString("yy/MM/dd")
+                                                <strong>-</strong> @module.EndTime.ToString("yy/MM/dd")
+                                            </div>
                                         </div>
                                         <hr class="m-0" />
                                         num++;
@@ -59,7 +67,7 @@
                                     </div>
                                     <div class="text-end col">
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
-                                        <button type="button" data-ref="@item.Id" data-name="@item.Name" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#delete">Delete</button>
+                                        @*<button type="button" data-ref="@item.Id" data-name="@item.Name" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#delete" disabled>Delete</button>*@
                                     </div>
                                 </div>
                             </div>
@@ -76,7 +84,7 @@
                 var prevDisabled = !Model.HasPrevious ? "disabled" : "";
                 var nextDisabled = !Model.HasNext ? "disabled" : "";
             }
-            <div class="text-center pt-3">
+            <div class="text-center p-3">
                 <a asp-action="IndexTeacher" asp-route-pageIndex="@(Model.CurrentPageIndex - 1)" class="btn btn-light border border-secondary @prevDisabled"><</a>
                 @for (int i = 1; i <= Model.TotalPages; i++)
                 {
