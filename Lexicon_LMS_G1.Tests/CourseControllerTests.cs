@@ -73,7 +73,7 @@ namespace Lexicon_LMS_G1.Tests
             var mockUserStore = new Mock<IUserStore<ApplicationUser>>();
             mockUserManager = new Mock<UserManager<ApplicationUser>>(mockUserStore.Object, null, null, null, null, null, null, null, null);
 
-            controller = new CoursesController(context, repository, mapper, null);
+            controller = new CoursesController(context, repository, mapper, null,null);
         }
 
 
