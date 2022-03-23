@@ -34,12 +34,11 @@ namespace Lexicon_LMS_G1.Data.Data
 
             await GenerateRoles();
             
-            await GenerateTeacher();
-
             await GenerateCourses();
 
             await GenerateStudents();
 
+            await GenerateTeacher();
 
             await context.SaveChangesAsync();
         }
@@ -192,7 +191,7 @@ namespace Lexicon_LMS_G1.Data.Data
             activityTypes.Add(new ActivityType { Name = "Assignment" });
             activityTypes.Add(new ActivityType { Name = "E-Learning" });
             activityTypes.Add(new ActivityType { Name = "Lecture" });
-            activityTypes.Add(new ActivityType { Name = "Excersize" });
+            activityTypes.Add(new ActivityType { Name = "Exercise" });
 
             if(activityTypesAdded) return activityTypes;
 

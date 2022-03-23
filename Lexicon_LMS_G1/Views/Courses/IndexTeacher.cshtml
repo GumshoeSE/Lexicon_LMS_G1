@@ -48,9 +48,11 @@
                                     @foreach (var module in item.Modules)
                                     {
                                         <div class="row bg-light py-3 mx-0">
-                                            <div class="col-12"><strong>Module @num:</strong> @Html.DisplayFor(m => module.Name)</div>                                      
-                                            <div class="col "><strong>Duration:</strong> @module.StartTime.ToString("yy/MM/dd") 
-                                                <strong>-</strong> @module.EndTime.ToString("yy/MM/dd")</div>
+                                            <div class="col-12"><strong>Module @num:</strong> @Html.DisplayFor(m => module.Name)</div>
+                                            <div class="col ">
+                                                <strong>Duration:</strong> @module.StartTime.ToString("yy/MM/dd")
+                                                <strong>-</strong> @module.EndTime.ToString("yy/MM/dd")
+                                            </div>
                                         </div>
                                         <hr class="m-0" />
                                         num++;
@@ -65,7 +67,7 @@
                                     </div>
                                     <div class="text-end col">
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
-                                        <button type="button" data-ref="@item.Id" data-name="@item.Name" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#delete">Delete</button>
+                                        @*<button type="button" data-ref="@item.Id" data-name="@item.Name" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#delete" disabled>Delete</button>*@
                                     </div>
                                 </div>
                             </div>
