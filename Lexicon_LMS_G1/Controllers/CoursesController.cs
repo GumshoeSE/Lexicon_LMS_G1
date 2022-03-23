@@ -38,6 +38,10 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 return RedirectToAction(nameof(IndexTeacher));
             }
+            else if(User.IsInRole("Student"))
+            {
+                return RedirectToAction(nameof(StudentIndex));
+            }
             return View(await _context.Courses.ToListAsync());
         }
 
@@ -103,7 +107,7 @@ namespace Lexicon_LMS_G1.Controllers
                 repo.Add(course);
                 await repo.SaveChangesAsync();
 
-                TempData["message"] = "Course successfully created!";
+                TempData["message"] = "Course successfully added!";
                 return RedirectToAction(nameof(Index));
             }
             return View(viewModel);
