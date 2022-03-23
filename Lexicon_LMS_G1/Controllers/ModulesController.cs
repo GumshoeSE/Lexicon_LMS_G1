@@ -79,7 +79,7 @@ namespace Lexicon_LMS_G1.Controllers
 
             // ToDo: Check if seconds is needed or not (validation)
             // set default start time to the when the last module ends and remove seconds.
-            var lastModuleEndDateTime = course.Modules.Last().EndTime;
+            var lastModuleEndDateTime = (course.Modules.Count > 0) ? course.Modules.Last().EndTime : course.StartTime;
             var defaultStartTime = lastModuleEndDateTime.Date.Add(
                 new TimeSpan(lastModuleEndDateTime.TimeOfDay.Hours, lastModuleEndDateTime.TimeOfDay.Minutes, 0));
 

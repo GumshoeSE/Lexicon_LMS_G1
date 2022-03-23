@@ -1,0 +1,129 @@
+﻿@model Lexicon_LMS_G1.Models.StudentViewCourseViewModel
+
+@{
+    ViewData["Title"] = @Html.DisplayFor(m => m.Name);
+}
+
+<h1 class="text-center pb-3"> @Html.DisplayFor(m => m.Name) </h1>
+
+<div class="container">
+    <div class="row">
+        <div class="border rounded col-5 p-0 bg-light">
+            <h2 class="px-3"> Assignments </h2>
+            <h5 class="px-3">Late Assignments</h5>
+            <div class="accordion" id="lateAssignments">
+                @foreach (var assignment in Model!.LateAssignments)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
+                                @Html.DisplayFor(a => assignment.Name)
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#lateAssignments">
+                            <div class="accordion-body">
+                                @Html.DisplayFor(a => assignment.Description)
+                                <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <h5 class="px-3">Upcomming</h5>
+            <div class="accordion" id="assignments">
+                @foreach (var assignment in Model!.UpcomingAssignments)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
+                                @Html.DisplayFor(a => assignment.Name)
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
+                            <div class="accordion-body">
+                                @Html.DisplayFor(a => assignment.Description)
+                                <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+            <h5 class="px-3">Finished</h5>
+            <div class="accordion" id="finishedAssignments">
+                @foreach (var assignment in Model!.FinishedAssignments)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
+                                @Html.DisplayFor(a => assignment.Name)
+                            </button>
+                        </h2>
+                        <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
+                            <div class="accordion-body">
+                                @Html.DisplayFor(a => assignment.Description)
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-2"></div>
+        <div class="col-5 border rounded p-0 bg-light d-flex flex-column" id="modules">
+            <div class="mb-auto">
+                <nav id="modulesNavBar" class="px-3 py-2" style="--bs-breadcrumb-divider: '>';">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active" id="breadcrumbModule" style="cursor: pointer" data-course="@Model.Id">
+                            Modules
+                        </li>
+                        <li class="breadcrumb-item hidden" id="breadcrumbActivity" style="cursor: pointer">
+                            Activities
+                        </li>
+                        <li class="breadcrumb-item hidden" id="breadcrumbDetail" style="cursor: pointer">
+                            Details
+                        </li>
+                    </ol>
+                </nav>
+                <div id="moduleview" class="overflow-auto">
+
+                    <partial name="ModulePartialView" model="@Model.Modules" />
+                </div>
+
+            </div>
+            <div class="">
+                <button class="btn btn-primary list-group-item w-100" data-bs-toggle="modal" data-bs-target="#attendeesModal">
+                    View Attendees
+                </button>
+
+            </div>
+        </div>
+
+    </div>
+    <div class="row justify-content-end ">
+        <div class="col-5 p-0" id="attendeesButton">
+
+            <div class="modal fade" id="attendeesModal" tabindex="-1">
+                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h2 class="modal-title">
+                                Attendees
+                            </h2>
+                            <button class="btn-close" data-bs-dismiss="modal">
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <ul class="list-group">
+                                @foreach (var attendee in Model!.OrderedAttendees)
+                                {
+                                    <li class="list-group-item">
+                                        @Html.DisplayFor(a => attendee.FirstName)
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

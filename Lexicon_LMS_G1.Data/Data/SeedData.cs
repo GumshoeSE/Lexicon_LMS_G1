@@ -19,6 +19,7 @@ namespace Lexicon_LMS_G1.Data.Data
         private static UserManager<ApplicationUser> userManager = null!;
         private static bool activityTypesAdded = false;
         private static ICollection<ActivityType> activityTypes = null!;
+        private static ICollection<Course> courseCol = new List<Course>();
 
         public static async Task InitAsync(ApplicationDbContext _context, IServiceProvider services)
         {
@@ -27,16 +28,17 @@ namespace Lexicon_LMS_G1.Data.Data
             roleManager = services.GetRequiredService<RoleManager<IdentityRole>>() ?? throw new ArgumentNullException(nameof(services));
             userManager = services.GetRequiredService<UserManager<ApplicationUser>>() ?? throw new ArgumentNullException(nameof(services));
 
-            faker = new Faker("sv");
+            faker = new Faker();
 
             activityTypes = await GenerateAndOrGetActivityTypes();
 
             await GenerateRoles();
             
-            await GenerateTeacher();
-
             await GenerateCourses();
 
+            await GenerateStudents();
+
+            await GenerateTeacher();
 
             await context.SaveChangesAsync();
         }
@@ -73,10 +75,12 @@ namespace Lexicon_LMS_G1.Data.Data
         private static async Task GenerateCourses()
         {
             ICollection<Course> courses = await context.Courses.ToListAsync();
+            
+            courseCol = courses;
 
             if(courses.Any()) return;
 
-            int coursesToAddAmount = faker.Random.Int(4, 10);
+            int coursesToAddAmount = faker.Random.Int(14, 27);
 
             for(int i = 0; i < coursesToAddAmount; i++)
             {
@@ -84,7 +88,7 @@ namespace Lexicon_LMS_G1.Data.Data
                 {
                     Name = faker.Commerce.Department(),
                     Description = faker.Lorem.Paragraphs(),
-                    StartTime = DateTime.Now.AddDays(faker.Random.Int(10 * (i + 1), 10 * (i + 7)))
+                    StartTime = DateTime.Now.AddDays(faker.Random.Int(-10 * (i + 2), 10 * (i + 7)))
                 };
 
                 courseToAdd.Modules = await GenerateAndGetModules(courseToAdd.StartTime);
@@ -93,6 +97,7 @@ namespace Lexicon_LMS_G1.Data.Data
             }
 
             await context.AddRangeAsync(courses);
+
         }
         
         private static async Task<ICollection<Module>> GenerateAndGetModules(DateTime start)
@@ -147,8 +152,8 @@ namespace Lexicon_LMS_G1.Data.Data
 
             Activity firstActivity = new Activity
             {
-                Name = faker.Hacker.Phrase(),
-                Description = faker.Lorem.Paragraph(),
+                Name = faker.Hacker.Verb(),
+                Description = faker.Hacker.Phrase(),
                 StartDate = start,
                 EndDate = start.AddDays(faker.Random.Int(2, 5)),
                 ActivityType = activityTypes.ElementAt(faker.Random.Int(0, activityTypeSize - 1))
@@ -186,7 +191,7 @@ namespace Lexicon_LMS_G1.Data.Data
             activityTypes.Add(new ActivityType { Name = "Assignment" });
             activityTypes.Add(new ActivityType { Name = "E-Learning" });
             activityTypes.Add(new ActivityType { Name = "Lecture" });
-            activityTypes.Add(new ActivityType { Name = "Excersize" });
+            activityTypes.Add(new ActivityType { Name = "Exercise" });
 
             if(activityTypesAdded) return activityTypes;
 
@@ -195,6 +200,31 @@ namespace Lexicon_LMS_G1.Data.Data
             activityTypesAdded = true;
 
             return activityTypes;
+        }
+
+        private static async Task GenerateStudents(int amount = 100)
+        {
+            if (await context.Users.AnyAsync()) return;
+
+            ApplicationUser student;
+
+            for (int i = 0; i < amount; i++)
+            {
+                student = new ApplicationUser
+                {
+                    Email = $"student{i}@university.se",
+                    FirstName = faker.Name.FirstName(),
+                    LastName = $"GenericLastname{i}",
+                    UserName = $"student{i}@university.se",
+                    Course = courseCol.ElementAt(i % courseCol.Count)
+                };
+
+                string studentPassword = $"{i}banan";
+
+                if (!(await userManager.CreateAsync(student, studentPassword)).Succeeded) throw new Exception($"Failed to seed Student {student.FirstName} with password \"{studentPassword}\"");
+
+                if (!(await userManager.AddToRoleAsync(student, "Student")).Succeeded) throw new Exception($"Failed to set {student.FirstName} as a student");
+            }
         }
 
         private static async Task<bool> HasTeacherAsync()

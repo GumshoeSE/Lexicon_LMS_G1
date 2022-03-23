@@ -21,8 +21,17 @@ namespace Lexicon_LMS_G1.Data.Repositores
         public async Task<IEnumerable<Course>> GetCourseAsync()
         {
             return db.Courses.Include(c => c.Modules)
-                              .OrderBy(c => c.StartTime);
+                             .Include(c => c.AttendingStudents)
+                             .OrderBy(c => c.StartTime);
                               
+        }
+        public override bool Update(Course newItem)
+        {
+            db.Update(newItem);
+            db.Entry(newItem).Property(c => c.Id).IsModified = false;
+            db.Entry(newItem).Property(c => c.StartTime).IsModified = false;
+            //db.Entry(newItem).Collection(c => c.AttendingStudents).IsModified =false;
+            return true;
         }
     }
 }
