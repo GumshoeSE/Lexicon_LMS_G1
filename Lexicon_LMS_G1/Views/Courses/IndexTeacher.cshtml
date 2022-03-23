@@ -1,0 +1,108 @@
+﻿@model PaginatedList<CourseViewModel>
+
+@{
+    ViewData["Title"] = "Course Overview Teacher";
+}
+
+
+<div class="container">
+    <h1 class="text-center pb-3">Courses Overview For Teacher</h1>
+
+    <div class="row mt-3">
+        <div id="courseList" class="col-6 border border-3 rounded">
+            <div class="row p-2">
+                <h2 class="text-center col-md-4 offset-md-4">Courses</h2>
+                <div class="col-md-4 align-content-center text-end">
+                    <a asp-action="Create" class="btn btn-outline-primary">Add</a>
+                </div>
+            </div>
+            <div class="accordion" id="courseAccordion">
+                @foreach (var item in Model)
+                {
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)" aria-expanded="false" aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
+                                <div class="text-center ps-4" style="width:100%">
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </div>
+                            </button>
+                        </h2>
+                        <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)" class="accordion-collapse collapse" aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)" data-bs-parent="#courseAccordion">
+                            <div class="accordion-body p-0 pt-3">
+                                <div class="row">
+                                    <div class="col ms-3"><h5 class="mb-1">Course Start:</h5><p>@item.StartTime.ToString("yy/MM/dd hh:mm")</p></div>
+                                    <div class="col offset-2 text-end me-3"><strong>Number of attendees:</strong><br>@item.AttendingStudents.Count</div>
+                                </div>
+                                <div class="px-3">
+                                    <h5>Course description:</h5>
+                                    <p>@Html.DisplayFor(modelItem => item.Description)</p>
+                                </div>
+                                <hr class="mb-0" />
+                                @if (item.Modules.Count == 0)
+                                {
+                                    <p class="ps-3 bg-light py-3">This course don't have any modules</p>
+                                }
+                                else
+                                {
+                                    var num = 1;
+                                    @foreach (var module in item.Modules)
+                                    {
+                                        <div class="row bg-light py-3 mx-0">
+                                            <div class="col-12"><strong>Module @num:</strong> @Html.DisplayFor(m => module.Name)</div>
+                                            <div class="col ">
+                                                <strong>Duration:</strong> @module.StartTime.ToString("yy/MM/dd")
+                                                <strong>-</strong> @module.EndTime.ToString("yy/MM/dd")
+                                            </div>
+                                        </div>
+                                        <hr class="m-0" />
+                                        num++;
+                                    }
+
+                                }
+                                <div class="p-3 row">
+                                    <div class="col">
+                                        <a asp-controller="" asp-action="" class="btn btn-primary d-none">View Documents</a>
+                                        <a asp-controller="Modules" asp-route-id="@item.Id" asp-action="Create" class="btn btn-primary">Add Module</a>
+
+                                    </div>
+                                    <div class="text-end col">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
+                                        @*<button type="button" data-ref="@item.Id" data-name="@item.Name" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#delete" disabled>Delete</button>*@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+
+            <vc:delete></vc:delete>
+
+            @*Paginating puttons*@
+            @{
+                var prevDisabled = !Model.HasPrevious ? "disabled" : "";
+                var nextDisabled = !Model.HasNext ? "disabled" : "";
+            }
+            <div class="text-center p-3">
+                <a asp-action="IndexTeacher" asp-route-pageIndex="@(Model.CurrentPageIndex - 1)" class="btn btn-light border border-secondary @prevDisabled"><</a>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    @if (i != Model.CurrentPageIndex)
+                    {
+                        <a asp-action="IndexTeacher" asp-route-pageIndex="@i" class="btn btn-light border border-secondary">@i</a>
+                    }
+                    else
+                    {
+                        <span class="btn btn-secondary">@i</span>
+                    }
+                }
+                <a asp-action="IndexTeacher" asp-route-pageIndex="@(Model.CurrentPageIndex + 1)" class="btn btn-light border border-secondary @nextDisabled">></a>
+
+                <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
+            </div>
+        </div>
+        <div id="activitiesList" class="col-6">
+        </div>
+    </div>
+</div>

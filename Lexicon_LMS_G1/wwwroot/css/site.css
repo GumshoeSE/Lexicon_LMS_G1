@@ -16,3 +16,13 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.hidden {
+    display: none;
+}
+
+ul.timeline {
+    list-style-type: none;
+    position: relative;
+    max-height: 58vh
+}

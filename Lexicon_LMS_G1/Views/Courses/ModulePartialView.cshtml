@@ -1,0 +1,10 @@
+﻿@model IEnumerable<Lexicon_LMS_G1.Entities.Entities.Module>
+
+
+ <h5 class="text-center">Modules in the course</h5>
+<div class="list-group" id="modulesButtons">
+    @foreach (var item in Model)
+    {
+        <button class="list-group-item btn btn-primary moduleSelectButton" data-parent="@item.CourseId" data-module="@item.Id" id="@($"moduleButton")@item.Id"> @Html.DisplayFor(a => item.Name) </button>
+    }
+</div>
