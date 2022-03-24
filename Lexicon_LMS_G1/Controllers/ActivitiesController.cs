@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
+using Lexicon_LMS_G1.Entities.Paging;
+using Lexicon_LMS_G1.Entities.ViewModels;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -156,6 +158,46 @@ namespace Lexicon_LMS_G1.Controllers
         private bool ActivityExists(int id)
         {
             return _context.Activities.Any(e => e.Id == id);
+        }
+
+        public async Task<IActionResult> GetActionsForCourse(int courseId, int? pageIndex, string activityType)
+        {
+            var paging = new ActivitiesPagingParams()
+            {
+                PageIndex = pageIndex ?? 1
+            };
+
+            var modules = _context.Modules.Where(m => m.CourseId == courseId).ToList();
+            List<ActivityTeacherViewModel> activites = new List<ActivityTeacherViewModel>();
+            foreach (var module in modules)
+            {
+                var moduleactivities = _context.Activities.Include(a => a.ActivityType).Where(a => a.ModuleId == module.Id).OrderBy(a => a.StartDate).ToList();
+                var viewmodel = moduleactivities.Select(a => new ActivityTeacherViewModel
+                {
+                    Id = a.Id,
+                    Name = a.Name,
+                    StartDate = a.StartDate,
+                    EndDate = a.EndDate,
+                    ModuleId = a.ModuleId,
+                    ActivityType = a.ActivityType,
+                    Module = a.Module,
+                    ActivityTypeId = a.ActivityTypeId,
+                    Description = a.Description
+                });
+                if(activityType != null)
+                {
+                    if(activityType != "all")
+                    viewmodel = viewmodel.Where(a => a.ActivityType.Name == activityType);
+                }
+                foreach (var activity in viewmodel)
+                {
+                    
+                    activites.Add(activity);
+                }
+            }
+            ViewData["activityType"] = _context.ActivitiesTypes.ToList();
+
+            return PartialView("CourseActivitiesPartialView", await PaginatedList<ActivityTeacherViewModel>.CreateAsync(activites.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize, courseId));
         }
     }
 }

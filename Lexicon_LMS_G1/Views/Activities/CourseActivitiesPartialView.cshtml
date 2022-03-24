@@ -1,0 +1,74 @@
+﻿@using Lexicon_LMS_G1.Services
+@using Lexicon_LMS_G1.Entities.Entities
+@model PaginatedList<ActivityTeacherViewModel>
+@inject IBorderColorService borderColor
+<div class="border border-3 rounded p-2">
+<h2 class="text-center">Activities for chosen course:</h2>
+<div class="row align-items-center mb-3">
+    <div class="col-3">
+        <h6>Choose type: </h6>
+    </div>
+    <div class="col">
+        <select class="form-select atypes" onmousedown="this.value=''" data-courseId="@Model.CourseId" data-pageIndex="@Model.CurrentPageIndex">
+            <option value="all" selected>All types</option>
+            @foreach (var item in ViewData["activityType"] as List<ActivityType>)
+            {
+                <option value="@item.Name">@Html.DisplayFor(modelType => item.Name)</option>
+            }
+        </select>
+    </div>
+</div>
+<div class="accordion" id="activityAccordion">
+    @foreach (var item in Model)
+    {
+        <div class="accordion-item mb-1">
+            <h2 class="accordion-header " id="@($"headinga")@Html.DisplayFor(modelItem => item.Id)">
+                <button class="accordion-button collapsed border border-2 @borderColor.GetBorderColor(item.ActivityType)" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapseA")@Html.DisplayFor(modelItem => item.Id)" aria-expanded="false" aria-controls="@($"collapseA")@Html.DisplayFor(modelItem => item.Id)">
+                    <div class="ps-4" style="width:100%">
+                        <div class=""><strong>@Html.DisplayFor(modelItem => item.ActivityType.Name)</strong></div>
+                        <div>@Html.DisplayFor(modelItem => item.Name)</div>
+                    </div>
+                </button>
+            </h2>
+            <div id="@($"collapseA")@Html.DisplayFor(modelItem => item.Id)" class="accordion-collapse collapse" aria-labelledby="@($"headinga")@Html.DisplayFor(modelItem => item.Id)" data-bs-parent="#activityAccordion">
+                <div class="accordion-body p-0 pt-3">
+                    <div class="ms-3"><h5 class="mb-0">Module:</h5> <p>@item.Module.Name</p></div>
+                    <div class="ms-3">
+                        <h5 class="mb-2">Duration:</h5><p>
+                            @item.StartDate.ToString("yy/MM/dd hh:mm")
+                            <strong>-</strong> @item.EndDate.ToString("yy/MM/dd hh:mm")
+                        </p>
+                    </div>
+                    <div class="px-3">
+                        <h5 class="mb-0">Activity description:</h5>
+                        <p>@Html.DisplayFor(modelItem => item.Description)</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    }
+</div>
+@*Paginating puttons*@
+@{
+    var prevDisabled = !Model.HasPrevious ? "disabled" : "";
+    var nextDisabled = !Model.HasNext ? "disabled" : "";
+}
+<div class="text-center p-3">
+    <button data-courseId="@Model.CourseId" data-pageIndex="@(Model.CurrentPageIndex - 1)" class="pagingbutton btn btn-light border border-secondary @prevDisabled"><</button>
+    @for (int i = 1; i <= Model.TotalPages; i++)
+    {
+        @if (i != Model.CurrentPageIndex)
+        {
+            <button data-courseId="@Model.CourseId" data-pageIndex="@i" class="btn btn-light border border-secondary pagingbutton">@i</button>
+        }
+        else
+        {
+            <span class="btn btn-secondary">@i</span>
+        }
+    }
+    <button data-courseId="@Model.CourseId" data-pageIndex="@(Model.CurrentPageIndex + 1)" class="pagingbutton btn btn-light border border-secondary @nextDisabled">></button>
+
+    <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
+</div>
+</div>
