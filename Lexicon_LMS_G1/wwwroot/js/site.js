@@ -133,6 +133,8 @@ $(document).ready(function () {
                 .then(res => res.text())
                 .then(data => {
                     activitiesForCourse.innerHTML = data;
+                    $(".pagingbutton").click(pagingClick);
+                    $(".atypes").change(typechoice);
                 });
         }
         else {
@@ -140,3 +142,39 @@ $(document).ready(function () {
         }
     });
 })
+
+
+function pagingClick() {
+    let courseId = $(this).attr("data-courseId");
+    let pageIndex = $(this).attr("data-pageIndex");
+    let params = [['courseId', courseId], ['pageIndex', pageIndex]];
+    let url = new URL('https://localhost:7124/Activities/GetActionsForCourse');
+    url.search = new URLSearchParams(params).toString();
+    fetch(url, {
+        method: 'GET'
+    })
+        .then(res => res.text())
+        .then(data => {
+            activitiesForCourse.innerHTML = data;
+            $(".pagingbutton").click(pagingClick);
+            $(".atypes").change(typechoice);
+        });
+}
+
+function typechoice() {
+    let courseId = $(this).attr("data-courseId");
+    let pageIndex = $(this).attr("data-pageIndex");
+    let activityType = $('.atypes option:selected').val();
+    let params = [['courseId', courseId], ['pageIndex', pageIndex], ['activityType', activityType]];
+    let url = new URL('https://localhost:7124/Activities/GetActionsForCourse');
+    url.search = new URLSearchParams(params).toString();
+    fetch(url, {
+        method: 'GET'
+    })
+        .then(res => res.text())
+        .then(data => {
+            activitiesForCourse.innerHTML = data;
+            $(".pagingbutton").click(pagingClick);
+            $(".atypes").change(typechoice);
+        });
+}
