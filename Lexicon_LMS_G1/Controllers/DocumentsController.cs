@@ -8,166 +8,150 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
+using Lexicon_LMS_G1.Entities.ViewModels;
 
 namespace Lexicon_LMS_G1.Controllers
 {
     public class DocumentsController : Controller
     {
+        private readonly string documentBasePath = "root";
         private readonly ApplicationDbContext _context;
 
         public DocumentsController(ApplicationDbContext context)
         {
             _context = context;
+            if (!Directory.Exists(documentBasePath))
+            {
+                Directory.CreateDirectory(documentBasePath);
+            }
         }
 
-        // GET: Documents
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Documents.Include(d => d.Activity).Include(d => d.Course).Include(d => d.Module);
-            return View(await applicationDbContext.ToListAsync());
-        }
-
-        // GET: Documents/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
+            DocumentUploadViewModel<int, Course> view = new DocumentUploadViewModel<int, Course>()
             {
-                return NotFound();
-            }
-
-            var document = await _context.Documents
-                .Include(d => d.Activity)
-                .Include(d => d.Course)
-                .Include(d => d.Module)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (document == null)
-            {
-                return NotFound();
-            }
-
-            return View(document);
+                Identifier = await _context.Courses.ToListAsync()
+            };
+            return View(view);
         }
 
-        // GET: Documents/Create
-        public IActionResult Create()
+        [HttpGet]
+        public async Task<IActionResult> UploadDocument<T, Q>() where Q : BaseDocument
         {
-            ViewData["ActivityId"] = new SelectList(_context.Activities, "Id", "Description");
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description");
-            ViewData["ModuleId"] = new SelectList(_context.Modules, "Id", "Description");
-            return View();
+            DocumentUploadViewModel<T, Q> view = new DocumentUploadViewModel<T, Q>()
+            {
+                Identifier = await _context.Set<Q>().ToListAsync()
+            };
+
+            return View(view);
         }
 
-        // POST: Documents/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,TimeOfCreation,Path,UserId,CourseId,ModuleId,ActivityId")] Document document)
+        public async Task<IActionResult> UploadCourseDocument(IFormFile document, int courseId, string description)
         {
-            if (ModelState.IsValid)
+            string path = await SaveFileGetPath(document, "Course");
+            CourseDocument courseDocument = new CourseDocument()
             {
-                _context.Add(document);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ActivityId"] = new SelectList(_context.Activities, "Id", "Description", document.ActivityId);
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description", document.CourseId);
-            ViewData["ModuleId"] = new SelectList(_context.Modules, "Id", "Description", document.ModuleId);
-            return View(document);
-        }
-
-        // GET: Documents/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var document = await _context.Documents.FindAsync(id);
-            if (document == null)
-            {
-                return NotFound();
-            }
-            ViewData["ActivityId"] = new SelectList(_context.Activities, "Id", "Description", document.ActivityId);
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description", document.CourseId);
-            ViewData["ModuleId"] = new SelectList(_context.Modules, "Id", "Description", document.ModuleId);
-            return View(document);
-        }
-
-        // POST: Documents/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,TimeOfCreation,Path,UserId,CourseId,ModuleId,ActivityId")] Document document)
-        {
-            if (id != document.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(document);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DocumentExists(document.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ActivityId"] = new SelectList(_context.Activities, "Id", "Description", document.ActivityId);
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description", document.CourseId);
-            ViewData["ModuleId"] = new SelectList(_context.Modules, "Id", "Description", document.ModuleId);
-            return View(document);
-        }
-
-        // GET: Documents/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var document = await _context.Documents
-                .Include(d => d.Activity)
-                .Include(d => d.Course)
-                .Include(d => d.Module)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (document == null)
-            {
-                return NotFound();
-            }
-
-            return View(document);
-        }
-
-        // POST: Documents/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var document = await _context.Documents.FindAsync(id);
-            _context.Documents.Remove(document);
+                Name = document.FileName,
+                FileType = document.ContentType,
+                Description = description,
+                CreatedOn = DateTime.Now,
+                FilePath = path,
+                CourseId = courseId
+            };
+            _context.Add(courseDocument);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            return UploadDocumentReturnTo();
         }
 
-        private bool DocumentExists(int id)
+        [HttpPost]
+        public async Task<IActionResult> UploadModuleDocument(IFormFile document, int moduleId, string description)
         {
-            return _context.Documents.Any(e => e.Id == id);
+            string path = await SaveFileGetPath(document, "Module");
+            ModuleDocument moduleDocument = new ModuleDocument()
+            {
+                Name = document.Name,
+                FileType = document.ContentType,
+                Description = description,
+                CreatedOn = DateTime.Now,
+                FilePath = path,
+                ModuleId = moduleId
+            };
+            _context.Add(moduleDocument);
+            await _context.SaveChangesAsync();
+
+            return UploadDocumentReturnTo();
         }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadActivityDocument(IFormFile document, int activityId, string description)
+        {
+            string path = await SaveFileGetPath(document, "Activity");
+            ActivityDocument activityDocument = new ActivityDocument()
+            {
+                Name = document.Name,
+                FileType = document.ContentType,
+                Description = description,
+                CreatedOn = DateTime.Now,
+                FilePath = path,
+                ActivityId = activityId
+            };
+            _context.Add(activityDocument);
+            await _context.SaveChangesAsync();
+
+            return UploadDocumentReturnTo();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadStudentDocument(IFormFile document, string studentId, string description)
+        {
+            string path = await SaveFileGetPath(document, "Student");
+            StudentDocument studentDocument = new StudentDocument()
+            {
+                Name = document.Name,
+                FileType = document.ContentType,
+                Description = description,
+                CreatedOn = DateTime.Now,
+                FilePath = path,
+                UserId = studentId
+            };
+            _context.Add(studentDocument);
+            await _context.SaveChangesAsync();
+
+            return UploadDocumentReturnTo();
+        }
+
+        private IActionResult UploadDocumentReturnTo()
+        {
+            return Ok();
+        }
+
+        private async Task<string> SaveFileGetPath(IFormFile file, string folder = "default")
+        {
+            string directory = $"{documentBasePath}{Path.DirectorySeparatorChar}{folder}";
+            string filename;
+            string whereToSave;
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            do
+            {
+                filename = Path.GetRandomFileName();
+                whereToSave = $"{directory}{Path.DirectorySeparatorChar}{filename}";
+            }
+            while (System.IO.File.Exists(whereToSave));
+            
+
+            using (var stream = System.IO.File.Create(whereToSave))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return whereToSave;
+        }
+
     }
 }

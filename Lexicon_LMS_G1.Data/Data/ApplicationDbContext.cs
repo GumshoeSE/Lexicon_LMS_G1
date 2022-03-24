@@ -10,9 +10,12 @@ namespace Lexicon_LMS_G1.Data.Data
         public DbSet<Activity> Activities { get; set; }
         public DbSet<ActivityType> ActivitiesTypes { get; set; }
         public DbSet<Course> Courses { get; set; }
-        public DbSet<Document> Documents { get; set; }
         public DbSet<Module> Modules { get; set; }
         public DbSet<UserFinishedActivity> UserFinishedActivity { get; set; }
+        public DbSet<CourseDocument> CourseDocuments { get; set; }
+        public DbSet<ModuleDocument> ModuleDocuments { get; set; }
+        public DbSet<ActivityDocument> ActivityDocuments { get; set; }
+        public DbSet<StudentDocument> StudentDocuments { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
