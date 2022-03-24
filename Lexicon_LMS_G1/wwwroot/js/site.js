@@ -117,7 +117,7 @@ function reloadActivity() {
     });
 }
 
-var activitiesForCourse = document.getElementById('activitiesList')
+var activitiesForCourse = document.getElementById('activitiesList');
 
 $(document).ready(function () {
     $(".courseclick").click(function () {

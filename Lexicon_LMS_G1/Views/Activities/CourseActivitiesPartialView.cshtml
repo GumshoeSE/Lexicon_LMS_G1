@@ -2,7 +2,7 @@
 @using Lexicon_LMS_G1.Entities.Entities
 @model PaginatedList<ActivityTeacherViewModel>
 @inject IBorderColorService borderColor
-
+<div class="border border-3 rounded p-2">
 <h2 class="text-center">Activities for chosen course:</h2>
 <div class="row align-items-center mb-3">
     <div class="col-3">
@@ -70,4 +70,5 @@
     <button data-courseId="@Model.CourseId" data-pageIndex="@(Model.CurrentPageIndex + 1)" class="pagingbutton btn btn-light border border-secondary @nextDisabled">></button>
 
     <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
+</div>
 </div>
