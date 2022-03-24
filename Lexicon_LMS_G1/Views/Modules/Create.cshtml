@@ -62,7 +62,7 @@
                     <span asp-validation-for="EndTime" class="text-danger"></span>
                 </div>
                 <div class="form-group d-flex justify-content-between">
-                    <a href="javascript:history.go(-1)" class="btn btn-lg btn-danger ">Cancel</a>
+                    <a asp-controller="Courses" asp-action="IndexTeacher" class="btn btn-lg btn-danger">Cancel</a>
                     <input type="submit" value="Add" class="btn btn-lg btn-primary" />
                 </div>
             </form>
