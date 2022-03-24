@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,5 +23,8 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
 
 
         public IEnumerable<UserViewModel> Users { get; set; } = new List<UserViewModel>();
+
+        [Display (Name="Search") ]
+        public string? SearchQuery { get; set; }
     }
 }

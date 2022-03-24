@@ -1,16 +1,36 @@
 ﻿@model Lexicon_LMS_G1.Entities.ViewModels.UsersViewModel
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Users";
 }
 
-<h1>Index</h1>
+<h1>Users</h1>
 
 <p>
     @if (User.IsInRole("Teacher"))
     {
-        @*<a asp-action="Create">Create New</a>*@
+        <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Register">Add User</a>
     }
 </p>
+
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Index">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="SearchQuery" class="control-label"></label>
+                <input asp-for="SearchQuery" class="form-control" />
+                <span asp-validation-for="SearchQuery" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input type="submit" value="Search" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
 <table class="table">
     <thead>
         <tr>
@@ -66,19 +86,19 @@
     var nextDisabled = !Model.HasNext ? "disabled" : "";
 }
 <div class="text-center p-3">
-    <a asp-action="Index" asp-route-pageIndex="@(Model.CurrentPageIndex - 1)" class="btn btn-light border border-secondary @prevDisabled"><</a>
+    <a asp-action="Index" asp-route-pageIndex="@(Model.CurrentPageIndex - 1)" asp-route-searchQuery="@Model.SearchQuery"  class="btn btn-light border border-secondary @prevDisabled"><</a>
     @for (int i = 1; i <= Model.TotalPages; i++)
     {
         @if (i != Model.CurrentPageIndex)
         {
-            <a asp-action="Index" asp-route-pageIndex="@i" class="btn btn-light border border-secondary">@i</a>
+            <a asp-action="Index" asp-route-pageIndex="@i" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary">@i</a>
         }
         else
         {
             <span class="btn btn-secondary">@i</span>
         }
     }
-    <a asp-action="Index" asp-route-pageIndex="@(Model.CurrentPageIndex + 1)" class="btn btn-light border border-secondary @nextDisabled">></a>
+    <a asp-action="Index" asp-route-pageIndex="@(Model.CurrentPageIndex + 1)" asp-route-searchQuery="@Model.SearchQuery"  class="btn btn-light border border-secondary @nextDisabled">></a>
 
     <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
 </div>

@@ -41,12 +41,12 @@ namespace Lexicon_LMS_G1.Controllers
 
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
-                users = users.Where(s => 
-                    s.UserName.Contains(searchQuery.Trim()) || 
+                users = users.Where(s =>
+                    s.UserName.Contains(searchQuery.Trim()) ||
                     s.LastName.Contains(searchQuery.Trim()) ||
                     s.FirstName.Contains(searchQuery.Trim()) ||
                     s.Email.Contains(searchQuery.Trim())
-                   
+
                 );
             }
             var usersToReturn = await users.OrderBy(o => o.FirstName).ThenBy(o => o.LastName)
@@ -54,11 +54,7 @@ namespace Lexicon_LMS_G1.Controllers
                 .Take(pageSize)
                 .ToListAsync();
 
-
-
-
             var userCount = users.Count();
-
 
             var viewUsers = mapper.Map<List<UserViewModel>>(usersToReturn);
 
@@ -70,7 +66,7 @@ namespace Lexicon_LMS_G1.Controllers
                 TotalCount = userCount,
                 TotalPages = (int)Math.Ceiling(userCount / (double)pageSize),
                 PageSize = pageSize,
-
+                SearchQuery = searchQuery
 
             };
             //ToDo Paginationhandling of big values as parameters
