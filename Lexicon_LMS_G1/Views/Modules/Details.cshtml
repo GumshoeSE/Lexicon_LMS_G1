@@ -29,38 +29,58 @@
                                 <div class="text-start" style="width:100%">
                                     @item.ActivityType.Name
                                 </div>
-                                <div class="text-end me-3 fw-light" style="width:100%">
+                                <div class="me-3 d-flex fw-light justify-content-between" style="width:100%">
                                     @{
-                                        var timeDiff = item.StartDate - DateTime.Now;
-                                        var isInThePast = timeDiff.CompareTo(TimeSpan.Zero) < 0;
-                                        var isToday = timeDiff.TotalDays == 0;
-                                        var isThisWeek = timeDiff.TotalDays <= 7;
-                                        var timeText = "";
+                                        var startDif = item.StartDate - DateTime.Now;
+                                        var endDif = item.EndDate - DateTime.Now;
 
-                                        if(isInThePast)
+                                        var hasStarted = startDif.CompareTo(TimeSpan.Zero) < 0;
+                                        var hasEnded = endDif.CompareTo(TimeSpan.Zero) < 0;
+                                        var isOngoing = hasStarted && !hasEnded;
+
+                                        var isToday = startDif.TotalDays < 1;
+                                        var isThisWeek = startDif.TotalDays <= 7;
+                                        var timeText = "";
+                                        var statusText = "";
+                                        var badgeType = "";
+
+                                        if (hasEnded)
+                                                                {
+                                            statusText += "finished";
+                                            badgeType += "bg-success";
+                                            timeText += $"{item.EndDate.ToString("yyyy/MM/dd")}";
+                                        }
+                                        else if(isOngoing)
                                         {
-                                            timeText = $"finished {item.EndDate.ToString("yyyy/MM/dd")}";
+                                            statusText += "current";
+                                            badgeType += "bg-warning text-dark";
                                         }
                                         else
                                         {
-                                            timeText = $"starts in ";
+                                            statusText += "planned";
+                                            badgeType += "bg-info text-dark";
 
                                             if (isToday)
                                             {
-                                                timeText += (timeDiff.Hours > 0) ? $"{timeDiff.Hours} h " : $"";
-                                                timeText += (timeDiff.Minutes > 0) ? $"{timeDiff.Minutes} min " : $"";
+                                                timeText += (startDif.Hours > 0) ? $"{startDif.Hours} h " : $"";
+                                                timeText += (startDif.Minutes > 0) ? $"{startDif.Minutes} min " : $""; 
                                             }
                                             else if(isThisWeek)
                                             {
-                                                timeText += $"{timeDiff.Days} days";
+                                                timeText += $"{startDif.Days} days";
                                             }
                                             else
                                             {
-                                                timeText = $"starts {item.StartDate.ToString("yyyy/MM/dd")}";
+                                                timeText += $"{item.StartDate.ToString("yyyy/MM/dd")}";
                                             }
                                         }
                                     }
-                                    @timeText
+                                    <div class="badge @badgeType">
+                                        @statusText
+                                    </div>
+                                    <div class="fw-lighter">
+                                        @timeText
+                                    </div>
                                 </div>
                             </button>
                         </h2>
@@ -111,6 +131,6 @@
     </div>
 </div>
 
-<a href="javascript:history.go(-1)" class="btn btn-primary mt-3">Back</a>
+<a asp-controller="Courses" asp-action="IndexTeacher" class="btn btn-danger mt-3">Back</a>
 
 <vc:delete></vc:delete>
