@@ -8,16 +8,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
+using Lexicon_LMS_G1.Data.Repositores;
+using System.Text.Json;
 
 namespace Lexicon_LMS_G1.Controllers
 {
     public class ActivitiesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IBaseRepository<Activity> _repo;
 
-        public ActivitiesController(ApplicationDbContext context)
+        public ActivitiesController(ApplicationDbContext context, IBaseRepository<Activity> repo)
         {
             _context = context;
+            _repo = repo;
         }
 
         // GET: Activities
@@ -151,6 +155,20 @@ namespace Lexicon_LMS_G1.Controllers
             _context.Activities.Remove(activity);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        //[HttpPost]
+        public JsonResult FindById(int id)
+        {
+
+            var activity = _repo.GetById(id);
+
+            if (activity == null)
+            {
+                return Json(false);
+            }
+            var serializedActivity = JsonSerializer.Serialize(activity);
+            return Json(serializedActivity);
         }
 
         private bool ActivityExists(int id)

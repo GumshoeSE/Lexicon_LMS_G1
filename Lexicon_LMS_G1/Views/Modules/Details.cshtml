@@ -1,136 +1,282 @@
 ﻿@model ModuleDetailsViewModel
 
-<h1 class="text-center">Module Details</h1>
+<h1 class="text-center mb-4">Module '@Model.Name'</h1>
 
 <div class="container">
     <div class="row">
-        <div class="col-md-6 border border-3 rounded-xl p-3">
-            <div class="row">
-                <h1 class="text-center col-md-4 offset-md-4">Activities</h1>
-                <div class="col-md-4 align-content-center text-end">
-                    <a asp-controller="Activities" asp-route-id="@Model.Id" asp-action="Create" class="btn btn-primary">Add</a>
+        <div class="col-md-6">
+            <div class="border border-3 rounded-xl p-3">
+                <div class="row">
+                    <h2 class="text-center col-md-4 offset-md-4">Activities</h2>
+                    <div class="col-md-4 align-content-center text-end">
+                        <button type="button" id="addActivityBtn" class="btn btn-primary"> Add </button>
+                    </div>
                 </div>
-            </div>
-            <div class="accordion mt-3" id="courseAccordion">
-                @if (Model.Activities.Count == 0)
-                {
-                    <p class="ps-3">This module currently has no activities</p>
-                }
-                @foreach (var item in Model.Activities)
-                {
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
-                            <button class="accordion-button collapsed" 
-                                    type="button" 
+                <div class="accordion mt-2" id="courseAccordion">
+                    @if (Model.Activities.Count == 0)
+                    {
+                        <p class="ps-3">This module currently has no activities</p>
+                    }
+                    @foreach (var item in Model.Activities)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
+                                <button class="accordion-button collapsed"
+                                    type="button"
                                     data-bs-toggle="collapse"
                                     data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)"
                                     aria-expanded="false"
                                     aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
-                                <div class="text-start" style="width:100%">
-                                    @item.ActivityType.Name
-                                </div>
-                                <div class="me-3 d-flex fw-light justify-content-between" style="width:100%">
-                                    @{
-                                        var startDif = item.StartDate - DateTime.Now;
-                                        var endDif = item.EndDate - DateTime.Now;
+                                    <div class="text-start" style="width:100%">
+                                        @item.ActivityType.Name
+                                    </div>
+                                    <div class="me-3 d-flex fw-light justify-content-between" style="width:100%">
+                                        @{
+                                            var startDif = item.StartDate - DateTime.Now;
+                                            var endDif = item.EndDate - DateTime.Now;
 
-                                        var hasStarted = startDif.CompareTo(TimeSpan.Zero) < 0;
-                                        var hasEnded = endDif.CompareTo(TimeSpan.Zero) < 0;
-                                        var isOngoing = hasStarted && !hasEnded;
+                                            var hasStarted = startDif.CompareTo(TimeSpan.Zero) < 0;
+                                            var hasEnded = endDif.CompareTo(TimeSpan.Zero) < 0;
+                                            var isOngoing = hasStarted && !hasEnded;
 
-                                        var isToday = startDif.TotalDays < 1;
-                                        var isThisWeek = startDif.TotalDays <= 7;
-                                        var timeText = "";
-                                        var statusText = "";
-                                        var badgeType = "";
+                                            var isToday = startDif.TotalDays < 1;
+                                            var isThisWeek = startDif.TotalDays <= 7;
+                                            var timeText = "";
+                                            var statusText = "";
+                                            var badgeType = "";
 
-                                        if (hasEnded)
-                                                                {
-                                            statusText += "finished";
-                                            badgeType += "bg-success";
-                                            timeText += $"{item.EndDate.ToString("yyyy/MM/dd")}";
-                                        }
-                                        else if(isOngoing)
-                                        {
-                                            statusText += "current";
-                                            badgeType += "bg-warning text-dark";
-                                        }
-                                        else
-                                        {
-                                            statusText += "planned";
-                                            badgeType += "bg-info text-dark";
-
-                                            if (isToday)
+                                            if (hasEnded)
                                             {
-                                                timeText += (startDif.Hours > 0) ? $"{startDif.Hours} h " : $"";
-                                                timeText += (startDif.Minutes > 0) ? $"{startDif.Minutes} min " : $""; 
+                                                statusText += "finished";
+                                                badgeType += "bg-success";
+                                                timeText += $"{item.EndDate.ToString("yyyy/MM/dd")}";
                                             }
-                                            else if(isThisWeek)
+                                            else if (isOngoing)
                                             {
-                                                timeText += $"{startDif.Days} days";
+                                                statusText += "current";
+                                                badgeType += "bg-warning text-dark";
                                             }
                                             else
                                             {
-                                                timeText += $"{item.StartDate.ToString("yyyy/MM/dd")}";
+                                                statusText += "planned";
+                                                badgeType += "bg-info text-dark";
+
+                                                if (isToday)
+                                                {
+                                                    timeText += (startDif.Hours > 0) ? $"{startDif.Hours} h " : $"";
+                                                    timeText += (startDif.Minutes > 0) ? $"{startDif.Minutes} min " : $"";
+                                                }
+                                                else if (isThisWeek)
+                                                {
+                                                    timeText += $"{startDif.Days} days";
+                                                }
+                                                else
+                                                {
+                                                    timeText += $"{item.StartDate.ToString("yyyy/MM/dd")}";
+                                                }
                                             }
                                         }
-                                    }
-                                    <div class="badge @badgeType">
-                                        @statusText
+                                        <div class="badge @badgeType">
+                                            @statusText
+                                        </div>
+                                        <div class="fw-lighter">
+                                            @timeText
+                                        </div>
                                     </div>
-                                    <div class="fw-lighter">
-                                        @timeText
-                                    </div>
-                                </div>
-                            </button>
-                        </h2>
-                        <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)"
-                            class="accordion-collapse collapse" 
-                            aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)" 
-                            data-bs-parent="#courseAccordion">
-                            <div class="accordion-body p-0 pt-3">
-                                <div class="ps-3">
-                                    <h5>Duration:</h5>
-                                    <p class="fw-light">@item.StartDate.ToString("yyyy/MM/dd") - @item.EndDate.ToString("yyyy/MM/dd")</p>
-                                    <h5>Name:</h5>
-                                    <p class="fw-light">@Html.DisplayFor(modelItem => item.Name)</p>
-                                    <h5>Description:</h5>
-                                    <p class="fw-light">@Html.DisplayFor(modelItem => item.Description)</p>
+                                </button>
+                            </h2>
+                            <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)"
+                             class="accordion-collapse collapse"
+                             aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)"
+                             data-bs-parent="#courseAccordion">
+                                <div class="accordion-body p-0 pt-3">
+                                    <div class="ps-3">
+                                        <h5>Duration:</h5>
+                                        <p class="fw-light">@item.StartDate.ToString("yyyy/MM/dd") - @item.EndDate.ToString("yyyy/MM/dd")</p>
+                                        <h5>Name:</h5>
+                                        <p class="fw-light">@Html.DisplayFor(modelItem => item.Name)</p>
+                                        <h5>Description:</h5>
+                                        <p class="fw-light">@Html.DisplayFor(modelItem => item.Description)</p>
 
-                                    @switch (item.ActivityType)
-                                    {
-                                        default :
-                                            //<div class="ps-3">@Html.DisplayFor(modelItem => item.ActivityType.Name)</div>
-                                            break;
-                                    }
-                                </div>
-                                <hr />
-                                <div class="form-group d-flex px-3 pb-3 justify-content-between">
-                                    <div>
-                                        <a class="btn btn-primary">Documents</a>
+                                        @switch (item.ActivityType)
+                                        {
+                                            default:
+                                                //<div class="ps-3">@Html.DisplayFor(modelItem => item.ActivityType.Name)</div>
+                                                break;
+                                        }
                                     </div>
-                                    <div>
-                                        <a asp-controller="Activities" asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
-                                        <button type="button" 
-                                            data-ref="@item.Id"
-                                            data-name="@item.Name"
-                                            data-type="Activity"
-                                            class="btn btn-danger deleter"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#delete">
-                                            Remove
-                                        </button>
+                                    <hr />
+                                    <div class="form-group d-flex px-3 pb-3 justify-content-between">
+                                        <div>
+                                            <a class="btn btn-primary">Documents</a>
+                                        </div>
+                                        <div>
+                                            <button type="button" value="@item.Id" class="btn btn-primary editActivityBtn">Edit</button>
+                                            <button type="button"
+                                                data-ref="@item.Id"
+                                                data-name="@item.Name"
+                                                data-type="Activity"
+                                                class="btn btn-danger deleter"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#delete">
+                                                Remove
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="border border-3 rounded-xl p-3" id="multi-container">
+                <div id="moduleDetails">
+                    <h2 class="text-center">Details</h2>
+                    <hr />
+                    <h5>Duration:</h5>
+                    <p class="fw-light">@Model.StartTime.ToString("yyyy/MM/dd") - @Model.EndTime.ToString("yyyy/MM/dd")</p>
+                    <h5>Name:</h5>
+                    <p class="fw-light">@Html.DisplayFor(modelItem => Model.Name)</p>
+                    <h5>Description:</h5>
+                    <p class="fw-light">@Html.DisplayFor(modelItem => Model.Description)</p>
+                </div>
+                <div id="editActivity" class="hidden">
+                    <h2 class="text-center">Edit Activity</h2>
+                    <hr />
+                    <form>
+                        <div class="mb-3">
+                            <label for="editActivityName" class="form-label h5">Name</label>
+                            <input type="text" class="form-control" id="editActivityName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="editActivityDescription" class="form-label h5">Description</label>
+                            <textarea class="form-control" id="editActivityDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editActivtyStartDate" class="form-label h5">Start Time (Permanent)</label>
+                            <input type="datetime-local" class="form-control" id="editActivtyStartDate" disabled>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editActivtyEndDate" class="form-label h5">End Time (Permanent)</label>
+                            <input type="datetime-local" class="form-control" id="editActivtyEndDate" disabled>
+                        </div>
+                        <hr />
+                        <div class="d-flex px-3 justify-content-between">
+                            <button type="button" id="submitEditActivityBtn" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-danger cancelBtn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div id="addActivity" class="hidden">
+                    <h2 class="text-center">Add Activity</h2>
+                    <hr />
+                    <form>
+                        <div class="mb-3">
+                            <label for="addActivtyName" class="form-label h5">Name</label>
+                            <input type="text" class="form-control" id="addActivtyName">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addActivtyDescription" class="form-label h5">Description</label>
+                            <textarea class="form-control" id="addActivtyDescription" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addActivtyStartDate" class="form-label h5">Start Time</label>
+                            <input type="datetime-local" class="form-control" id="addActivtyStartDate">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addActivtyEndDate" class="form-label h5">End Time</label>
+                            <input type="datetime-local" class="form-control" id="addActivtyEndDate">
+                        </div>
+                        <hr />
+                        <div class="d-flex px-3 justify-content-between">
+                            <button type="button" id="submitEditActivityBtn" class="btn btn-primary">Save</button>
+                            <button type="button" class="btn btn-danger cancelBtn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="border border border-3 rounded-xl mt-3 p-3">
+                <h2 class="text-center">Documents</h2>
             </div>
         </div>
     </div>
 </div>
 
-<a asp-controller="Courses" asp-action="IndexTeacher" class="btn btn-danger mt-3">Back</a>
+@*<a asp-controller="Courses" asp-action="IndexTeacher" class="btn btn-danger mt-3">Back to courses</a>*@
 
 <vc:delete></vc:delete>
+
+@section Scripts {
+
+<script>
+
+    $(document).ready(function () {
+
+        let currentDisplayed = $("#moduleDetails");
+
+        $("#addActivityBtn").on("click", function(e){
+            currentDisplayed.addClass("hidden");
+            $("#addActivity").removeClass("hidden");
+            currentDisplayed = $("#addActivity");
+
+            $('.collapse').collapse('hide');
+
+            $('#multi-container').addClass("border-primary");
+            setTimeout(removeBlueBorder, 1000);
+
+            $('html, body').animate({ scrollTop: 0 }, 'fast');
+
+        });
+        $(".editActivityBtn").on("click", function(e){
+
+            let activityId = $(this).val();
+
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("FindById", "Activities")?id=' + activityId,
+                data: {"id" : activityId},
+                contentType: "application/json",
+                success: function (reply){
+                    let activity = JSON.parse(reply);
+                    $("#editActivityName").val(activity.Name);
+                    $("#editActivityDescription").val(activity.Description);
+
+                    document.querySelector("#editActivtyStartDate").value = activity.StartDate;
+                    $("#editActivtyStartDate").val(activity.StartDate.slice(0,16));
+                    $("#editActivtyEndDate").val(activity.EndDate.slice(0,16));
+
+                    currentDisplayed.addClass("hidden");
+                    $("#editActivity").removeClass("hidden");
+                    currentDisplayed = $("#editActivity");
+
+                    $('.collapse').collapse('hide');
+
+                    $('#multi-container').addClass("border-primary");
+                    setTimeout(removeBlueBorder, 1000);
+
+                    $('html, body').animate({ scrollTop: 0 }, 'fast');
+
+                },
+                error: function (req, status, error) {
+                    console.log(error);
+                    alert('error: ' + reply);
+                }
+            });
+        });
+        $(".cancelBtn").on("click", function(e){
+            currentDisplayed.addClass("hidden");
+            $("#moduleDetails").removeClass("hidden");
+            currentDisplayed = $("#moduleDetails");
+
+            $('#multi-container').addClass("border-primary");
+            setTimeout(removeBlueBorder, 1000);
+        });
+
+        function removeBlueBorder() {
+            $('#multi-container').removeClass("border-primary");
+        }
+    });
+</script>
+}
