@@ -20,8 +20,8 @@
                 @foreach (var item in Model)
                 {
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)" aria-expanded="false" aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
+                        <h2 class="accordion-header " id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
+                            <button class="accordion-button collapsed courseclick" type="button" id="@item.Id" data-courseId="@item.Id" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)" aria-expanded="false" aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
                                 <div class="text-center ps-4" style="width:100%">
                                     @Html.DisplayFor(modelItem => item.Name)
                                 </div>
@@ -102,7 +102,8 @@
                 <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
             </div>
         </div>
-        <div id="activitiesList" class="col-6">
+        <div id="activitiesList" class="col-5 offset-1 border border-3 rounded d-none">
+
         </div>
     </div>
 </div>

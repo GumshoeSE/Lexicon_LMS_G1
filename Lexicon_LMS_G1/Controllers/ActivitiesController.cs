@@ -157,5 +157,20 @@ namespace Lexicon_LMS_G1.Controllers
         {
             return _context.Activities.Any(e => e.Id == id);
         }
+
+        public IActionResult GetActionsForCourse(int courseId)
+        {
+            var modules = _context.Modules.Where(m => m.CourseId == courseId).ToList();
+            List<Activity> activites = new List<Activity>();
+            foreach (var module in modules)
+            {
+                var moduleactivities = _context.Activities.Include(a => a.ActivityType).Where(a => a.ModuleId == module.Id).OrderBy(a => a.StartDate).ToList();
+                foreach (var activity in moduleactivities)
+                {
+                    activites.Add(activity);
+                }
+            }
+            return PartialView("CourseActivitiesPartialView", activites);
+        }
     }
 }

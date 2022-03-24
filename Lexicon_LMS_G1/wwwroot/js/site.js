@@ -6,7 +6,7 @@
 
 })();
 
-$(document).ready(function (){
+$(document).ready(function () {
     $(".deleter").click(function () {
         $("#deleteId").val(
             $(this).attr("data-ref")
@@ -30,7 +30,7 @@ const breadcrumbDetail = document.getElementById("breadcrumbDetail");           
 let latestModuleId;
 
 breadcrumbModule?.addEventListener("click", function () {
-    
+
     breadcrumbModule.classList.add("active");
 
     breadcrumbActivity.classList.remove("active");
@@ -38,7 +38,7 @@ breadcrumbModule?.addEventListener("click", function () {
 
     breadcrumbDetail.classList.add("hidden");
     breadcrumbDetail.classList.remove("active");
-    
+
     reloadCourse();
 });
 
@@ -116,3 +116,27 @@ function reloadActivity() {
             });
     });
 }
+
+var activitiesForCourse = document.getElementById('activitiesList')
+
+$(document).ready(function () {
+    $(".courseclick").click(function () {
+        if ($(this).attr("aria-expanded") == "true") {
+            activitiesForCourse.classList.remove("d-none");
+            let id = $(this).attr("data-courseid");
+            let params = [['courseId', id]];
+            let url = new URL('https://localhost:7124/Activities/GetActionsForCourse');
+            url.search = new URLSearchParams(params).toString();
+            fetch(url, {
+                method: 'GET'
+            })
+                .then(res => res.text())
+                .then(data => {
+                    activitiesForCourse.innerHTML = data;
+                });
+        }
+        else {
+            activitiesForCourse.classList.add("d-none");
+        }
+    });
+})
