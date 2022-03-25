@@ -8,6 +8,7 @@ namespace Lexicon_LMS_G1.Entities.Entities
 {
     public class StudentDocument : BaseDocument
     {
-
+        public int ActivityId { get; set; }
+        public bool IsApproved { get; set; }
     }
 }

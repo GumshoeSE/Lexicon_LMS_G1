@@ -24,6 +24,9 @@
                             <div class="accordion-body">
                                 @Html.DisplayFor(a => assignment.Description)
                                 <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
+                                <button class="btn btn-info uploadAssignment" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
+                                    +
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -43,6 +46,9 @@
                             <div class="accordion-body">
                                 @Html.DisplayFor(a => assignment.Description)
                                 <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
+                                <button class="btn btn-info uploadAssignment" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
+                                    +
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -126,4 +132,33 @@
             </div>
         </div>
     </div>
+    <div class="col-5 p-0">
+        <div class="modal fade" id="uploadModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+                    <form asp-action="UploadStudentDocument" enctype="multipart/form-data" asp-controller="Documents">
+                        <div>
+                            <label class="control-label">UPLOLOAD FILÈ</label>
+                            <input name="document" type="file" class="form-control" required />
+                        </div>
+                        <div>
+                            <label class="control-label">DESCRPTION</label>
+                            <input name="description" type="text" class="form-control" />
+                        </div>
+                        <div class="">
+                            <label class="control-label">Don't look, I'm dressing!</label>
+                            <input id="-R��������Ξft" name="activityId" type="number" value="0" class="form-control" />
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Upload File</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+
+@section Scripts{
+<script src="~/js/index-student.js"></script>
+}

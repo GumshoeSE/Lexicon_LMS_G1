@@ -122,7 +122,7 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadStudentDocument(IFormFile document, string description)
+        public async Task<IActionResult> UploadStudentDocument(IFormFile document, string description, int activityId)
         {
             string path = await SaveFileGetPath(document, "Student");
             ApplicationUser user = await userManager.GetUserAsync(User);
@@ -133,7 +133,9 @@ namespace Lexicon_LMS_G1.Controllers
                 Description = description,
                 CreatedOn = DateTime.Now,
                 FilePath = path,
-                UserId = user.Id
+                UserId = user.Id,
+                ActivityId = activityId,
+                IsApproved = false
             };
             _context.Add(studentDocument);
             await _context.SaveChangesAsync();
