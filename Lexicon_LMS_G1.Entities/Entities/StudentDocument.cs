@@ -8,7 +8,6 @@ namespace Lexicon_LMS_G1.Entities.Entities
 {
     public class StudentDocument : BaseDocument
     {
-        public string UserId { get; set; }
-        public ApplicationUser User { get; set; }
+
     }
 }

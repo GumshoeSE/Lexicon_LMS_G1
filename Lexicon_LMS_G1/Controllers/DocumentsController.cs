@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Entities.ViewModels;
+using Microsoft.AspNetCore.Identity;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -16,10 +17,12 @@ namespace Lexicon_LMS_G1.Controllers
     {
         private readonly string documentBasePath = "root";
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public DocumentsController(ApplicationDbContext context)
+        public DocumentsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            this.userManager = userManager;
             if (!Directory.Exists(documentBasePath))
             {
                 Directory.CreateDirectory(documentBasePath);
@@ -29,28 +32,37 @@ namespace Lexicon_LMS_G1.Controllers
         [HttpGet]
         public async Task<IActionResult> Index()
         {
-            DocumentUploadViewModel<int, Course> view = new DocumentUploadViewModel<int, Course>()
-            {
-                Identifier = await _context.Courses.ToListAsync()
-            };
-            return View(view);
+            
+            return await UploadDocument<int, Module>();
         }
 
-        [HttpGet]
-        public async Task<IActionResult> UploadDocument<T, Q>() where Q : BaseDocument
+        private async Task<IActionResult> UploadDocument<T, Q>() where Q : class
         {
             DocumentUploadViewModel<T, Q> view = new DocumentUploadViewModel<T, Q>()
             {
                 Identifier = await _context.Set<Q>().ToListAsync()
             };
 
-            return View(view);
+            switch (typeof(Q).Name)
+            {
+                case "Course":
+                    return View("UploadCoursePartialView", view);
+                case "Module":
+                    return View("UploadModulePartialView", view);
+                case "Activity":
+                    return View("UploadActivityPartialView", view);
+                case "Student":
+                    return View("UploadStudentPartialView", view);
+            }
+
+            return StatusCode(500, $"{typeof(Q).Name} is unavailable to upload for.");
         }
 
         [HttpPost]
         public async Task<IActionResult> UploadCourseDocument(IFormFile document, int courseId, string description)
         {
             string path = await SaveFileGetPath(document, "Course");
+            ApplicationUser user = await userManager.GetUserAsync(User);
             CourseDocument courseDocument = new CourseDocument()
             {
                 Name = document.FileName,
@@ -58,7 +70,8 @@ namespace Lexicon_LMS_G1.Controllers
                 Description = description,
                 CreatedOn = DateTime.Now,
                 FilePath = path,
-                CourseId = courseId
+                CourseId = courseId,
+                UserId = user.Id
             };
             _context.Add(courseDocument);
             await _context.SaveChangesAsync();
@@ -70,6 +83,7 @@ namespace Lexicon_LMS_G1.Controllers
         public async Task<IActionResult> UploadModuleDocument(IFormFile document, int moduleId, string description)
         {
             string path = await SaveFileGetPath(document, "Module");
+            ApplicationUser user = await userManager.GetUserAsync(User);
             ModuleDocument moduleDocument = new ModuleDocument()
             {
                 Name = document.Name,
@@ -77,7 +91,8 @@ namespace Lexicon_LMS_G1.Controllers
                 Description = description,
                 CreatedOn = DateTime.Now,
                 FilePath = path,
-                ModuleId = moduleId
+                ModuleId = moduleId,
+                UserId = user.Id
             };
             _context.Add(moduleDocument);
             await _context.SaveChangesAsync();
@@ -89,6 +104,7 @@ namespace Lexicon_LMS_G1.Controllers
         public async Task<IActionResult> UploadActivityDocument(IFormFile document, int activityId, string description)
         {
             string path = await SaveFileGetPath(document, "Activity");
+            ApplicationUser user = await userManager.GetUserAsync(User);
             ActivityDocument activityDocument = new ActivityDocument()
             {
                 Name = document.Name,
@@ -96,7 +112,8 @@ namespace Lexicon_LMS_G1.Controllers
                 Description = description,
                 CreatedOn = DateTime.Now,
                 FilePath = path,
-                ActivityId = activityId
+                ActivityId = activityId,
+                UserId = user.Id
             };
             _context.Add(activityDocument);
             await _context.SaveChangesAsync();
@@ -105,9 +122,10 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadStudentDocument(IFormFile document, string studentId, string description)
+        public async Task<IActionResult> UploadStudentDocument(IFormFile document, string description)
         {
             string path = await SaveFileGetPath(document, "Student");
+            ApplicationUser user = await userManager.GetUserAsync(User);
             StudentDocument studentDocument = new StudentDocument()
             {
                 Name = document.Name,
@@ -115,7 +133,7 @@ namespace Lexicon_LMS_G1.Controllers
                 Description = description,
                 CreatedOn = DateTime.Now,
                 FilePath = path,
-                UserId = studentId
+                UserId = user.Id
             };
             _context.Add(studentDocument);
             await _context.SaveChangesAsync();

@@ -14,5 +14,7 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
         [Required]
         [Display(Name = "Start Time")]
         public DateTime StartTime { get; set; }
+
+
     }
 }

@@ -89,9 +89,15 @@ namespace Lexicon_LMS_G1.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ActivityId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ActivityDocuments");
                 });
@@ -245,9 +251,15 @@ namespace Lexicon_LMS_G1.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("CourseDocuments");
                 });
@@ -314,9 +326,15 @@ namespace Lexicon_LMS_G1.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ModuleId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ModuleDocuments");
                 });
@@ -539,7 +557,15 @@ namespace Lexicon_LMS_G1.Data.Migrations
                         .WithMany("Documents")
                         .HasForeignKey("ActivityId");
 
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Activity");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
@@ -559,7 +585,15 @@ namespace Lexicon_LMS_G1.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Course");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Module", b =>
@@ -581,7 +615,15 @@ namespace Lexicon_LMS_G1.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Module");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.StudentDocument", b =>
