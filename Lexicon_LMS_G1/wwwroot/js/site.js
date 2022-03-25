@@ -135,6 +135,7 @@ $(document).ready(function () {
                     activitiesForCourse.innerHTML = data;
                     $(".pagingbutton").click(pagingClick);
                     $(".atypes").change(typechoice);
+
                 });
         }
         else {
@@ -147,7 +148,13 @@ $(document).ready(function () {
 function pagingClick() {
     let courseId = $(this).attr("data-courseId");
     let pageIndex = $(this).attr("data-pageIndex");
-    let params = [['courseId', courseId], ['pageIndex', pageIndex]];
+    let activityType = $('.atypes option:selected').val();
+    $('#activitiesList').focus();
+    let params = {
+        'courseId': courseId,
+        'pageIndex': pageIndex,
+        'activityType': activityType
+    };
     let url = new URL('https://localhost:7124/Activities/GetActionsForCourse');
     url.search = new URLSearchParams(params).toString();
     fetch(url, {
@@ -156,6 +163,7 @@ function pagingClick() {
         .then(res => res.text())
         .then(data => {
             activitiesForCourse.innerHTML = data;
+            $('.atypes').val(activityType);
             $(".pagingbutton").click(pagingClick);
             $(".atypes").change(typechoice);
         });
@@ -163,9 +171,11 @@ function pagingClick() {
 
 function typechoice() {
     let courseId = $(this).attr("data-courseId");
-    let pageIndex = $(this).attr("data-pageIndex");
     let activityType = $('.atypes option:selected').val();
-    let params = [['courseId', courseId], ['pageIndex', pageIndex], ['activityType', activityType]];
+    let params = {
+        'courseId': courseId,
+        'activityType': activityType
+    };
     let url = new URL('https://localhost:7124/Activities/GetActionsForCourse');
     url.search = new URLSearchParams(params).toString();
     fetch(url, {
@@ -174,7 +184,11 @@ function typechoice() {
         .then(res => res.text())
         .then(data => {
             activitiesForCourse.innerHTML = data;
+            $('.atypes').val(activityType);
             $(".pagingbutton").click(pagingClick);
             $(".atypes").change(typechoice);
+            $('#activitiesList').focus();
         });
 }
+
+
