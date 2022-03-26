@@ -12,6 +12,8 @@ using AutoMapper;
 using Lexicon_LMS_G1.Data.Repositores;
 using Lexicon_LMS_G1.Entities.ViewModels;
 using Lexicon_LMS_G1.Entities.Helpers;
+using System.Text.Json;
+using Lexicon_LMS_G1.Entities.Dtos;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -223,9 +225,33 @@ namespace Lexicon_LMS_G1.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateModule([FromBody] ModuleUpdateDto dto)
+        {
+            var orginialModule = _baseModuleRepo.GetById(dto.Id);
+
+            if (orginialModule == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var module = _mapper.Map(dto, orginialModule);
+                _baseModuleRepo.Update(module);
+                await _baseModuleRepo.SaveChangesAsync();
+
+                return Json(new { redirectToUrl = Url.Action("Details", "Modules", new { id = module.Id }) });
+            }
+
+            return Json(false);
+        }
+
         private bool ModuleExists(int id)
         {
             return _context.Modules.Any(e => e.Id == id);
         }
+
+
     }
 }

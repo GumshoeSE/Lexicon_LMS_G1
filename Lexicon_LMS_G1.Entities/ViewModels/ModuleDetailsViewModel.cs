@@ -14,8 +14,12 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
 
         public DateTime EndTime { get; set; }
 
+        public int CourseId { get; set; }
+
         public ICollection<ApplicationUser> AttendingStudents { get; set; } = new List<ApplicationUser>();
         public ICollection<Activity> Activities { get; set; } = new List<Activity>();
+
         //public ICollection<Document> Documents { get; set; } = new List<Activity>();
+
     }
 }

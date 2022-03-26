@@ -10,6 +10,8 @@ using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Data.Repositores;
 using System.Text.Json;
+using Lexicon_LMS_G1.Entities.Dtos;
+using AutoMapper;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -17,11 +19,13 @@ namespace Lexicon_LMS_G1.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IBaseRepository<Activity> _repo;
+        private readonly IMapper _mapper;
 
-        public ActivitiesController(ApplicationDbContext context, IBaseRepository<Activity> repo)
+        public ActivitiesController(ApplicationDbContext context, IBaseRepository<Activity> repo, IMapper mapper)
         {
             _context = context;
             _repo = repo;
+            _mapper = mapper;
         }
 
         // GET: Activities
@@ -157,18 +161,26 @@ namespace Lexicon_LMS_G1.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //[HttpPost]
-        public JsonResult FindById(int id)
+        [HttpPost]
+        public async Task<IActionResult> UpdateActivity([FromBody] ActivityUpdateDto dto)
         {
+            var orginialActivity = _repo.GetById(dto.Id);
 
-            var activity = _repo.GetById(id);
-
-            if (activity == null)
+            if (orginialActivity == null)
             {
-                return Json(false);
+                return NotFound();
             }
-            var serializedActivity = JsonSerializer.Serialize(activity);
-            return Json(serializedActivity);
+
+            if (ModelState.IsValid)
+            {
+                var activity = _mapper.Map(dto, orginialActivity);
+                _repo.Update(activity);
+                await _repo.SaveChangesAsync();
+
+                return Json(new { redirectToUrl = Url.Action("Details", "Modules", new { id = activity.ModuleId }) });
+            }
+
+            return Json(false);
         }
 
         private bool ActivityExists(int id)

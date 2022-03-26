@@ -1,5 +1,9 @@
 ﻿@model ModuleDetailsViewModel
 
+@{
+    var lastActivityEndDateTime = Model.Activities.Last()?.EndDate;
+}
+
 <h1 class="text-center mb-4">Module '@Model.Name'</h1>
 
 <div class="container">
@@ -9,7 +13,7 @@
                 <div class="row">
                     <h2 class="text-center col-md-4 offset-md-4">Activities</h2>
                     <div class="col-md-4 align-content-center text-end">
-                        <button type="button" id="addActivityBtn" class="btn btn-primary"> Add </button>
+                        <button type="button" id="addActivityBtn" class="btn btn-outline-primary"> Add </button>
                     </div>
                 </div>
                 <div class="accordion mt-2" id="courseAccordion">
@@ -89,39 +93,66 @@
                              class="accordion-collapse collapse"
                              aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)"
                              data-bs-parent="#courseAccordion">
-                                <div class="accordion-body p-0 pt-3">
-                                    <div class="ps-3">
-                                        <h5>Duration:</h5>
-                                        <p class="fw-light">@item.StartDate.ToString("yyyy/MM/dd") - @item.EndDate.ToString("yyyy/MM/dd")</p>
-                                        <h5>Name:</h5>
-                                        <p class="fw-light">@Html.DisplayFor(modelItem => item.Name)</p>
-                                        <h5>Description:</h5>
-                                        <p class="fw-light">@Html.DisplayFor(modelItem => item.Description)</p>
-
-                                        @switch (item.ActivityType)
-                                        {
-                                            default:
-                                                //<div class="ps-3">@Html.DisplayFor(modelItem => item.ActivityType.Name)</div>
-                                                break;
-                                        }
+                                <div class="accordion-body ps-0 pe-0 border border-3" id="accordion-body@(item.Id)">
+                                    <div id="activityDetails@(item.Id)">
+                                        <div class="ps-3">
+                                            <h5>Duration:</h5>
+                                            <p class="fw-light">@item.StartDate.ToString("yyyy/MM/dd") - @item.EndDate.ToString("yyyy/MM/dd")</p>
+                                            <h5>Name:</h5>
+                                            <p class="fw-light">@item.Name</p>
+                                            <h5>Description:</h5>
+                                            <p class="fw-light">@item.Description</p>
+                                        </div>
+                                        <hr />
+                                        <div class="form-group d-flex px-3 justify-content-between">
+                                            <div>
+                                                <a class="btn btn-primary">Documents</a>
+                                            </div>
+                                            <div>
+                                                <button type="button" value="@item.Id" class="btn btn-primary editActivityBtn">Edit</button>
+                                                <button type="button"
+                                                    data-ref="@item.Id"
+                                                    data-name="@item.Name"
+                                                    data-type="Activity"
+                                                    class="btn btn-danger deleter"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#delete">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <hr />
-                                    <div class="form-group d-flex px-3 pb-3 justify-content-between">
-                                        <div>
-                                            <a class="btn btn-primary">Documents</a>
-                                        </div>
-                                        <div>
-                                            <button type="button" value="@item.Id" class="btn btn-primary editActivityBtn">Edit</button>
-                                            <button type="button"
-                                                data-ref="@item.Id"
-                                                data-name="@item.Name"
-                                                data-type="Activity"
-                                                class="btn btn-danger deleter"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#delete">
-                                                Remove
-                                            </button>
-                                        </div>
+                                    <div id="editActivity@(item.Id)" class="hidden">
+                                        <form class="novalidate">
+                                            <input type="hidden" id="editActivityId@(item.Id)" value="@item.Id">
+                                            <div class="ps-3">
+                                                <h5>Duration:</h5>
+                                                <p class="fw-light">@item.StartDate.ToString("yyyy/MM/dd") - @item.EndDate.ToString("yyyy/MM/dd")</p>
+                                                <div class="mb-3">
+                                                    <label for="editActivityName" class="form-label h5">Name:</label>
+                                                    <div class="input-group has-validation">
+                                                        <input type="text" class="form-control req" id="editActivityName@(item.Id)" value="@item.Name">
+                                                        <div id="validationEditActivityName" class="invalid-feedback">
+                                                            Please provide a name for the activity.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editActivityDescription" class="form-label h5">Description:</label>
+                                                    <div class="input-group has-validation">
+                                                        <textarea class="form-control req" id="editActivityDescription@(item.Id)" rows="3">@item.Description</textarea>
+                                                        <div id="validationEditActivityDescription" class="invalid-feedback">
+                                                            Please provide a description for the module.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr />
+                                            <div class="d-flex px-3 justify-content-between">
+                                                <button type="button" class="btn btn-primary submitEditActivityBtn" value="@item.Id">Save</button>
+                                                <button type="button" class="btn btn-danger cancelEditActivityBtn" value="@item.Id">Cancel</button>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
@@ -133,7 +164,12 @@
         <div class="col-md-6">
             <div class="border border-3 rounded-xl p-3" id="multi-container">
                 <div id="moduleDetails">
-                    <h2 class="text-center">Details</h2>
+                    <div class="row">
+                        <h2 class="text-center col-md-4 offset-md-4">Details</h2>
+                        <div class="col-md-4 align-content-center text-end">
+                            <button type="button" id="editModuleBtn" class="btn btn-outline-primary"> Edit </button>
+                        </div>
+                    </div>
                     <hr />
                     <h5>Duration:</h5>
                     <p class="fw-light">@Model.StartTime.ToString("yyyy/MM/dd") - @Model.EndTime.ToString("yyyy/MM/dd")</p>
@@ -142,30 +178,35 @@
                     <h5>Description:</h5>
                     <p class="fw-light">@Html.DisplayFor(modelItem => Model.Description)</p>
                 </div>
-                <div id="editActivity" class="hidden">
-                    <h2 class="text-center">Edit Activity</h2>
+                <div id="editModule" class="hidden">
+                    <h2 class="text-center">Edit Module</h2>
                     <hr />
-                    <form>
+                    <form class="novalidate">
+                        <input type="hidden" id="editModuleId" value="@Model.Id">
+                        <h5>Duration:</h5>
+                        <p class="fw-light">@Model.StartTime.ToString("yyyy/MM/dd") - @Model.EndTime.ToString("yyyy/MM/dd")</p>
                         <div class="mb-3">
-                            <label for="editActivityName" class="form-label h5">Name</label>
-                            <input type="text" class="form-control" id="editActivityName">
+                            <label for="editModuleName" class="form-label h5">Name</label>
+                            <div class="input-group has-validation">
+                                <input type="text" class="form-control req" id="editModuleName" value="@Model.Name">
+                                <div id="validationModuleName" class="invalid-feedback">
+                                    Please provide a name for the module.
+                                </div>
+                            </div>
                         </div>
                         <div class="mb-3">
-                            <label for="editActivityDescription" class="form-label h5">Description</label>
-                            <textarea class="form-control" id="editActivityDescription" rows="3"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editActivtyStartDate" class="form-label h5">Start Time (Permanent)</label>
-                            <input type="datetime-local" class="form-control" id="editActivtyStartDate" disabled>
-                        </div>
-                        <div class="mb-3">
-                            <label for="editActivtyEndDate" class="form-label h5">End Time (Permanent)</label>
-                            <input type="datetime-local" class="form-control" id="editActivtyEndDate" disabled>
+                            <label for="editModuleDescription" class="form-label h5">Description</label>
+                            <div class="input-group has-validation">
+                                <textarea class="form-control req" id="editModuleDescription" rows="3">@Model.Description</textarea>
+                                <div id="validationModuleDescription" class="invalid-feedback">
+                                    Please provide a description for the module.
+                                </div>
+                            </div>
                         </div>
                         <hr />
                         <div class="d-flex px-3 justify-content-between">
-                            <button type="button" id="submitEditActivityBtn" class="btn btn-primary">Save</button>
-                            <button type="button" class="btn btn-danger cancelBtn">Cancel</button>
+                            <button type="button" id="submitEditModuleBtn" class="btn btn-lg btn-primary">Save</button>
+                            <button type="button" class="btn btn-lg btn-danger cancelBtn">Cancel</button>
                         </div>
                     </form>
                 </div>
@@ -191,8 +232,8 @@
                         </div>
                         <hr />
                         <div class="d-flex px-3 justify-content-between">
-                            <button type="button" id="submitEditActivityBtn" class="btn btn-primary">Save</button>
-                            <button type="button" class="btn btn-danger cancelBtn">Cancel</button>
+                            <button type="button" id="submitAddActivityBtn" class="btn btn-lg btn-primary">Save</button>
+                            <button type="button" class="btn btn-lg btn-danger cancelBtn">Cancel</button>
                         </div>
                     </form>
                 </div>
@@ -203,6 +244,10 @@
         </div>
     </div>
 </div>
+
+@Html.Hidden("UpdateModuleUrl", Url.Action("UpdateModule", "Modules"))
+@Html.Hidden("UpdateActivityUrl", Url.Action("UpdateActivity", "Activities"))
+@Html.Hidden("LastActivityEndTime", lastActivityEndDateTime);
 
 <vc:delete></vc:delete>
 
