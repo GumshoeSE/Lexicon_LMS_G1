@@ -9,6 +9,7 @@ namespace Lexicon_LMS_G1.Automapper
         public ActivitiesProfile()
         {
             CreateMap<ActivityUpdateDto, Activity>();
+            CreateMap<ActivityCreateDto, Activity>();
         }
     }
 }

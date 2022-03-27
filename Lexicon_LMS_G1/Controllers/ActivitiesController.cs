@@ -12,6 +12,8 @@ using Lexicon_LMS_G1.Data.Repositores;
 using System.Text.Json;
 using Lexicon_LMS_G1.Entities.Dtos;
 using AutoMapper;
+using Lexicon_LMS_G1.Entities.Helpers;
+using System.Net;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -19,12 +21,15 @@ namespace Lexicon_LMS_G1.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IBaseRepository<Activity> _repo;
+        private readonly IBaseRepository<Module> _baseModuleRepo;
         private readonly IMapper _mapper;
 
-        public ActivitiesController(ApplicationDbContext context, IBaseRepository<Activity> repo, IMapper mapper)
+        public ActivitiesController(ApplicationDbContext context, IBaseRepository<Activity> repo,
+            IBaseRepository<Module> baseModuleRepo, IMapper mapper)
         {
             _context = context;
             _repo = repo;
+            _baseModuleRepo = baseModuleRepo;
             _mapper = mapper;
         }
 
@@ -177,10 +182,79 @@ namespace Lexicon_LMS_G1.Controllers
                 _repo.Update(activity);
                 await _repo.SaveChangesAsync();
 
+                TempData["message"] = "Activity successfully updated!";
                 return Json(new { redirectToUrl = Url.Action("Details", "Modules", new { id = activity.ModuleId }) });
             }
 
             return Json(false);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> PutActivity([FromBody] ActivityCreateDto dto)
+        {
+            var activity = _mapper.Map<Activity>(dto);
+            var module = await _baseModuleRepo.GetByIdWithIncludedAsync(m => m.Activities, m => m.Id == activity.ModuleId);
+
+
+            if (activity.StartDate.Ticks < module.StartTime.Ticks)
+            {
+                ModelState.AddModelError("StartDate", $"The activity can not start before the module starts ({module.StartTime}).");
+            }
+            else if (activity.StartDate.Ticks > module.EndTime.Ticks)
+            {
+                ModelState.AddModelError("StartDate", $"The activity can not start after the module ends ({module.EndTime}).");
+            }
+
+            if (activity.EndDate.Ticks < module.StartTime.Ticks)
+            {
+                ModelState.AddModelError("EndDate", $"The activity can not end before the module starts ({module.StartTime}).");
+            }
+            else if (activity.EndDate.Ticks > module.EndTime.Ticks)
+            {
+                ModelState.AddModelError("EndDate", $"The activity can not end after the module ends ({module.EndTime}).");
+            }
+
+            if (activity.StartDate.Ticks >= activity.EndDate.Ticks)
+            {
+                ModelState.AddModelError("EndDate", $"The activity has to start before it ends.");
+                ModelState.AddModelError("StartDate", $"The activity has to start before it ends.");
+            }
+
+            var (isOverlap, conMod) = DateTimeChecker.IsOverlappingWithList(activity.StartDate, activity.EndDate, module.Activities);
+
+            if (isOverlap)
+            {
+                ModelState.AddModelError("EndDate", $"Duration is overlapping with another activity '{conMod.Name}'");
+                ModelState.AddModelError("StartDate", $"Duration is overlapping with another activity '{conMod.Name}'");
+            }
+
+            if (ModelState.IsValid)
+            {
+                _repo.Add(activity);
+                await _repo.SaveChangesAsync();
+
+                TempData["message"] = "Activity successfully added!";
+
+                return Json(new {
+                    success = true,
+                    redirectToUrl = Url.Action("Details", "Modules", new { id = activity.ModuleId }) });
+            }
+
+            var modelErrors = new List<object>();
+
+            foreach (var modelStateKey in ViewData.ModelState.Keys)
+            {
+                var value = ViewData.ModelState[modelStateKey];
+                foreach (var error in value.Errors)
+                {
+                    modelErrors.Add(new { key = modelStateKey, message = error.ErrorMessage });
+                }
+            }
+
+            return Json(new {
+                success = false,
+                errors = modelErrors
+            });
         }
 
         private bool ActivityExists(int id)

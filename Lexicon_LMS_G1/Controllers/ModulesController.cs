@@ -57,6 +57,8 @@ namespace Lexicon_LMS_G1.Controllers
                 return NotFound();
             }
 
+            module.Activities = module.Activities.OrderBy(a => a.StartDate).ToList();
+
             var viewModel = _mapper.Map<ModuleDetailsViewModel>(module);
 
             return View(viewModel);
@@ -241,6 +243,7 @@ namespace Lexicon_LMS_G1.Controllers
                 _baseModuleRepo.Update(module);
                 await _baseModuleRepo.SaveChangesAsync();
 
+                TempData["message"] = "Module successfully updated!";
                 return Json(new { redirectToUrl = Url.Action("Details", "Modules", new { id = module.Id }) });
             }
 
