@@ -3,27 +3,27 @@
 @inject ICourseSelectListService courseListService
 
 <div class="container">
-    <h1 class="text-center col-md-4 offset-4 text-wrap">Add New User</h1>
+    <h1 class="text-center col-md-4 offset-4 text-wrap" id="newStudent">Add New User</h1>
     <div class="row">
         <div class="col-md-4 offset-4">
             <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                <h3>Please select what kind of user.</h3>
+                <h3 id="user">Please select what kind of user.</h3>
                 <hr />
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="teacherRadioBtn" >
-                  <label class="form-check-label" for="teacherRadioBtn">
-                    Teacher
-                  </label>
+                <div class="form-check" id="teacher">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="teacherRadioBtn">
+                    <label class="form-check-label" for="teacherRadioBtn">
+                        Teacher
+                    </label>
                 </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="flexRadioDefault" id="studentRadioBtn" checked >
-                  <label class="form-check-label" for="studentRadioBtn">
-                    Student
-                  </label>
+                <div class="form-check" id="student">
+                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="studentRadioBtn" checked>
+                    <label class="form-check-label" for="studentRadioBtn">
+                        Student
+                    </label>
                 </div>
                 <div id="hiddenForm">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                    <input type="hidden" asp-for="Input.Role" value="Student" id="userRole"/>
+                    <input type="hidden" asp-for="Input.Role" value="Student" id="userRole" />
                     <div class="form-floating mt-3">
                         <input asp-for="Input.FirstName" class="form-control" autocomplete="firstname" aria-required="true" />
                         <label asp-for="Input.FirstName"></label>
@@ -40,8 +40,8 @@
                         <span asp-validation-for="Input.Email" class="text-danger"></span>
                     </div>
                     <div class="form-floating mb-3" id="courseSelect">
-                        <select class="form-select inputField" name="Input.CourseId"
-                            asp-items="@await courseListService.GetSelectListAsync()">
+                        <select class="form-select inputField courseId" name="Input.CourseId"
+                                asp-items="@await courseListService.GetSelectListAsync()">
                             <option selected="selected" value="">Select a course</option>
                         </select>
                         <label asp-for="Input.CourseId"></label>
@@ -58,26 +58,51 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+<partial name="_ValidationScriptsPartial" />
 
-    <script>
-        $(document).ready(function () {
-            $("input[type='radio']").on("change", function(){
-                radioBtnChanged(this);
-            });
+<script>
+    $(document).ready(function () {
+        GetCourseIdFromQuery();
+        removeDisable();
+        $("input[type='radio']").on("change", function(){
+            radioBtnChanged(this);
+
         });
+    });
 
-        function radioBtnChanged(e) {
-            $("#hiddenForm").removeClass("hidden");
-        
-            if (e.id == "teacherRadioBtn") {
-                $("#userRole").val("Teacher");
-                $("#courseSelect").addClass("hidden");
-            }
-            else if (e.id == "studentRadioBtn") {
-                $("#userRole").val("Student");
-                $("#courseSelect").removeClass("hidden");
-            }
+    function radioBtnChanged(e) {
+        $("#hiddenForm").removeClass("hidden");
+
+        if (e.id == "teacherRadioBtn") {
+            $("#userRole").val("Teacher");
+            $("#courseSelect").addClass("hidden");
         }
-    </script>
+        else if (e.id == "studentRadioBtn") {
+            $("#userRole").val("Student");
+            $("#courseSelect").removeClass("hidden");
+        }
+    }
+    function GetCourseIdFromQuery() {
+        let querystring = window.location.search;
+        let urlParams = new URLSearchParams(querystring);
+        let id = urlParams.get('id');
+        if(id != null){
+            $('.courseId').prop('disabled', true);
+            $('.courseId').addClass('valid');
+            $('.courseId').val(id);
+            $('.courseId').removeClass('form-select');
+            $('.courseId').addClass('form-control');
+            $('#teacher').addClass('d-none');
+            $('#user').addClass('d-none');
+            let text = document.getElementById('newStudent')
+            text.innerText = "Add New Student"
+            $('#student').addClass('d-none');
+        }
+    }
+    function removeDisable(){
+    $('#registerForm').submit(function(){
+       $('.courseId').prop('disabled', false);
+    })
+    }
+</script>
 }

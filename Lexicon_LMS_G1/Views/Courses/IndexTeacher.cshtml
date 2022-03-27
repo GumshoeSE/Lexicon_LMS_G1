@@ -30,11 +30,14 @@
                         <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)" class="accordion-collapse collapse" aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)" data-bs-parent="#courseAccordion">
                             <div class="accordion-body p-0 pt-3">
                                 <div class="row">
-                                    <div class="col ms-3"><h5 class="mb-1">Course Start:</h5><p>@item.StartTime.ToString("yy/MM/dd hh:mm")</p></div>
+                                    <div class="col ms-3"><h5 class="">Course Start:</h5><p class="mb-1">@item.StartTime.ToString("yy/MM/dd hh:mm")</p></div>
                                     <div class="col offset-2 text-end me-3"><strong>Number of attendees:</strong><br>@item.AttendingStudents.Count</div>
                                 </div>
                                 <div class="px-3">
-                                    <h5>Course description:</h5>
+                                    <div class ="row">
+                                    <h5 class ="col align-self-end">Course description:</h5>
+                                    <a asp-area="Identity" asp-page="/Account/Register" asp-route-id="@item.Id" class="col-4 mb-3 btn btn-primary addSTC">Add student to course</a>
+                                    </div>
                                     <p>@Html.DisplayFor(modelItem => item.Description)</p>
                                 </div>
                                 <hr class="mb-0" />
@@ -68,6 +71,7 @@
                                     <div class="text-end col">
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
                                         @*<button type="button" data-ref="@item.Id" data-name="@item.Name" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#delete" disabled>Delete</button>*@
+
                                     </div>
                                 </div>
                             </div>
@@ -103,7 +107,6 @@
             </div>
         </div>
         <div id="activitiesList" class="col-5 offset-1 d-none">
-
         </div>
     </div>
 </div>

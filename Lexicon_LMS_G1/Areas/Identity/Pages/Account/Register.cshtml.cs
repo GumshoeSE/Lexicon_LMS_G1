@@ -68,6 +68,7 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
         {
             [Required]
             public string Role { get; set; }
+
             [Required]
             [StringLength(15, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             [Display(Name = "First Name")]
@@ -92,8 +93,9 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
         }
 
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public async Task OnGetAsync(int? id, string returnUrl = null)
         {
+            var id1 = id;
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
