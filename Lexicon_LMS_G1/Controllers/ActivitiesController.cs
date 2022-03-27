@@ -10,16 +10,19 @@ using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Entities.Paging;
 using Lexicon_LMS_G1.Entities.ViewModels;
+using AutoMapper;
 
 namespace Lexicon_LMS_G1.Controllers
 {
     public class ActivitiesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IMapper _mapper;
 
-        public ActivitiesController(ApplicationDbContext context)
+        public ActivitiesController(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         // GET: Activities
@@ -160,44 +163,47 @@ namespace Lexicon_LMS_G1.Controllers
             return _context.Activities.Any(e => e.Id == id);
         }
 
-        public async Task<IActionResult> GetActionsForCourse(int courseId, int? pageIndex, string activityType)
+        public async Task<IActionResult> GetActionsForCourse(int courseId, int? pageIndex, string activityType, bool showHistory)
         {
             var paging = new ActivitiesPagingParams()
             {
                 PageIndex = pageIndex ?? 1
             };
-
+            Course course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
             var modules = _context.Modules.Where(m => m.CourseId == courseId).ToList();
             List<ActivityTeacherViewModel> activites = new List<ActivityTeacherViewModel>();
             foreach (var module in modules)
             {
-                var moduleactivities = _context.Activities.Include(a => a.ActivityType).Where(a => a.ModuleId == module.Id).OrderBy(a => a.StartDate).ToList();
-                var viewmodel = moduleactivities.Select(a => new ActivityTeacherViewModel
-                {
-                    Id = a.Id,
-                    Name = a.Name,
-                    StartDate = a.StartDate,
-                    EndDate = a.EndDate,
-                    ModuleId = a.ModuleId,
-                    ActivityType = a.ActivityType,
-                    Module = a.Module,
-                    ActivityTypeId = a.ActivityTypeId,
-                    Description = a.Description
-                });
-                if(activityType != null)
+                var moduleactivities = _context.Activities.Include(a => a.ActivityType).Where(a => a.ModuleId == module.Id).OrderBy(a => a.StartDate);
+                var viewModel = _mapper.ProjectTo<ActivityTeacherViewModel>(moduleactivities);
+                
+                if (activityType != null)
                 {
                     if(activityType != "all")
-                    viewmodel = viewmodel.Where(a => a.ActivityType.Name == activityType);
+                    viewModel = viewModel.Where(a => a.ActivityType.Name == activityType);
                 }
-                foreach (var activity in viewmodel)
+                if (showHistory)
+                {
+                    viewModel = viewModel.Where(a => a.EndDate < DateTime.Now);
+                }
+                else 
+                {
+                    viewModel = viewModel.Where(a => a.EndDate >= DateTime.Now);
+                }
+                foreach (var activity in viewModel)
                 {
                     
                     activites.Add(activity);
                 }
             }
+            int count = activites.Count();
             ViewData["activityType"] = _context.ActivitiesTypes.ToList();
 
-            return PartialView("CourseActivitiesPartialView", await PaginatedList<ActivityTeacherViewModel>.CreateAsync(activites.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize, courseId));
+            return PartialView("CourseActivitiesPartialView", await PaginatedList<ActivityTeacherViewModel>.CreateAsync(activites.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize, count, course));
         }
+
+       
+
     }
+   
 }
