@@ -23,6 +23,7 @@ builder.Services.AddTransient<ICourseSelectListService, CourseSelectListService>
 
 builder.Services.AddAutoMapper(typeof(CourseProfile));
 builder.Services.AddAutoMapper(typeof(ModuleProfile));
+builder.Services.AddAutoMapper(typeof(ActivityProfile));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
