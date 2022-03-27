@@ -3,6 +3,13 @@
 
 @{
     var lastActivityEndDateTime = (Model.Activities.Count() > 0) ? Model.Activities.Last().EndDate : Model.StartTime;
+
+    var timespan = Model.EndTime - Model.StartTime;
+    foreach(var activity in Model.Activities)
+    {
+        timespan -= (activity.EndDate - activity.StartDate);
+    }
+    var moduleIsFull = (timespan == TimeSpan.Zero) ? "disabled" : "";
 }
 
 <h1 class="text-center mb-4">Module '@Model.Name'</h1>
@@ -14,7 +21,11 @@
                 <div class="row">
                     <h2 class="text-center col-md-4 offset-md-4">Activities</h2>
                     <div class="col-md-4 align-content-center text-end">
-                        <button type="button" id="addActivityBtn" class="btn btn-outline-primary"> Add </button>
+                        <span data-toggle="tooltip" title="The module can't fit more activities">
+                            <button type="button" id="addActivityBtn" class="btn btn-outline-primary" @moduleIsFull> 
+                                Add 
+                            </button>
+                        </span>
                     </div>
                 </div>
                 <div class="accordion mt-2" id="courseAccordion">
@@ -295,4 +306,12 @@
 
 @section Scripts {
     <script src="~/js/module-details.js"></script>
+    
+    @if (timespan == TimeSpan.Zero){
+        <script>
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+        </script>
+    }
 }
