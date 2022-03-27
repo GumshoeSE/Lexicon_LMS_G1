@@ -8,7 +8,9 @@ namespace Lexicon_LMS_G1.Automapper
     {
         public UserProfile()
         {
-            CreateMap<ApplicationUser, UserViewModel>().ReverseMap();
+            CreateMap<ApplicationUser, UserViewModel>()
+                .ForPath(dest=>dest.CourseName, opt=>opt.MapFrom(src=>src.Course.Name));
+            
         }
     }
 }

@@ -9,10 +9,17 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
 {
     public class UsersViewModel
     {
+        [Display(Name = "Name")]
         public string Name { get; } = "Name";
+
+        [Display(Name = "Email address")]
         public string Email { get; } = "Email";
+
+        [Display(Name = "Course id")]
         public string CourseId { get; } = "Course Id";
 
+        [Display(Name = "Attending course")]
+        public string CourseName { get; } = "Course";
 
         public int CurrentPageIndex { get; set; }
         public int TotalCount { get; set; }
