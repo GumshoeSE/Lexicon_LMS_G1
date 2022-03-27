@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Lexicon_LMS_G1.Data.Repositores;
+using Lexicon_LMS_G1.Validation;
 
 namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
 {
@@ -66,6 +67,8 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            public string Role { get; set; }
+            [Required]
             [StringLength(15, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             [Display(Name = "First Name")]
             public string FirstName { get; set; }
@@ -75,7 +78,8 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
 
-            [Display(Name = "Course (Optional)")]
+            [StudentCourse]
+            [Display(Name = "Course")]
             public string CourseId { get; set; }
 
             [Required]
@@ -83,8 +87,7 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            [Required]
-            public string Role { get; set; }
+            
 
         }
 

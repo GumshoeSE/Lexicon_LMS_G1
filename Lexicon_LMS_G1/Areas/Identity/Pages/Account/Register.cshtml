@@ -42,9 +42,10 @@
                     <div class="form-floating mb-3" id="courseSelect">
                         <select class="form-select inputField" name="Input.CourseId"
                             asp-items="@await courseListService.GetSelectListAsync()">
-                            <option selected="selected" value="">None</option>
+                            <option selected="selected" value="">Select a course</option>
                         </select>
                         <label asp-for="Input.CourseId"></label>
+                        <span asp-validation-for="Input.CourseId" class="text-danger"></span>
                     </div>
                     <div>
                         <a asp-controller="Courses" asp-action="IndexTeacher" class="btn btn-lg btn-danger float-start">Cancel</a>
