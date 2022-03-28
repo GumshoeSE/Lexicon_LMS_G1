@@ -9,6 +9,8 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
 {
     public class UserViewModel
     {
+        public Guid Id { get; set; }
+
         [Display(Name = "First name")]
         public string FirstName { get; set; } = string.Empty;
 

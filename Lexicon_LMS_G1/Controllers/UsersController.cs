@@ -54,9 +54,8 @@ namespace Lexicon_LMS_G1.Controllers
                     (s.UserName.Contains(searchQuery) ||
                     s.LastName.Contains(searchQuery) ||
                     s.FirstName.Contains(searchQuery) ||
-                    s.Email.Contains(searchQuery)
-                //|| s.Course?.Name.Contains(searchQuery) 
-                || (s.Course != null) && s.Course.Name.Contains(searchQuery)
+                    s.Email.Contains(searchQuery) ||
+                    (s.Course != null) && s.Course.Name.Contains(searchQuery)
                 ));
             }
 

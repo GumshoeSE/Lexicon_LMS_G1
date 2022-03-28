@@ -13,7 +13,8 @@
     }
 
     <div class="row mt-3">
-        <div id="usersList" class="col-6 border border-3 rounded">
+        @*<div id="usersList" class="col-6 border border-3 rounded">*@
+        <div id="usersList" class="col-12 border border-3 rounded">
             <div class="row p-2">
                 <h2 class="text-center col-md-4 offset-md-4">Users</h2>
                 <div class="col-md-4 align-content-center text-end">
@@ -24,7 +25,7 @@
                 <div class="col-md-12">
                     <form asp-action="Index">
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        @*                        <div class="form-group">
+                        @* <div class="form-group">
                             <label asp-for="SearchQuery" class="control-label"></label>
                             <input asp-for="SearchQuery" class="form-control" />
                             <span asp-validation-for="SearchQuery" class="text-danger"></span>
@@ -53,9 +54,6 @@
                         <th>
                             @Html.DisplayNameFor(model => model.Email)
                         </th>
-                        @*<th>
-                            @Html.DisplayNameFor(model => model.CourseId)
-                        </th>*@
                         <th>
                             @Html.DisplayNameFor(model => model.CourseName)
                         </th>
@@ -72,16 +70,15 @@
                             <td>
                                 @Html.DisplayFor(modelItem => item.Email)
                             </td>
-                            @*<td>
-                                @Html.DisplayFor(modelItem => item.CourseId)
-                            </td>*@
                             <td>
                                 @Html.DisplayFor(modelItem => item.CourseName)
                             </td>
                             <td>
-                                @*                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
+                                @*<a asp-action="Edit" asp-route-id="@item.Id">Edit</a> *@
+                                @*<span>|</span>*@
+                                @* <a asp-action="Details" asp-route-id="@item.Id">Details</a> *@
+                                @*<span>|</span>*@
+                                @*<a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
                             </td>
                         </tr>
                     }
