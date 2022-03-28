@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Lexicon_LMS_G1.Data.Migrations
 {
-    public partial class ReInit : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -299,14 +299,12 @@ namespace Lexicon_LMS_G1.Data.Migrations
                         name: "FK_UserFinishedActivity_Activities_ActivityId",
                         column: x => x.ActivityId,
                         principalTable: "Activities",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_UserFinishedActivity_AspNetUsers_ApplicationUserId",
                         column: x => x.ApplicationUserId,
                         principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(

@@ -180,8 +180,10 @@ namespace Lexicon_LMS_G1.Controllers
                 return NotFound();
             }
 
-            var course = repo.GetById(deleteId);
-            //var course = await _context.Courses.FindAsync(id);
+            var course = await _context.Courses
+                .Include(c => c.AttendingStudents)
+                .ThenInclude(s => s.FinishedActivities)
+                .FirstOrDefaultAsync(c => c.Id == deleteId);
 
             if (repo.Delete(deleteId))
             {
