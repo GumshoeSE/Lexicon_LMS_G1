@@ -78,6 +78,7 @@ namespace Lexicon_LMS_G1.Controllers
             }
 
             var course = await _context.Courses
+                .Include(c => c.Documents)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (course == null)
             {
@@ -184,6 +185,36 @@ namespace Lexicon_LMS_G1.Controllers
                 try
                 {
                     courseRepo.Update(course);
+
+                    if (viewModel.Document != null)
+                    {
+                        string file;
+
+                        do
+                        {
+                            file = $"{GlobalStatics.SaveDocumentCourse}{Path.DirectorySeparatorChar}{Path.GetRandomFileName()}";
+                        }
+                        while (System.IO.File.Exists(file));
+
+                        var doc = new CourseDocument()
+                        {
+                            Name = viewModel.Document.FileName,
+                            FileType = viewModel.Document.ContentType,
+                            Description = viewModel.DocumentDescription,
+                            CreatedOn = DateTime.Now,
+                            FilePath = file,
+                            Course = course,
+                            UserId = userManager.GetUserId(User)
+                        };
+
+                        using (var stream = System.IO.File.Create(file))
+                        {
+                            await viewModel.Document.CopyToAsync(stream);
+                        }
+                        _context.Add(doc);
+
+                        course.Documents.Add(doc);
+                    }
 
                     await repo.SaveChangesAsync();
                 }

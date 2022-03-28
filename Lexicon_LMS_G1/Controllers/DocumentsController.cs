@@ -59,6 +59,7 @@ namespace Lexicon_LMS_G1.Controllers
             return StatusCode(500, $"{typeof(Q).Name} is unavailable to upload for.");
         }
 
+        // BEGIN Upload Methods
         [HttpPost]
         public async Task<IActionResult> UploadCourseDocument(IFormFile document, int courseId, string description)
         {
@@ -143,11 +144,13 @@ namespace Lexicon_LMS_G1.Controllers
 
             return UploadDocumentReturnTo();
         }
-
+        // BEGIN Save Files
+        // END Upload Methods
         private IActionResult UploadDocumentReturnTo()
         {
             return Ok();
         }
+        // END Save Files
 
         private async Task<string> SaveFileGetPath(IFormFile file, string folder = "default")
         {
@@ -174,5 +177,40 @@ namespace Lexicon_LMS_G1.Controllers
             return whereToSave;
         }
 
+        // BEGIN Download Methods
+        [HttpGet("download")]
+        public async Task<IActionResult> DownloadCourse(int id)
+        {
+            return await DownloadGenericDocument<CourseDocument>(id);
+        }
+
+        [HttpGet("download")]
+        public async Task<IActionResult> DownloadModule(int id)
+        {
+            return await DownloadGenericDocument<ModuleDocument>(id);
+        }
+
+        [HttpGet("download")]
+        public async Task<IActionResult> DownloadActivity(int id)
+        {
+            return await DownloadGenericDocument<ActivityDocument>(id);
+        }
+
+        [HttpGet("download")]
+        public async Task<IActionResult> DownloadStudent(int id)
+        {
+            return await DownloadGenericDocument<StudentDocument>(id);
+        }
+
+        private async Task<IActionResult> DownloadGenericDocument<T>(int id) where T : BaseDocument
+        {
+            T doc = await _context.Set<T>().FindAsync(id);
+
+            if (doc == null)
+                return NotFound();
+
+            return File(System.IO.File.ReadAllBytes(doc.FilePath), doc.FileType, doc.Name);
+        }
+        //END Download Methods
     }
 }
