@@ -17,9 +17,13 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddSingleton<IBorderColorService, BorderColorService>();
 
 builder.Services.AddTransient<ICourseRepository, CourseRepository>();
+builder.Services.AddTransient<IModuleRepository, ModuleRepository>();
 builder.Services.AddTransient<IBaseRepository<Course>, CourseRepository>();
 builder.Services.AddTransient<IBaseRepository<Module>, ModuleRepository>();
+builder.Services.AddTransient<IBaseRepository<Activity>, ActivityRepository>();
+builder.Services.AddTransient<IBaseRepository<ActivityType>, ActivityTypeRepository>();
 builder.Services.AddTransient<ICourseSelectListService, CourseSelectListService>();
+builder.Services.AddTransient<IActivityTypeSelectListService, ActivityTypeSelectListService>();
 
 builder.Services.AddAutoMapper(typeof(CourseProfile));
 builder.Services.AddAutoMapper(typeof(ModuleProfile));

@@ -51,7 +51,17 @@
                                     @foreach (var module in item.Modules)
                                     {
                                         <div class="row bg-light py-3 mx-0">
-                                            <div class="col-12"><strong>Module @num:</strong> @Html.DisplayFor(m => module.Name)</div>
+                                            <div class="col-12 d-flex justify-content-between">
+                                                <div>
+                                                    <strong>Module @num:</strong> @Html.DisplayFor(m => module.Name)
+                                                </div>
+                                                <a asp-controller="Modules"
+                                                    asp-action="Details"
+                                                    asp-route-id="@module.Id"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                    Details
+                                                </a>
+                                            </div>
                                             <div class="col ">
                                                 <strong>Duration:</strong> @module.StartTime.ToString("yy/MM/dd")
                                                 <strong>-</strong> @module.EndTime.ToString("yy/MM/dd")
