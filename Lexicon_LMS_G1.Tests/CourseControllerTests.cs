@@ -29,7 +29,7 @@ namespace Lexicon_LMS_G1.Tests
         private static IBaseRepository<Course> baseRepository;
         private Mock<UserManager<ApplicationUser>> mockUserManager;
         private CoursesController controller;
-        private IMapper mapper;
+        private static IMapper mapper;
 
         [ClassInitialize]
         public static void ClassSetUp(TestContext testContext)
@@ -37,8 +37,14 @@ namespace Lexicon_LMS_G1.Tests
             testContext.WriteLine(testContext.TestName);
             testContext.WriteLine("CoursControllerTests starts");
 
+            mapper = new Mapper(new MapperConfiguration(mcf =>
+            {
+                mcf.AddProfile<CourseProfile>();
+            }));
+
             context = CreateContext();
             courseRepository = null;
+
 
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
@@ -78,10 +84,7 @@ namespace Lexicon_LMS_G1.Tests
             mockUserManager = new Mock<UserManager<ApplicationUser>>(mockUserStore.Object, null, null, null, null, null, null, null, null);
             courseRepository = new CourseRepository(context);
             baseRepository = new CourseRepository(context);
-            mapper = new Mapper(new MapperConfiguration(mcf =>
-            {
-                mcf.AddProfile<CourseProfile>();
-            }) )
+            
 
             controller = new CoursesController(context, courseRepository, mapper, baseRepository, null);
         }
