@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Http;
+using System.ComponentModel.DataAnnotations;
 
 namespace Lexicon_LMS_G1.Entities.ViewModels
 {
@@ -15,6 +16,9 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
         [Display(Name = "Start Time")]
         public DateTime StartTime { get; set; }
 
+        public IFormFile? Document { get; set; }
 
+        [Display(Name = "Description")]
+        public string? DocumentDescription { get; set; }
     }
 }

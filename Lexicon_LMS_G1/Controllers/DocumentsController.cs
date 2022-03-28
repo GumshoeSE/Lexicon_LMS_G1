@@ -10,12 +10,13 @@ using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Entities.ViewModels;
 using Microsoft.AspNetCore.Identity;
+using Lexicon_LMS_G1.Entities;
 
 namespace Lexicon_LMS_G1.Controllers
 {
     public class DocumentsController : Controller
     {
-        private readonly string documentBasePath = "root";
+        private readonly string documentBasePath = GlobalStatics.SaveDocumentBase;
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> userManager;
 

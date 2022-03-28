@@ -2,6 +2,7 @@
 using AutoMapper;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Data.Repositores;
+using Lexicon_LMS_G1.Entities;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Entities.Paging;
 using Lexicon_LMS_G1.Entities.ViewModels;
@@ -104,7 +105,40 @@ namespace Lexicon_LMS_G1.Controllers
             if (ModelState.IsValid)
             {
                 var course = _mapper.Map<Course>(viewModel);
+                
+
+                if(viewModel.Document != null)
+                {
+                    string file;
+
+                    do
+                    {
+                        file = $"{GlobalStatics.SaveDocumentCourse}{Path.DirectorySeparatorChar}{Path.GetRandomFileName()}";
+                    }
+                    while (System.IO.File.Exists(file));
+
+                    var doc = new CourseDocument()
+                    {
+                        Name = viewModel.Document.FileName,
+                        FileType = viewModel.Document.ContentType,
+                        Description = viewModel.DocumentDescription,
+                        CreatedOn = DateTime.Now,
+                        FilePath = file,
+                        Course = course,
+                        UserId = userManager.GetUserId(User)
+                    };
+
+                    using (var stream = System.IO.File.Create(file))
+                    {
+                        await viewModel.Document.CopyToAsync(stream);
+                    }
+                    _context.Add(doc);
+
+                    course.Documents.Add(doc);
+                }
+
                 repo.Add(course);
+
                 await repo.SaveChangesAsync();
 
                 TempData["message"] = "Course successfully added!";
