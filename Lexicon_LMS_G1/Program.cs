@@ -14,6 +14,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+builder.Services.AddSingleton<IBorderColorService, BorderColorService>();
+
 builder.Services.AddTransient<ICourseRepository, CourseRepository>();
 builder.Services.AddTransient<IModuleRepository, ModuleRepository>();
 builder.Services.AddTransient<IBaseRepository<Course>, CourseRepository>();
@@ -25,6 +27,7 @@ builder.Services.AddTransient<IActivityTypeSelectListService, ActivityTypeSelect
 
 builder.Services.AddAutoMapper(typeof(CourseProfile));
 builder.Services.AddAutoMapper(typeof(ModuleProfile));
+builder.Services.AddAutoMapper(typeof(ActivityProfile));
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {

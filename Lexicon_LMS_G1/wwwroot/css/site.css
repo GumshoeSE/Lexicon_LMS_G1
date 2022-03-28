@@ -27,6 +27,12 @@ ul.timeline {
     max-height: 58vh
 }
 
+.test {
+    padding: 0em 0em 0.5em 0em;
+    position: sticky;
+    top: 30px
+}
+
 .rounded-xl {
     border-radius: .5rem !important;
 }

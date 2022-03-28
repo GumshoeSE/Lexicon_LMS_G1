@@ -14,6 +14,9 @@ using Lexicon_LMS_G1.Entities.Dtos;
 using AutoMapper;
 using Lexicon_LMS_G1.Entities.Helpers;
 using System.Net;
+using Lexicon_LMS_G1.Entities.Paging;
+using Lexicon_LMS_G1.Entities.ViewModels;
+using AutoMapper;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -261,5 +264,48 @@ namespace Lexicon_LMS_G1.Controllers
         {
             return _context.Activities.Any(e => e.Id == id);
         }
+
+        public async Task<IActionResult> GetActionsForCourse(int courseId, int? pageIndex, string activityType, bool showHistory)
+        {
+            var paging = new ActivitiesPagingParams()
+            {
+                PageIndex = pageIndex ?? 1
+            };
+            Course course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
+            var modules = _context.Modules.Where(m => m.CourseId == courseId).ToList();
+            List<ActivityTeacherViewModel> activites = new List<ActivityTeacherViewModel>();
+            foreach (var module in modules)
+            {
+                var moduleactivities = _context.Activities.Include(a => a.ActivityType).Where(a => a.ModuleId == module.Id).OrderBy(a => a.StartDate);
+                var viewModel = _mapper.ProjectTo<ActivityTeacherViewModel>(moduleactivities);
+                
+                if (activityType != null)
+                {
+                    if(activityType != "all")
+                    viewModel = viewModel.Where(a => a.ActivityType.Name == activityType);
+                }
+                if (showHistory)
+                {
+                    viewModel = viewModel.Where(a => a.EndDate < DateTime.Now);
+                }
+                else 
+                {
+                    viewModel = viewModel.Where(a => a.EndDate >= DateTime.Now);
+                }
+                foreach (var activity in viewModel)
+                {
+                    
+                    activites.Add(activity);
+                }
+            }
+            int count = activites.Count();
+            ViewData["activityType"] = _context.ActivitiesTypes.ToList();
+
+            return PartialView("CourseActivitiesPartialView", await PaginatedList<ActivityTeacherViewModel>.CreateAsync(activites.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize, count, course));
+        }
+
+       
+
     }
+   
 }
