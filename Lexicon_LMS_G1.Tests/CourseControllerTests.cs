@@ -1,8 +1,11 @@
 ﻿using AutoMapper;
+using Lexicon_LMS_G1.Automapper;
 using Lexicon_LMS_G1.Controllers;
 using Lexicon_LMS_G1.Data.Data;
 using Lexicon_LMS_G1.Data.Repositores;
 using Lexicon_LMS_G1.Entities.Entities;
+using Lexicon_LMS_G1.Entities.Paging;
+using Lexicon_LMS_G1.Entities.ViewModels;
 using Lexicon_LMS_G1.Tests.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +25,8 @@ namespace Lexicon_LMS_G1.Tests
     {
         public TestContext? TestContext { get; set; }
         private static ApplicationDbContext context;
-        private static ICourseRepository repository;
+        private static ICourseRepository courseRepository;
+        private static IBaseRepository<Course> baseRepository;
         private Mock<UserManager<ApplicationUser>> mockUserManager;
         private CoursesController controller;
         private IMapper mapper;
@@ -34,7 +38,7 @@ namespace Lexicon_LMS_G1.Tests
             testContext.WriteLine("CoursControllerTests starts");
 
             context = CreateContext();
-            repository = null;
+            courseRepository = null;
 
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
@@ -72,94 +76,98 @@ namespace Lexicon_LMS_G1.Tests
 
             var mockUserStore = new Mock<IUserStore<ApplicationUser>>();
             mockUserManager = new Mock<UserManager<ApplicationUser>>(mockUserStore.Object, null, null, null, null, null, null, null, null);
+            courseRepository = new CourseRepository(context);
+            baseRepository = new CourseRepository(context);
+            mapper = new Mapper(new MapperConfiguration(mcf =>
+            {
+                mcf.AddProfile<CourseProfile>();
+            }) )
 
-            controller = new CoursesController(context, repository, mapper, null,null);
+            controller = new CoursesController(context, courseRepository, mapper, baseRepository, null);
         }
 
 
 
         [TestMethod]
-        public async Task MyTestMethodAsync()
+        public async Task Index_AuthorizedTeacher_ShouldReturnPaginatedListCourseViewModel()
         {
             TestContext.WriteLine($"{TestContext.TestName} starts");
-            controller.SetUserIsAutenticated(true);
-            var result = await controller.Index();
+            controller.SetUserIsAutenticatedWithRole(true, "Teacher", true);
+
+            var result = (ViewResult)await controller.IndexTeacher(1);
 
             Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(ViewResult));
+            Assert.IsInstanceOfType(result.Model, typeof(PaginatedList<CourseViewModel>));
             Assert.AreEqual(typeof(ViewResult), result.GetType());
-            
-            var test = result as ViewResult;
-            var t = test.ViewName;
 
-            Assert.AreEqual(typeof( List<Course>), test?.Model?.GetType());
+            var test = result;
 
-            List<Course> list = (List<Course>)(test.Model);
+            Assert.AreEqual(typeof(PaginatedList<CourseViewModel>), test?.Model?.GetType());
+
+            PaginatedList<CourseViewModel> list = (PaginatedList<CourseViewModel>)(test.Model);
 
             Assert.IsNotNull(list);
             Assert.AreEqual("Course 1", list[0].Name);
             Assert.AreEqual("Course 2", list[1].Name);
-            
+            Assert.AreEqual("Modul 1", list[1].Modules.First().Name);
         }
 
 
 
         [TestMethod]
-        public async Task MyTestMethodAsync3()
+        public async Task Create_IsAuthorisedTeacher_ShouldReturnViewModel()
         {
             TestContext.WriteLine($"{TestContext.TestName} starts");
-            controller.SetUserIsAutenticated(true);
+            controller.SetUserIsAutenticatedWithRole(true, "Teacher", true);
 
-            mockUserManager.Setup(mgr => mgr.IsInRoleAsync(It.IsAny<ApplicationUser>(), It.IsAny<string>())).ReturnsAsync(true);    
-
-            var result = await controller.Index();
+            var result = await controller.Create(new CourseCreateViewModel { Name = "Testcourse1", Description = "Hej hopp", StartTime = DateTime.Now});
 
             Assert.IsNotNull(result);
             Assert.IsInstanceOfType(result, typeof(ViewResult));
             Assert.AreEqual(typeof(ViewResult), result.GetType());
 
-            var test = result as ViewResult;
-            var t2 = test?.ViewData.Model;
+            //var test = result as ViewResult;
+            //var t2 = test?.ViewData.Model;
 
-            Assert.AreEqual("", test?.Model?.GetType());
-
-        }
-
-        [TestMethod]
-        public async Task MyTestMethodAsync4()
-        {
-            TestContext.WriteLine($"{TestContext.TestName} starts");
-            controller.SetUserIsAutenticated(true);
-            var result = await controller.Index();
-
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(ViewResult));
-            Assert.AreEqual(typeof(ViewResult), result.GetType());
-
-            var test = result as ViewResult;
-            var t2 = test.TempData;
-
-            Assert.AreEqual("", test?.Model?.GetType());     
-        }
-
-
-        [TestMethod]
-        public async Task MyTestMethodAsync2()
-        {
-            TestContext.WriteLine($"{TestContext.TestName} starts");
-            controller.SetUserIsAutenticated(true);
-            var result = await controller.IndexTeacher(1);
-
-            Assert.IsNotNull(result);
-            Assert.IsInstanceOfType(result, typeof(ViewResult));
-            Assert.AreEqual(typeof(ViewResult), result.GetType());
-
-            var test = result as ViewResult;
-            var t2 = test?.Model;
-
-            Assert.AreEqual("", test?.Model?.GetType());
+            //Assert.AreEqual("", test?.Model?.GetType());
 
         }
+
+        //[TestMethod]
+        //public async Task MyTestMethodAsync4()
+        //{
+        //    TestContext.WriteLine($"{TestContext.TestName} starts");
+        //    controller.SetUserIsAutenticated(true);
+        //    var result = await controller.Index();
+
+        //    Assert.IsNotNull(result);
+        //    Assert.IsInstanceOfType(result, typeof(ViewResult));
+        //    Assert.AreEqual(typeof(ViewResult), result.GetType());
+
+        //    var test = result as ViewResult;
+        //    var t2 = test.TempData;
+
+        //    Assert.AreEqual("", test?.Model?.GetType());     
+        //}
+
+
+        //[TestMethod]
+        //public async Task MyTestMethodAsync2()
+        //{
+        //    TestContext.WriteLine($"{TestContext.TestName} starts");
+        //    controller.SetUserIsAutenticated(true);
+        //    var result = await controller.IndexTeacher(1);
+
+        //    Assert.IsNotNull(result);
+        //    Assert.IsInstanceOfType(result, typeof(ViewResult));
+        //    Assert.AreEqual(typeof(ViewResult), result.GetType());
+
+        //    var test = result as ViewResult;
+        //    var t2 = test?.Model;
+
+        //    Assert.AreEqual("", test?.Model?.GetType());
+
+        //}
 
 
 

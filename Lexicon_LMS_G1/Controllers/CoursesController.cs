@@ -69,22 +69,22 @@ namespace Lexicon_LMS_G1.Controllers
 
 
         // GET: Courses/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //public async Task<IActionResult> Details(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var course = await _context.Courses
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (course == null)
-            {
-                return NotFound();
-            }
+        //    var course = await _context.Courses
+        //        .FirstOrDefaultAsync(m => m.Id == id);
+        //    if (course == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            return View(course);
-        }
+        //    return View(course);
+        //}
 
         // GET: Courses/Create
         [Authorize(Roles = "Teacher")]
