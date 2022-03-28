@@ -1,4 +1,6 @@
-﻿(() => {
+﻿//const { get } = require("jquery");
+
+(() => {
     setTimeout(function () {
         $('#message').fadeOut('slow');
 
@@ -123,19 +125,12 @@ $(document).ready(function () {
     $(".courseclick").click(function () {
         if ($(this).attr("aria-expanded") == "true") {
             activitiesForCourse.classList.remove("d-none");
-            let id = $(this).attr("data-courseid");
-            let params = [['courseId', id]];
-            let url = new URL('https://localhost:7124/Activities/GetActionsForCourse');
-            url.search = new URLSearchParams(params).toString();
-            fetch(url, {
-                method: 'GET'
-            })
-                .then(res => res.text())
-                .then(data => {
-                    activitiesForCourse.innerHTML = data;
-                    $(".pagingbutton").click(pagingClick);
-                    $(".atypes").change(typechoice);
-                });
+            $('html, body').animate({
+                scrollTop: $(this).offset().top
+            }, 500);
+          //  $('body').scrollTo(this);
+            let course = $(this).attr('data-courseId');
+            GetActivities(course, "all", false, 1);
         }
         else {
             activitiesForCourse.classList.add("d-none");
@@ -145,27 +140,35 @@ $(document).ready(function () {
 
 
 function pagingClick() {
-    let courseId = $(this).attr("data-courseId");
+    let course = $(this).attr("data-course");
     let pageIndex = $(this).attr("data-pageIndex");
-    let params = [['courseId', courseId], ['pageIndex', pageIndex]];
-    let url = new URL('https://localhost:7124/Activities/GetActionsForCourse');
-    url.search = new URLSearchParams(params).toString();
-    fetch(url, {
-        method: 'GET'
-    })
-        .then(res => res.text())
-        .then(data => {
-            activitiesForCourse.innerHTML = data;
-            $(".pagingbutton").click(pagingClick);
-            $(".atypes").change(typechoice);
-        });
+    let activityType = $('.atypes option:selected').val();
+    let history = $('#showHistory').is(':checked');
+    GetActivities(course, activityType, history, pageIndex);
 }
 
 function typechoice() {
-    let courseId = $(this).attr("data-courseId");
-    let pageIndex = $(this).attr("data-pageIndex");
+    let course = $(this).attr("data-course");
     let activityType = $('.atypes option:selected').val();
-    let params = [['courseId', courseId], ['pageIndex', pageIndex], ['activityType', activityType]];
+    let history = $(this).is(':checked');
+    GetActivities(course, activityType, history, 1);
+}
+
+
+function showHistory() {
+    let history = $(this).is(':checked');
+    let course = $(this).attr("data-course");
+    let activityType = $('.atypes option:selected').val();
+    GetActivities(course, activityType, history, 1);
+}
+function GetActivities(course, activityType, history, pageIndex) {
+    
+    let params = {
+        'courseId': course,
+        'activityType': activityType,
+        'showHistory': history,
+        'pageIndex': pageIndex
+    };
     let url = new URL('https://localhost:7124/Activities/GetActionsForCourse');
     url.search = new URLSearchParams(params).toString();
     fetch(url, {
@@ -174,7 +177,23 @@ function typechoice() {
         .then(res => res.text())
         .then(data => {
             activitiesForCourse.innerHTML = data;
+            if ($('.test').attr('data-count') == 0) {
+
+            
+            var noActiviteies = document.getElementById('empty');
+            if (history == false) {
+                noActiviteies.innerHTML = 'All activities has past for this course, click "View history" to se past activities';
+            }
+            else {
+                noActiviteies.innerHTML = "This course don't have any past activities";
+                }
+            }
+            $('.atypes').val(activityType);
             $(".pagingbutton").click(pagingClick);
             $(".atypes").change(typechoice);
+            $('#showHistory').prop('checked', history);
+            $('#showHistory').on('change', showHistory);
+
         });
 }
+
