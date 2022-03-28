@@ -32,6 +32,12 @@ namespace Lexicon_LMS_G1.Data.Data
                 .HasForeignKey(s => s.CourseId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            builder.Entity<Course>()
+                .HasMany(c => c.AttendingStudents)
+                .WithOne(s => s.Course)
+                .HasForeignKey(s => s.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
             builder.Entity<UserFinishedActivity>()
                 .HasOne(u => u.Activity)
                 .WithMany(a => a.FinishedActivities)
