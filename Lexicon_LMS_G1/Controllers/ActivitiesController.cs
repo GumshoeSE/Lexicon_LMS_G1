@@ -8,16 +8,32 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
+using Lexicon_LMS_G1.Data.Repositores;
+using System.Text.Json;
+using Lexicon_LMS_G1.Entities.Dtos;
+using AutoMapper;
+using Lexicon_LMS_G1.Entities.Helpers;
+using System.Net;
+using Lexicon_LMS_G1.Entities.Paging;
+using Lexicon_LMS_G1.Entities.ViewModels;
+using AutoMapper;
 
 namespace Lexicon_LMS_G1.Controllers
 {
     public class ActivitiesController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly IBaseRepository<Activity> _repo;
+        private readonly IBaseRepository<Module> _baseModuleRepo;
+        private readonly IMapper _mapper;
 
-        public ActivitiesController(ApplicationDbContext context)
+        public ActivitiesController(ApplicationDbContext context, IBaseRepository<Activity> repo,
+            IBaseRepository<Module> baseModuleRepo, IMapper mapper)
         {
             _context = context;
+            _repo = repo;
+            _baseModuleRepo = baseModuleRepo;
+            _mapper = mapper;
         }
 
         // GET: Activities
@@ -153,9 +169,143 @@ namespace Lexicon_LMS_G1.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [HttpPost]
+        public async Task<IActionResult> UpdateActivity([FromBody] ActivityUpdateDto dto)
+        {
+            var orginialActivity = _repo.GetById(dto.Id);
+
+            if (orginialActivity == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var activity = _mapper.Map(dto, orginialActivity);
+                _repo.Update(activity);
+                await _repo.SaveChangesAsync();
+
+                TempData["message"] = "Activity successfully updated!";
+                return Json(new { redirectToUrl = Url.Action("Details", "Modules", new { id = activity.ModuleId }) });
+            }
+
+            return Json(false);
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> PutActivity([FromBody] ActivityCreateDto dto)
+        {
+            var activity = _mapper.Map<Activity>(dto);
+            var module = await _baseModuleRepo.GetByIdWithIncludedAsync(m => m.Activities, m => m.Id == activity.ModuleId);
+
+
+            if (activity.StartDate.Ticks < module.StartTime.Ticks)
+            {
+                ModelState.AddModelError("StartDate", $"The activity can not start before the module starts ({module.StartTime}).");
+            }
+            else if (activity.StartDate.Ticks > module.EndTime.Ticks)
+            {
+                ModelState.AddModelError("StartDate", $"The activity can not start after the module ends ({module.EndTime}).");
+            }
+
+            if (activity.EndDate.Ticks < module.StartTime.Ticks)
+            {
+                ModelState.AddModelError("EndDate", $"The activity can not end before the module starts ({module.StartTime}).");
+            }
+            else if (activity.EndDate.Ticks > module.EndTime.Ticks)
+            {
+                ModelState.AddModelError("EndDate", $"The activity can not end after the module ends ({module.EndTime}).");
+            }
+
+            if (activity.StartDate.Ticks >= activity.EndDate.Ticks)
+            {
+                ModelState.AddModelError("EndDate", $"The activity has to start before it ends.");
+                ModelState.AddModelError("StartDate", $"The activity has to start before it ends.");
+            }
+
+            var (isOverlap, conMod) = DateTimeChecker.IsOverlappingWithList(activity.StartDate, activity.EndDate, module.Activities);
+
+            if (isOverlap)
+            {
+                ModelState.AddModelError("EndDate", $"Duration is overlapping with another activity '{conMod.Name}'");
+                ModelState.AddModelError("StartDate", $"Duration is overlapping with another activity '{conMod.Name}'");
+            }
+
+            if (ModelState.IsValid)
+            {
+                _repo.Add(activity);
+                await _repo.SaveChangesAsync();
+
+                TempData["message"] = "Activity successfully added!";
+
+                return Json(new {
+                    success = true,
+                    redirectToUrl = Url.Action("Details", "Modules", new { id = activity.ModuleId }) });
+            }
+
+            var modelErrors = new List<object>();
+
+            foreach (var modelStateKey in ViewData.ModelState.Keys)
+            {
+                var value = ViewData.ModelState[modelStateKey];
+                foreach (var error in value.Errors)
+                {
+                    modelErrors.Add(new { key = modelStateKey, message = error.ErrorMessage });
+                }
+            }
+
+            return Json(new {
+                success = false,
+                errors = modelErrors
+            });
+        }
+
         private bool ActivityExists(int id)
         {
             return _context.Activities.Any(e => e.Id == id);
         }
+
+        public async Task<IActionResult> GetActionsForCourse(int courseId, int? pageIndex, string activityType, bool showHistory)
+        {
+            var paging = new ActivitiesPagingParams()
+            {
+                PageIndex = pageIndex ?? 1
+            };
+            Course course = _context.Courses.FirstOrDefault(c => c.Id == courseId);
+            var modules = _context.Modules.Where(m => m.CourseId == courseId).ToList();
+            List<ActivityTeacherViewModel> activites = new List<ActivityTeacherViewModel>();
+            foreach (var module in modules)
+            {
+                var moduleactivities = _context.Activities.Include(a => a.ActivityType).Where(a => a.ModuleId == module.Id).OrderBy(a => a.StartDate);
+                var viewModel = _mapper.ProjectTo<ActivityTeacherViewModel>(moduleactivities);
+                
+                if (activityType != null)
+                {
+                    if(activityType != "all")
+                    viewModel = viewModel.Where(a => a.ActivityType.Name == activityType);
+                }
+                if (showHistory)
+                {
+                    viewModel = viewModel.Where(a => a.EndDate < DateTime.Now);
+                }
+                else 
+                {
+                    viewModel = viewModel.Where(a => a.EndDate >= DateTime.Now);
+                }
+                foreach (var activity in viewModel)
+                {
+                    
+                    activites.Add(activity);
+                }
+            }
+            int count = activites.Count();
+            ViewData["activityType"] = _context.ActivitiesTypes.ToList();
+
+            return PartialView("CourseActivitiesPartialView", await PaginatedList<ActivityTeacherViewModel>.CreateAsync(activites.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize, count, course));
+        }
+
+       
+
     }
+   
 }
