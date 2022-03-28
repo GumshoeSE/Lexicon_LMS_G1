@@ -12,6 +12,8 @@ using AutoMapper;
 using Lexicon_LMS_G1.Data.Repositores;
 using Lexicon_LMS_G1.Entities.ViewModels;
 using Lexicon_LMS_G1.Entities.Helpers;
+using Lexicon_LMS_G1.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -21,14 +23,16 @@ namespace Lexicon_LMS_G1.Controllers
         private readonly IMapper _mapper;
         private readonly IBaseRepository<Module> _moduleRepo;
         private readonly IBaseRepository<Course> _courseRepo;
+        UserManager<ApplicationUser> _userManager;
 
         public ModulesController(ApplicationDbContext context, IMapper mapper,
-            IBaseRepository<Module> moduleRepo, IBaseRepository<Course> courseRepo)
+            IBaseRepository<Module> moduleRepo, IBaseRepository<Course> courseRepo, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _mapper = mapper;
             _moduleRepo = moduleRepo;
             _courseRepo = courseRepo;
+            _userManager = userManager;
         }
 
         // GET: Modules
@@ -126,8 +130,39 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 var module = _mapper.Map<Module>(viewModel);
 
-                _moduleRepo.Add(module);
-                await _moduleRepo.SaveChangesAsync();
+                if (viewModel.Document != null)
+                {
+                    string file;
+
+                    do
+                    {
+                        file = $"{GlobalStatics.SaveDocumentModule}{Path.DirectorySeparatorChar}{Path.GetRandomFileName()}";
+                    }
+                    while (System.IO.File.Exists(file));
+
+                    var doc = new ModuleDocument()
+                    {
+                        Name = viewModel.Document.FileName,
+                        FileType = viewModel.Document.ContentType,
+                        Description = viewModel.DocumentDescription,
+                        CreatedOn = DateTime.Now,
+                        FilePath = file,
+                        Module = module,
+                        UserId = _userManager.GetUserId(User)
+                    };
+
+                    using (var stream = System.IO.File.Create(file))
+                    {
+                        await viewModel.Document.CopyToAsync(stream);
+                    }
+                    _context.Add(doc);
+
+                    module.Documents.Add(doc);
+                }
+
+                _context.Add(module);
+
+                await _context.SaveChangesAsync();
 
                 TempData["message"] = "Module successfully added!";
                 return RedirectToAction("IndexTeacher", "Courses");

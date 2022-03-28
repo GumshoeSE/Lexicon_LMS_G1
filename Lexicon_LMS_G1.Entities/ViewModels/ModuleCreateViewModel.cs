@@ -1,4 +1,5 @@
 ﻿using Lexicon_LMS_G1.Entities.Entities;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Lexicon_LMS_G1.Entities.ViewModels
@@ -25,5 +26,10 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
         public Course? Course { get; set; }
 
         public bool ShowTimeLine { get; set; }
+
+        public IFormFile? Document { get; set; }
+
+        [Display(Name = "Description")]
+        public string? DocumentDescription { get; set; }
     }
 }
