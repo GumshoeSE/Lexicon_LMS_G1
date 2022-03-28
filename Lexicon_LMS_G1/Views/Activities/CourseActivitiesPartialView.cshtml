@@ -1,0 +1,131 @@
+﻿@using Lexicon_LMS_G1.Services
+@using Lexicon_LMS_G1.Entities.Entities
+@model PaginatedList<ActivityTeacherViewModel>
+@inject IBorderColorService borderColor
+<div class="border border-3 rounded p-2 test" style="padding: 0em 0em 0.5em 0em; position: sticky; top: 30px" data-count="@Model.Count" id="hej">
+    <h2 class="text-center">Activities for: @Model.Course.Name</h2>
+    <div class=" row">
+        <div class="col">
+            <h5>Choose activity type: </h5>
+        </div>
+        <div class="col text-end ">
+            <h5>Show history<h5/>
+        </div>
+    </div>
+    <div class="row mb-2 align-items-center">
+        <div class="col-5">
+            <select class="form-select atypes" data-course="@Model.Course.Id" data-pageIndex="@Model.CurrentPageIndex">
+                <option value="all" selected>All types</option>
+                @foreach (var item in ViewData["activityType"] as List<ActivityType>)
+                {
+                    <option value="@item.Name">@Html.DisplayFor(modelType => item.Name)</option>
+                }
+            </select>
+        </div>
+@*        <div class="col-1 align-self-end">
+*@            <div class="form-check form-switch col-1 offset-5">
+                <input class="form-check-input border border-secondary border-2" data-course="@Model.Course.Id" type="checkbox" id="showHistory">
+            </div>
+@*        </div>*@
+    </div>
+
+    <hr class="m-0 mb-2" />
+    <div class="accordion" id="activityAccordion">
+        @if (Model.ActivitiesCount > 0)
+        {
+
+
+            @foreach (var item in Model)
+            {
+                <div class="accordion-item mb-1">
+                    <h2 class="accordion-header " id="@($"headinga")@Html.DisplayFor(modelItem => item.Id)">
+                        <button class="accordion-button collapsed border border-2 @borderColor.GetBorderColor(item.ActivityType)" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapseA")@Html.DisplayFor(modelItem => item.Id)" aria-expanded="false" aria-controls="@($"collapseA")@Html.DisplayFor(modelItem => item.Id)">
+                            <div class="ps-4" style="width:100%">
+                                <div class=""><strong>@Html.DisplayFor(modelItem => item.ActivityType.Name)</strong></div>
+                                <div>@Html.DisplayFor(modelItem => item.Name)</div>
+                            </div>
+                        </button>
+                    </h2>
+                    <div id="@($"collapseA")@Html.DisplayFor(modelItem => item.Id)" class="accordion-collapse collapse" aria-labelledby="@($"headinga")@Html.DisplayFor(modelItem => item.Id)" data-bs-parent="#activityAccordion">
+                        <div class="accordion-body p-0 pt-3">
+                            <div class="ms-3"><h5 class="mb-0">Module:</h5> <p>@item.Module.Name</p></div>
+                            <div class="ms-3">
+                                <h5 class="mb-2">Duration:</h5><p>
+                                    @item.StartDate.ToString("yy/MM/dd hh:mm")
+                                    <strong>-</strong> @item.EndDate.ToString("yy/MM/dd hh:mm")
+                                </p>
+                            </div>
+                            <div class="px-3">
+                                <h5 class="mb-0">Activity description:</h5>
+                                <p>@Html.DisplayFor(modelItem => item.Description)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            }
+        }
+
+        <p id="empty" class="ps-3 fs-5 text-center"></p>
+
+    </div>
+    @*Paginating puttons*@
+    @{
+        var prevDisabled = !Model.HasPrevious ? "disabled" : "";
+        var nextDisabled = !Model.HasNext ? "disabled" : "";
+    }
+    <div class="text-center p-3">
+        <button data-course="@Model.Course.Id" data-pageIndex="@(Model.CurrentPageIndex - 1)" class="pagingbutton btn btn-light border border-secondary @prevDisabled"><</button>
+        @if (Model.TotalPages > 5)
+        {
+            if (Model.CurrentPageIndex == 4)
+            {
+                <button data-course="@Model.Course.Id" data-pageIndex="1" class="btn btn-light border border-secondary pagingbutton">1</button>
+
+            }
+            if (Model.CurrentPageIndex > 4)
+            {
+                <button data-course="@Model.Course.Id" data-pageIndex="1" class="btn btn-light border border-secondary pagingbutton">1</button>
+                <span>...</span>
+            }
+            @for (int i = (@Model.CurrentPageIndex - 2); i <= (@Model.CurrentPageIndex + 2); i++)
+            {
+                @if (i != Model.CurrentPageIndex && i > 0 && i <= Model.TotalPages)
+                {
+                    <button data-course="@Model.Course.Id" data-pageIndex="@i" class="btn btn-light border border-secondary pagingbutton">@i</button>
+                }
+                else if (i > 0 && i == Model.CurrentPageIndex)
+                {
+                    <span class="btn btn-secondary">@i</span>
+                }
+            }
+            @if (Model.TotalPages > Model.CurrentPageIndex + 3)
+            {
+                <span>...</span>
+                <button data-course="@Model.Course.Id" data-pageIndex="@Model.TotalPages" class="btn btn-light border border-secondary pagingbutton">@Model.TotalPages</button>
+            }
+            @if (Model.CurrentPageIndex + 3 == Model.TotalPages)
+            {
+                <button data-course="@Model.Course.Id" data-pageIndex="@Model.TotalPages" class="btn btn-light border border-secondary pagingbutton">@Model.TotalPages</button>
+            }
+
+        }
+        else
+        {
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                @if (i != Model.CurrentPageIndex)
+                {
+                    <button data-course="@Model.Course.Id" data-pageIndex="@i" class="btn btn-light border border-secondary pagingbutton">@i</button>
+                }
+                else
+                {
+                    <span class="btn btn-secondary">@i</span>
+                }
+            }
+        }
+        <button data-course="@Model.Course.Id" data-pageIndex="@(Model.CurrentPageIndex + 1)" class="pagingbutton btn btn-light border border-secondary @nextDisabled">></button>
+
+        <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
+    </div>
+</div>

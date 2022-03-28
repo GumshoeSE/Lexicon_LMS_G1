@@ -64,7 +64,7 @@ namespace Lexicon_LMS_G1.Controllers
                 AttendingStudents = c.AttendingStudents,
             }).AsEnumerable();
 
-            return View(await PaginatedList<CourseViewModel>.CreateAsync(viewModel.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize));
+            return View(await PaginatedList<CourseViewModel>.CreateAsync(viewModel.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize, 0));
 
         }
 

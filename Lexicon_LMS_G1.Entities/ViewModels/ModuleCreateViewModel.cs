@@ -25,8 +25,6 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
         public int CourseId { get; set; }
         public Course? Course { get; set; }
 
-        public bool ShowTimeLine { get; set; }
-
         public IFormFile? Document { get; set; }
 
         [Display(Name = "Description")]

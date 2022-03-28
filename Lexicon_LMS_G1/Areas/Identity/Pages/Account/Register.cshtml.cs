@@ -2,24 +2,15 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Text.Encodings.Web;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
 using Lexicon_LMS_G1.Entities.Entities;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using Microsoft.AspNetCore.WebUtilities;
-using Microsoft.Extensions.Logging;
 using Lexicon_LMS_G1.Data.Repositores;
+using Lexicon_LMS_G1.Validation;
 
 namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
 {
@@ -76,6 +67,9 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
+            public string Role { get; set; }
+
+            [Required]
             [StringLength(15, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
             [Display(Name = "First Name")]
             public string FirstName { get; set; }
@@ -85,7 +79,8 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
 
-            [Display(Name = "Course (Optional)")]
+            [StudentCourse]
+            [Display(Name = "Course")]
             public string CourseId { get; set; }
 
             [Required]
@@ -93,14 +88,14 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            [Required]
-            public string Role { get; set; }
+            
 
         }
 
 
-        public async Task OnGetAsync(string returnUrl = null)
+        public async Task OnGetAsync(int? id, string returnUrl = null)
         {
+            var id1 = id;
             ReturnUrl = returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
@@ -130,7 +125,7 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    TempData["message"] = "User successfully created!";
+                    TempData["message"] = "User successfully added!";
 
                     if(!(await _userManager.AddToRoleAsync(user, Input.Role)).Succeeded) throw new Exception($"Failed to set {Input.FirstName} as a {Input.Role}");
 
