@@ -274,7 +274,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("UserFinishedActivity");
+                    b.ToTable("UserFinishedActivity", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
