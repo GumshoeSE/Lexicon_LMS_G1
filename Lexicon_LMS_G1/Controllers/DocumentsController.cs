@@ -8,166 +8,273 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Lexicon_LMS_G1.Entities.Entities;
 using Lexicon_LMS_G1.Data.Data;
+using Lexicon_LMS_G1.Entities.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using Lexicon_LMS_G1.Entities;
 
 namespace Lexicon_LMS_G1.Controllers
 {
     public class DocumentsController : Controller
     {
+        private readonly string documentBasePath = GlobalStatics.SaveDocumentBase;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public DocumentsController(ApplicationDbContext context)
+        public DocumentsController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            this.userManager = userManager;
+            if (!Directory.Exists(documentBasePath))
+            {
+                Directory.CreateDirectory(documentBasePath);
+            }
         }
 
-        // GET: Documents
+        [HttpGet]
         public async Task<IActionResult> Index()
         {
-            var applicationDbContext = _context.Documents.Include(d => d.Activity).Include(d => d.Course).Include(d => d.Module);
-            return View(await applicationDbContext.ToListAsync());
+            
+            return await UploadDocument<int, Module>();
         }
 
-        // GET: Documents/Details/5
-        public async Task<IActionResult> Details(int? id)
+        private async Task<IActionResult> UploadDocument<T, Q>() where Q : class
         {
-            if (id == null)
+            DocumentUploadViewModel<T, Q> view = new DocumentUploadViewModel<T, Q>()
             {
-                return NotFound();
+                Identifier = await _context.Set<Q>().ToListAsync()
+            };
+
+            switch (typeof(Q).Name)
+            {
+                case "Course":
+                    return View("UploadCoursePartialView", view);
+                case "Module":
+                    return View("UploadModulePartialView", view);
+                case "Activity":
+                    return View("UploadActivityPartialView", view);
+                case "Student":
+                    return View("UploadStudentPartialView", view);
             }
 
-            var document = await _context.Documents
-                .Include(d => d.Activity)
-                .Include(d => d.Course)
-                .Include(d => d.Module)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (document == null)
-            {
-                return NotFound();
-            }
-
-            return View(document);
+            return StatusCode(500, $"{typeof(Q).Name} is unavailable to upload for.");
         }
 
-        // GET: Documents/Create
-        public IActionResult Create()
-        {
-            ViewData["ActivityId"] = new SelectList(_context.Activities, "Id", "Description");
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description");
-            ViewData["ModuleId"] = new SelectList(_context.Modules, "Id", "Description");
-            return View();
-        }
-
-        // POST: Documents/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,TimeOfCreation,Path,UserId,CourseId,ModuleId,ActivityId")] Document document)
+        public async Task<IActionResult> DeleteModule(int id)
         {
-            if (ModelState.IsValid)
-            {
-                _context.Add(document);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ActivityId"] = new SelectList(_context.Activities, "Id", "Description", document.ActivityId);
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description", document.CourseId);
-            ViewData["ModuleId"] = new SelectList(_context.Modules, "Id", "Description", document.ModuleId);
-            return View(document);
-        }
-
-        // GET: Documents/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var document = await _context.Documents.FindAsync(id);
-            if (document == null)
-            {
-                return NotFound();
-            }
-            ViewData["ActivityId"] = new SelectList(_context.Activities, "Id", "Description", document.ActivityId);
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description", document.CourseId);
-            ViewData["ModuleId"] = new SelectList(_context.Modules, "Id", "Description", document.ModuleId);
-            return View(document);
-        }
-
-        // POST: Documents/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,TimeOfCreation,Path,UserId,CourseId,ModuleId,ActivityId")] Document document)
-        {
-            if (id != document.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(document);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!DocumentExists(document.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            ViewData["ActivityId"] = new SelectList(_context.Activities, "Id", "Description", document.ActivityId);
-            ViewData["CourseId"] = new SelectList(_context.Courses, "Id", "Description", document.CourseId);
-            ViewData["ModuleId"] = new SelectList(_context.Modules, "Id", "Description", document.ModuleId);
-            return View(document);
-        }
-
-        // GET: Documents/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var document = await _context.Documents
-                .Include(d => d.Activity)
-                .Include(d => d.Course)
+            var doc = await _context.ModuleDocuments
                 .Include(d => d.Module)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (document == null)
-            {
-                return NotFound();
-            }
+                .FirstOrDefaultAsync(d => id == d.Id);
 
-            return View(document);
-        }
+            _context.Remove(doc);
 
-        // POST: Documents/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var document = await _context.Documents.FindAsync(id);
-            _context.Documents.Remove(document);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            TempData["message"] = $"Document removed";
+
+            return RedirectToAction("Details", "Modules", new { id = doc.ModuleId });
         }
 
-        private bool DocumentExists(int id)
+        [HttpPost]
+        public async Task<IActionResult> DeleteActivity(int id)
         {
-            return _context.Documents.Any(e => e.Id == id);
+            var doc = await _context.ActivityDocuments
+                .Include(d => d.Activity)
+                .FirstOrDefaultAsync(d => id == d.Id);
+
+            _context.Remove(doc);
+
+            await _context.SaveChangesAsync();
+
+            TempData["message"] = $"Document removed";
+
+            return RedirectToAction("Details", "Modules", new { id = doc.Activity.ModuleId });
         }
+
+        // BEGIN Upload Methods
+        [HttpPost]
+        public async Task<IActionResult> UploadCourseDocument(IFormFile document, int courseId, string description)
+        {
+            string path = await SaveFileGetPath(document, "Course");
+            ApplicationUser user = await userManager.GetUserAsync(User);
+            CourseDocument courseDocument = new CourseDocument()
+            {
+                Name = document.FileName,
+                FileType = document.ContentType,
+                Description = description,
+                CreatedOn = DateTime.Now,
+                FilePath = path,
+                CourseId = courseId,
+                UserId = user.Id
+            };
+            _context.Add(courseDocument);
+            await _context.SaveChangesAsync();
+
+            return UploadDocumentReturnTo();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadModuleDocument(IFormFile document, int moduleId, string description)
+        {
+            string path = await SaveFileGetPath(document, "Module");
+            ApplicationUser user = await userManager.GetUserAsync(User);
+            ModuleDocument moduleDocument = new ModuleDocument()
+            {
+                Name = document.Name,
+                FileType = document.ContentType,
+                Description = description,
+                CreatedOn = DateTime.Now,
+                FilePath = path,
+                ModuleId = moduleId,
+                UserId = user.Id
+            };
+            _context.Add(moduleDocument);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Modules", new {id = moduleId});
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadActivityDocument(IFormFile document, int activityId, string description, int moduleId)
+        {
+            string path = await SaveFileGetPath(document, "Activity");
+            ApplicationUser user = await userManager.GetUserAsync(User);
+            ActivityDocument activityDocument = new ActivityDocument()
+            {
+                Name = document.Name,
+                FileType = document.ContentType,
+                Description = description,
+                CreatedOn = DateTime.Now,
+                FilePath = path,
+                ActivityId = activityId,
+                UserId = user.Id
+            };
+            _context.Add(activityDocument);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "Modules", new { id = moduleId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UploadStudentDocument(IFormFile document, string description, int activityId)
+        {
+            string path = await SaveFileGetPath(document, "Student");
+            ApplicationUser user = await userManager.GetUserAsync(User);
+            StudentDocument studentDocument = new StudentDocument()
+            {
+                Name = document.Name,
+                FileType = document.ContentType,
+                Description = description,
+                CreatedOn = DateTime.Now,
+                FilePath = path,
+                UserId = user.Id,
+                ActivityId = activityId,
+                IsApproved = false
+            };
+            _context.Add(studentDocument);
+            await _context.SaveChangesAsync();
+
+            return UploadDocumentReturnTo();
+        }
+        // END Upload Methods
+        // BEGIN Save Files
+        private IActionResult UploadDocumentReturnTo()
+        {
+            return Ok();
+        }
+        // END Save Files
+
+        private async Task<string> SaveFileGetPath(IFormFile file, string folder = "default")
+        {
+            string directory = $"{documentBasePath}{Path.DirectorySeparatorChar}{folder}";
+            string filename;
+            string whereToSave;
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            do
+            {
+                filename = Path.GetRandomFileName();
+                whereToSave = $"{directory}{Path.DirectorySeparatorChar}{filename}";
+            }
+            while (System.IO.File.Exists(whereToSave));
+            
+
+            using (var stream = System.IO.File.Create(whereToSave))
+            {
+                await file.CopyToAsync(stream);
+            }
+            TempData["message"] = $"Document added";
+            return whereToSave;
+        }
+
+        // BEGIN Download Methods
+        public async Task<IActionResult> DownloadCourse(int id)
+        {
+            return await DownloadGenericDocument<CourseDocument>(id);
+        }
+
+        public async Task<IActionResult> DownloadModule(int id)
+        {
+            return await DownloadGenericDocument<ModuleDocument>(id);
+        }
+
+        public async Task<IActionResult> DownloadActivity(int id)
+        {
+            return await DownloadGenericDocument<ActivityDocument>(id);
+        }
+
+        public async Task<IActionResult> DownloadStudent(int id)
+        {
+            return await DownloadGenericDocument<StudentDocument>(id);
+        }
+
+        private async Task<IActionResult> DownloadGenericDocument<T>(int id) where T : BaseDocument
+        {
+            T doc = await _context.Set<T>().FindAsync(id);
+
+            if (doc == null)
+                return NotFound();
+
+            return File(System.IO.File.ReadAllBytes(doc.FilePath), doc.FileType, doc.Name);
+        }
+        // END Download Methods
+        // BEGIN Preview File
+        public async Task<IActionResult> PreviewCourse(int id)
+        {
+            return await PreviewGenericDocument<CourseDocument>(id);
+        }
+
+        public async Task<IActionResult> PreviewModule(int id)
+        {
+            return await PreviewGenericDocument<ModuleDocument>(id);
+        }
+
+        public async Task<IActionResult> PreviewActivity(int id)
+        {
+            return await PreviewGenericDocument<ActivityDocument>(id);
+        }
+
+        public async Task<IActionResult> PreviewStudent(int id)
+        {
+            return await PreviewGenericDocument<StudentDocument>(id);
+        }
+
+        private async Task<IActionResult> PreviewGenericDocument<T>(int id) where T : BaseDocument
+        {
+            List<T> docs = await _context.Set<T>().ToListAsync();
+
+            //T doc = await _context.Set<T>().FirstOrDefaultAsync(d => d.Id == id);
+
+            T doc = docs.FirstOrDefault(d => d.Id == id);
+
+
+            if (doc == null)
+                return NotFound();
+
+            return new FileContentResult(System.IO.File.ReadAllBytes(doc.FilePath), doc.FileType);
+        }
+        // END Preview File
     }
 }
