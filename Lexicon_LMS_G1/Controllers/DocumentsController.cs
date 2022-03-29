@@ -59,6 +59,38 @@ namespace Lexicon_LMS_G1.Controllers
             return StatusCode(500, $"{typeof(Q).Name} is unavailable to upload for.");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> DeleteModule(int id)
+        {
+            var doc = await _context.ModuleDocuments
+                .Include(d => d.Module)
+                .FirstOrDefaultAsync(d => id == d.Id);
+
+            _context.Remove(doc);
+
+            await _context.SaveChangesAsync();
+
+            TempData["message"] = $"Document removed";
+
+            return RedirectToAction("Details", "Modules", new { id = doc.ModuleId });
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteActivity(int id)
+        {
+            var doc = await _context.ActivityDocuments
+                .Include(d => d.Activity)
+                .FirstOrDefaultAsync(d => id == d.Id);
+
+            _context.Remove(doc);
+
+            await _context.SaveChangesAsync();
+
+            TempData["message"] = $"Document removed";
+
+            return RedirectToAction("Details", "Modules", new { id = doc.Activity.ModuleId });
+        }
+
         // BEGIN Upload Methods
         [HttpPost]
         public async Task<IActionResult> UploadCourseDocument(IFormFile document, int courseId, string description)
@@ -99,11 +131,11 @@ namespace Lexicon_LMS_G1.Controllers
             _context.Add(moduleDocument);
             await _context.SaveChangesAsync();
 
-            return UploadDocumentReturnTo();
+            return RedirectToAction("Details", "Modules", new {id = moduleId});
         }
 
         [HttpPost]
-        public async Task<IActionResult> UploadActivityDocument(IFormFile document, int activityId, string description)
+        public async Task<IActionResult> UploadActivityDocument(IFormFile document, int activityId, string description, int moduleId)
         {
             string path = await SaveFileGetPath(document, "Activity");
             ApplicationUser user = await userManager.GetUserAsync(User);
@@ -120,7 +152,7 @@ namespace Lexicon_LMS_G1.Controllers
             _context.Add(activityDocument);
             await _context.SaveChangesAsync();
 
-            return UploadDocumentReturnTo();
+            return RedirectToAction("Details", "Modules", new { id = moduleId });
         }
 
         [HttpPost]
@@ -173,7 +205,7 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 await file.CopyToAsync(stream);
             }
-
+            TempData["message"] = $"Document added";
             return whereToSave;
         }
 
@@ -231,7 +263,12 @@ namespace Lexicon_LMS_G1.Controllers
 
         private async Task<IActionResult> PreviewGenericDocument<T>(int id) where T : BaseDocument
         {
-            T doc = await _context.Set<T>().FindAsync(id);
+            List<T> docs = await _context.Set<T>().ToListAsync();
+
+            //T doc = await _context.Set<T>().FirstOrDefaultAsync(d => d.Id == id);
+
+            T doc = docs.FirstOrDefault(d => d.Id == id);
+
 
             if (doc == null)
                 return NotFound();

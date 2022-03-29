@@ -35,6 +35,18 @@ namespace Lexicon_LMS_G1.Data.Data
                 .HasForeignKey(s => s.CourseId)
                 .OnDelete(DeleteBehavior.NoAction);
 
+            builder.Entity<Module>()
+                .HasMany(e => e.Documents)
+                .WithOne(s => s.Module)
+                .HasForeignKey(s => s.ModuleId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<ModuleDocument>()
+                .HasOne(e => e.Module)
+                .WithMany(s => s.Documents)
+                .HasForeignKey(s => s.ModuleId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             builder.Entity<Course>()
                 .HasMany(c => c.AttendingStudents)
                 .WithOne(s => s.Course)

@@ -55,7 +55,11 @@ namespace Lexicon_LMS_G1.Controllers
                 return NotFound();
             }
 
-            var module = await _moduleRepo.GetModuleByIdAsync(id);
+            var module = await _context.Modules
+                .Include(m => m.Documents)
+                .Include(m => m.Activities).ThenInclude(a => a.ActivityType)
+                .Include(m => m.Activities).ThenInclude(a => a.Documents)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (module == null)
             {
                 return NotFound();

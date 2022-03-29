@@ -398,7 +398,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("UserFinishedActivity", (string)null);
+                    b.ToTable("UserFinishedActivity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -578,7 +578,8 @@ namespace Lexicon_LMS_G1.Data.Migrations
                 {
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
                         .WithMany("AttendingStudents")
-                        .HasForeignKey("CourseId");
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Course");
                 });
@@ -588,7 +589,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
                         .WithMany("Documents")
                         .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "User")
@@ -618,7 +619,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Module", "Module")
                         .WithMany("Documents")
                         .HasForeignKey("ModuleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "User")

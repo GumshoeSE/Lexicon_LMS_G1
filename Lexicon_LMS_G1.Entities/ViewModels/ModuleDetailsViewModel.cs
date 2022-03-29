@@ -19,6 +19,8 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
 
         public ICollection<ApplicationUser> AttendingStudents { get; set; } = new List<ApplicationUser>();
         public ICollection<Activity> Activities { get; set; } = new List<Activity>();
+        public ICollection<ModuleDocument> Documents { get; set; } = new List<ModuleDocument>();
+        public ICollection<ActivityDocument> ActivitiesDocuments { get; set; } = new List<ActivityDocument>();
 
         public IFormFile? Document { get; set; }
         public string? DocumentDescription { get; set; }
