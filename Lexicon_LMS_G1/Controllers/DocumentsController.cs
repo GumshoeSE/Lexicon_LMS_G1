@@ -144,8 +144,8 @@ namespace Lexicon_LMS_G1.Controllers
 
             return UploadDocumentReturnTo();
         }
-        // BEGIN Save Files
         // END Upload Methods
+        // BEGIN Save Files
         private IActionResult UploadDocumentReturnTo()
         {
             return Ok();
