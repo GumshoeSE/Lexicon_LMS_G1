@@ -12,8 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lexicon_LMS_G1.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
+<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220317130857_ActivityTypeToActivity.Designer.cs
     [Migration("20220317130857_ActivityTypeToActivity")]
     partial class ActivityTypeToActivity
+========
+    [Migration("20220328130949_init2")]
+    partial class init2
+>>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220328130949_init2.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -420,8 +425,14 @@ namespace Lexicon_LMS_G1.Data.Migrations
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
                 {
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
+<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220317130857_ActivityTypeToActivity.Designer.cs
                         .WithMany()
                         .HasForeignKey("CourseId");
+========
+                        .WithMany("AttendingStudents")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+>>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220328130949_init2.Designer.cs
 
                     b.Navigation("Course");
                 });
@@ -434,7 +445,8 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
                         .WithMany("Documents")
-                        .HasForeignKey("CourseId");
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Module", "Module")
                         .WithMany("Documents")
@@ -466,6 +478,28 @@ namespace Lexicon_LMS_G1.Data.Migrations
                     b.Navigation("Course");
                 });
 
+<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220317130857_ActivityTypeToActivity.Designer.cs
+========
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.UserFinishedActivity", b =>
+                {
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.Activity", "Activity")
+                        .WithMany("FinishedActivities")
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("FinishedActivities")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("ApplicationUser");
+                });
+
+>>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220328130949_init2.Designer.cs
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -520,6 +554,8 @@ namespace Lexicon_LMS_G1.Data.Migrations
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Activity", b =>
                 {
                     b.Navigation("Documents");
+
+                    b.Navigation("FinishedActivities");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
@@ -529,6 +565,11 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Course", b =>
                 {
+<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220317130857_ActivityTypeToActivity.Designer.cs
+========
+                    b.Navigation("AttendingStudents");
+
+>>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220328130949_init2.Designer.cs
                     b.Navigation("Documents");
 
                     b.Navigation("Modules");

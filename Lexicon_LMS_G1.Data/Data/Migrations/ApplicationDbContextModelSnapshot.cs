@@ -56,7 +56,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("ModuleId");
 
-                    b.ToTable("Activities", (string)null);
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ActivityType", b =>
@@ -73,7 +73,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ActivitiesTypes", (string)null);
+                    b.ToTable("ActivitiesTypes");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
@@ -175,7 +175,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Document", b =>
@@ -224,7 +224,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Documents", (string)null);
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Module", b =>
@@ -256,7 +256,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Modules", (string)null);
+                    b.ToTable("Modules");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -418,8 +418,9 @@ namespace Lexicon_LMS_G1.Data.Migrations
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
                 {
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
-                        .WithMany()
-                        .HasForeignKey("CourseId");
+                        .WithMany("AttendingStudents")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Course");
                 });
@@ -432,7 +433,8 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
                         .WithMany("Documents")
-                        .HasForeignKey("CourseId");
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Module", "Module")
                         .WithMany("Documents")
@@ -462,6 +464,25 @@ namespace Lexicon_LMS_G1.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.UserFinishedActivity", b =>
+                {
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.Activity", "Activity")
+                        .WithMany()
+                        .HasForeignKey("ActivityId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "ApplicationUser")
+                        .WithMany("FinishedActivities")
+                        .HasForeignKey("ApplicationUserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Activity");
+
+                    b.Navigation("ApplicationUser");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -518,6 +539,8 @@ namespace Lexicon_LMS_G1.Data.Migrations
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Activity", b =>
                 {
                     b.Navigation("Documents");
+
+                    b.Navigation("FinishedActivities");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
@@ -527,6 +550,8 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Course", b =>
                 {
+                    b.Navigation("Attendees");
+
                     b.Navigation("Documents");
 
                     b.Navigation("Modules");
