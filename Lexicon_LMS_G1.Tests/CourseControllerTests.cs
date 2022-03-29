@@ -9,6 +9,7 @@ using Lexicon_LMS_G1.Entities.ViewModels;
 using Lexicon_LMS_G1.Tests.Helpers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
@@ -87,6 +88,8 @@ namespace Lexicon_LMS_G1.Tests
             
 
             controller = new CoursesController(context, courseRepository, mapper, baseRepository, null);
+            var mockTempData = new Mock<ITempDataDictionary>();
+            controller.TempData = mockTempData.Object;
         }
 
 
