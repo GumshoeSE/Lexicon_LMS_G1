@@ -10,8 +10,10 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
     {
         public string DeleteController { get; set; } = string.Empty;
         public int DeleteId { get; set; }
+        public string DeleteModalId { get; set; } = string.Empty;
 
         public string? ReturnController { get; set; }
+        public string? ReturnAction { get; set; }
         public int? ReturnId { get; set; }
     }
 }

@@ -57,14 +57,26 @@
                                                 <div>
                                                     <strong>Module @num:</strong> @Html.DisplayFor(m => module.Name)
                                                 </div>
-                                                <a asp-controller="Modules"
-                                                    asp-action="Details"
-                                                    asp-route-id="@module.Id"
-                                                    class="btn btn-sm btn-outline-primary">
-                                                    Details
-                                                </a>
+                                                <div>
+                                                    <a asp-controller="Modules"
+                                                        asp-action="Details"
+                                                        asp-route-id="@module.Id"
+                                                        class="btn btn-sm btn-outline-primary">
+                                                        Details
+                                                    </a>
+                                                    <button type="button"
+                                                        data-ref="@module.Id"
+                                                        data-name="@module.Name"
+                                                        data-delete-id="deleteId1"
+                                                        data-type="Module"
+                                                        class="btn btn-sm btn-outline-danger deleter"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#deleteModal1">
+                                                        Delete
+                                                    </button>
+                                                </div>
                                             </div>
-                                            <div class="col ">
+                                            <div class="col">
                                                 <strong>Duration:</strong> @module.StartTime.ToString("yy/MM/dd")
                                                 <strong>-</strong> @module.EndTime.ToString("yy/MM/dd")
                                             </div>
@@ -82,7 +94,7 @@
                                     </div>
                                     <div class="text-end col">
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
-                                        <button type="button" data-ref="@item.Id" data-name="@item.Name" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#delete">Delete</button>
+                                        <button type="button" data-ref="@item.Id" data-name="@item.Name" data-delete-id="deleteId2" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#deleteModal2">Delete</button>
 
                                     </div>
                                 </div>
@@ -93,7 +105,10 @@
                 }
             </div>
 
-            <vc:delete delete-controller="courses"></vc:delete>
+            <vc:delete delete-controller="modules" return-controller="courses"
+                return-action="IndexTeacher" delete-modal-id="deleteModal1"></vc:delete>
+
+            <vc:delete delete-controller="courses" delete-modal-id="deleteModal2"></vc:delete>
 
             @*Paginating puttons*@
             @{

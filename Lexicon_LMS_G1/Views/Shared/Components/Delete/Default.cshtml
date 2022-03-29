@@ -1,6 +1,6 @@
 ﻿@model DeleteViewModel
 
-<div class="modal" tabindex="-1" id="delete">
+<div class="modal" tabindex="-1" id="@(Model.DeleteModalId)">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -14,8 +14,9 @@
                 <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                 <form asp-action="Delete" asp-controller="@Model.DeleteController">
                     <input type="hidden" asp-for="ReturnController" />
+                    <input type="hidden" asp-for="ReturnAction" />
                     <input type="hidden" asp-for="ReturnId" />
-                    <input type="hidden" name="deleteId" value="" id="deleteId" />
+                    <input type="hidden" name="DeleteId" value="" id="@(Model.DeleteModalId.Replace("Modal", "Id"))" />
                     <input type="submit" value="Yes" class="btn btn-primary" />
                 </form>
             </div>
