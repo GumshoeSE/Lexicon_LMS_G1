@@ -139,34 +139,18 @@ namespace Lexicon_LMS_G1.Controllers
             return View(activity);
         }
 
-        // GET: Activities/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var activity = await _context.Activities
-                .Include(a => a.Module)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (activity == null)
-            {
-                return NotFound();
-            }
-
-            return View(activity);
-        }
-
         // POST: Activities/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
         {
-            var activity = await _context.Activities.FindAsync(id);
+            var activity = await _context.Activities.FindAsync(viewModel.DeleteId);
             _context.Activities.Remove(activity);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            TempData["message"] = $"Activity '{activity.Name}' removed ";
+
+            return RedirectToAction("Details", "Modules", new { id = viewModel.ReturnId });
         }
 
         [HttpPost]

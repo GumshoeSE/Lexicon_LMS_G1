@@ -23,6 +23,7 @@ namespace Lexicon_LMS_G1.Entities.Entities
         public ActivityType ActivityType { get; set; }
 
         public ICollection<Document> Documents { get; set; } = new List<Document>();
+        public ICollection<UserFinishedActivity> FinishedActivities { get; set; } = new List<UserFinishedActivity>();
 
     }
 }

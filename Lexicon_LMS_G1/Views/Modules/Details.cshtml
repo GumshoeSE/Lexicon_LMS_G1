@@ -127,7 +127,7 @@
                                                     data-ref="@item.Id"
                                                     data-name="@item.Name"
                                                     data-type="Activity"
-                                                    class="btn btn-danger deleter hidden"
+                                                    class="btn btn-danger deleter"
                                                     data-bs-toggle="modal"
                                                     data-bs-target="#delete">
                                                     Remove
@@ -302,7 +302,7 @@
 @Html.Hidden("ModuleStartTime", Model.StartTime)
 @Html.Hidden("LastActivityEndTime", lastActivityEndDateTime)
 
-<vc:delete></vc:delete>
+<vc:delete delete-controller="activities" return-controller="modules" return-id="@Model.Id"></vc:delete>
 
 @section Scripts {
     <script src="~/js/module-details.js"></script>
