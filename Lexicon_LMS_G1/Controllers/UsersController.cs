@@ -68,8 +68,14 @@ namespace Lexicon_LMS_G1.Controllers
                     .Take(pageSize)
                     .ToListAsync();
             }
+            List<UserViewModel> viewUsers = new List<UserViewModel>();
+            for (int i = 0; i < usersToReturn.Count; i++)
+            {
+                var user = mapper.Map<UserViewModel>(usersToReturn[i]);
+                user.Role = (await userManager.GetRolesAsync(usersToReturn[i])).First().ToString();
+                viewUsers.Add(user);
+            }
 
-            var viewUsers = mapper.Map<List<UserViewModel>>(usersToReturn);
 
             var viewUser = new UsersViewModel
             {
@@ -87,6 +93,85 @@ namespace Lexicon_LMS_G1.Controllers
             //SqlException: The offset specified in a OFFSET clause may not be negative.
 
             return View(viewUser);
+        }
+        public async Task<IActionResult> Details(string? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var @module = await context.Users
+                .Include(u => u.Course)
+                .FirstOrDefaultAsync(u => u.Id == id);
+            var user = mapper.Map<UserDetailsViewModel>(@module);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View(user);
+        }
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var @module = await context.Modules.FindAsync(id);
+            if (@module == null)
+            {
+                return NotFound();
+            }
+            return View(@module);
+        }
+
+        // POST: Modules/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,StartTime,EndTime,CourseId")] Module @module)
+        {
+            if (id != @module.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    context.Update(@module);
+                    await context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ModuleExists(@module.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(@module);
+        }
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var @module = await context.Modules.FindAsync(id);
+            context.Modules.Remove(@module);
+            await context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool ModuleExists(int id)
+        {
+            return context.Modules.Any(e => e.Id == id);
         }
     }
 }

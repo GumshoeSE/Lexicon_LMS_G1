@@ -10,7 +10,7 @@ namespace Lexicon_LMS_G1.Automapper
         {
             CreateMap<ApplicationUser, UserViewModel>()
                 .ForPath(dest=>dest.CourseName, opt=>opt.MapFrom(src=>src.Course.Name));
-            
+            CreateMap<ApplicationUser, UserDetailsViewModel>().ReverseMap();
         }
     }
 }

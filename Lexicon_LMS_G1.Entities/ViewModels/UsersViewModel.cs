@@ -20,6 +20,8 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
 
         [Display(Name = "Attending course")]
         public string CourseName { get; } = "Course";
+        [Display(Name = "Has role")]
+        public string Role { get; } = "Role";
 
         public int CurrentPageIndex { get; set; }
         public int TotalCount { get; set; }
