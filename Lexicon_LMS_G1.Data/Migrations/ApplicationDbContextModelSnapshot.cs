@@ -22,21 +22,6 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("ApplicationUserUserRole", b =>
-                {
-                    b.Property<string>("RolesId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("UsersId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("RolesId", "UsersId");
-
-                    b.HasIndex("UsersId");
-
-                    b.ToTable("ApplicationUserUserRole", (string)null);
-                });
-
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Activity", b =>
                 {
                     b.Property<int>("Id")
@@ -71,7 +56,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("ModuleId");
 
-                    b.ToTable("Activities", (string)null);
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ActivityType", b =>
@@ -88,7 +73,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ActivitiesTypes", (string)null);
+                    b.ToTable("ActivitiesTypes");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
@@ -190,7 +175,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Document", b =>
@@ -239,7 +224,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Documents", (string)null);
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Module", b =>
@@ -271,7 +256,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Modules", (string)null);
+                    b.ToTable("Modules");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.UserFinishedActivity", b =>
@@ -282,6 +267,9 @@ namespace Lexicon_LMS_G1.Data.Migrations
                     b.Property<int>("ActivityId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("FinishedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
@@ -289,10 +277,10 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("UserFinishedActivity", (string)null);
+                    b.ToTable("UserFinishedActivity");
                 });
 
-            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.UserRole", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -429,21 +417,6 @@ namespace Lexicon_LMS_G1.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ApplicationUserUserRole", b =>
-                {
-                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.UserRole", null)
-                        .WithMany()
-                        .HasForeignKey("RolesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", null)
-                        .WithMany()
-                        .HasForeignKey("UsersId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Activity", b =>
                 {
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.ActivityType", "ActivityType")
@@ -533,7 +506,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.UserRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -560,7 +533,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.UserRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)

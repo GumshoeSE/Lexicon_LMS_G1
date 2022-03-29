@@ -36,7 +36,7 @@ namespace Lexicon_LMS_G1.Controllers
                 pageSize = 5;  
             
             var users = userManager.Users as IQueryable<ApplicationUser>;
-            users = users.Include(c => c.Course);
+            users = users.Include(c => c.Course).Include(c => c.FinishedActivities);
 
             if (!string.IsNullOrWhiteSpace(searchQuery))
             {
@@ -103,8 +103,11 @@ namespace Lexicon_LMS_G1.Controllers
 
             var @module = await context.Users
                 .Include(u => u.Course)
+                .Include(u => u.FinishedActivities)
+                .ThenInclude(a => a.Activity)
                 .FirstOrDefaultAsync(u => u.Id == id);
             var user = mapper.Map<UserDetailsViewModel>(@module);
+            user.Role = (await userManager.GetRolesAsync(@module)).First().ToString();
             if (user == null)
             {
                 return NotFound();
@@ -112,19 +115,21 @@ namespace Lexicon_LMS_G1.Controllers
 
             return View(user);
         }
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var @module = await context.Modules.FindAsync(id);
+            var @module = await context.Users.Include(u => u.Course).FirstOrDefaultAsync(u => u.Id == id);
             if (@module == null)
             {
                 return NotFound();
             }
-            return View(@module);
+
+            var user = mapper.Map<UserEditViewModel>(@module);
+            return View(user);
         }
 
         // POST: Modules/Edit/5
@@ -132,23 +137,35 @@ namespace Lexicon_LMS_G1.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Description,StartTime,EndTime,CourseId")] Module @module)
+        public async Task<IActionResult> Edit(string id, UserEditViewModel viewModel)
         {
-            if (id != @module.Id)
+            if (id != viewModel.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+               
+                var user = await userManager.FindByIdAsync(viewModel.Id);
+                user.FirstName = viewModel.FirstName;
+                user.LastName = viewModel.LastName;
+                user.PhoneNumber = viewModel.PhoneNumber;
+                user.CourseId= viewModel.CourseId;
+                user.Email = viewModel.Email;
+                user.UserName = user.Email;
+                
                 try
                 {
-                    context.Update(@module);
-                    await context.SaveChangesAsync();
+                    
+                    var user1 = await userManager.UpdateAsync(user);
+                    
+                    
+                    //await context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ModuleExists(@module.Id))
+                    if (!UserExists(user.Id))
                     {
                         return NotFound();
                     }
@@ -159,7 +176,7 @@ namespace Lexicon_LMS_G1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(@module);
+            return View(viewModel);
         }
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
@@ -169,9 +186,9 @@ namespace Lexicon_LMS_G1.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool ModuleExists(int id)
+        private bool UserExists(string id)
         {
-            return context.Modules.Any(e => e.Id == id);
+            return context.Users.Any(e => e.Id == id);
         }
     }
 }

@@ -7,31 +7,41 @@
 <h1>Details</h1>
 
 <div>
-    <h4>Module</h4>
+    <h4>@Model.Role</h4>
     <hr />
     <dl class="row">
-        <dt class="col-sm-2">
-            Name
+        <dt class="col-sm-2 fs-5">
+            @Model.Role Name:
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10 fs-5">
             @Html.DisplayFor(model => model.FirstName) @Html.DisplayFor(model => model.LastName)
         </dd>
-        <dt class="col-sm-2">
+        <dt class="col-sm-2 fs-5">
             Attending course:
         </dt>
-        <dd class="col-sm-10">
+        <dd class="col-sm-10 fs-5">
             @Html.DisplayFor(model => model.Course.Name)
+        </dd>
+        <dt class="col-sm-2 fs-5">
+            User email:
+        </dt>
+        <dd class="col-sm-10 fs-5">
+            @Html.DisplayFor(model => model.Email)
         </dd>
     </dl>
     <h5>Finished Assignment</h5>
+    <div class="row">
     @foreach (var assignment in Model.FinishedActivities)
     {
-        <div class="card" style="">
+        <div class="card col-4 m-3">
             <div class="card-body">
                 <h5 class="card-title">@assignment.Activity.Name</h5>
+                <h6>Finished date:</h6> <p>@assignment.FinishedDate.ToString("yyyy/MM/dd")</p>
             </div>
+
         </div>
     }
+    </div>
 </div>
 <div>
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
