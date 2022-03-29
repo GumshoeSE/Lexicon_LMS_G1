@@ -63,7 +63,7 @@ namespace Lexicon_LMS_G1.Controllers
                 AttendingStudents = c.AttendingStudents,
             }).AsEnumerable();
 
-            return View(await PaginatedList<CourseViewModel>.CreateAsync(viewModel.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize));
+            return View(await PaginatedList<CourseViewModel>.CreateAsync(viewModel.AsEnumerable().ToList(), paging.PageIndex, paging.PageSize, 0));
 
         }
 
@@ -173,17 +173,15 @@ namespace Lexicon_LMS_G1.Controllers
         [Authorize(Roles = "Teacher")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int? deleteId)
+        public async Task<IActionResult> Delete(DeleteViewModel viewModel)
         {
-            if (deleteId == null)
-            {
-                return NotFound();
-            }
 
-            var course = repo.GetById(deleteId);
-            //var course = await _context.Courses.FindAsync(id);
+            var course = await _context.Courses
+                .Include(c => c.AttendingStudents)
+                .ThenInclude(s => s.FinishedActivities)
+                .FirstOrDefaultAsync(c => c.Id == viewModel.DeleteId);
 
-            if (repo.Delete(deleteId))
+            if (repo.Delete(viewModel.DeleteId))
             {
                 await repo.SaveChangesAsync();
                 TempData["message"] = $"The course {course.Name} has been removed!";

@@ -1,48 +1,333 @@
-﻿@model Lexicon_LMS_G1.Entities.Entities.Module
+﻿@model ModuleDetailsViewModel
+@inject IActivityTypeSelectListService activityTypeListService
 
 @{
-    ViewData["Title"] = "Details";
+    var lastActivityEndDateTime = (Model.Activities.Count() > 0) ? Model.Activities.Last().EndDate : Model.StartTime;
+
+    var timespan = Model.EndTime - Model.StartTime;
+    foreach(var activity in Model.Activities)
+    {
+        timespan -= (activity.EndDate - activity.StartDate);
+    }
+    var moduleIsFull = (timespan == TimeSpan.Zero) ? "disabled" : "";
 }
 
-<h1>Details</h1>
+<h1 class="text-center mb-4">Module '@Model.Name'</h1>
 
-<div>
-    <h4>Module</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Course)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Course.Description)
-        </dd>
-    </dl>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="border border-3 rounded-xl p-3">
+                <div class="row">
+                    <h2 class="text-center col-md-4 offset-md-4">Activities</h2>
+                    <div class="col-md-4 align-content-center text-end">
+                        <span data-toggle="tooltip" title="The module can't fit more activities">
+                            <button type="button" id="addActivityBtn" class="btn btn-outline-primary" @moduleIsFull> 
+                                Add 
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="accordion mt-2" id="courseAccordion">
+                    @if (Model.Activities.Count == 0)
+                    {
+                        <p class="ps-3 text-center">This module currently has no activities</p>
+                    }
+                    @foreach (var item in Model.Activities)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
+                                <button class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)"
+                                    aria-expanded="false"
+                                    aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
+                                    <div class="text-start" style="width:100%">
+                                        @item.ActivityType.Name
+                                    </div>
+                                    <div class="me-3 d-flex fw-light justify-content-between" style="width:100%">
+                                        @{
+                                            var startDif = item.StartDate - DateTime.Now;
+                                            var endDif = item.EndDate - DateTime.Now;
+
+                                            var hasStarted = startDif.CompareTo(TimeSpan.Zero) < 0;
+                                            var hasEnded = endDif.CompareTo(TimeSpan.Zero) < 0;
+                                            var isOngoing = hasStarted && !hasEnded;
+
+                                            var isToday = startDif.TotalDays < 1;
+                                            var isThisWeek = startDif.TotalDays <= 7;
+                                            var timeText = "";
+                                            var statusText = "";
+                                            var badgeType = "";
+
+                                            if (hasEnded)
+                                            {
+                                                statusText += "finished";
+                                                badgeType += "bg-success";
+                                                timeText += $"{item.EndDate.ToString("yyyy/MM/dd")}";
+                                            }
+                                            else if (isOngoing)
+                                            {
+                                                statusText += "current";
+                                                badgeType += "bg-warning text-dark";
+                                            }
+                                            else
+                                            {
+                                                statusText += "planned";
+                                                badgeType += "bg-info text-dark";
+
+                                                if (isToday)
+                                                {
+                                                    timeText += (startDif.Hours > 0) ? $"{startDif.Hours} h " : $"";
+                                                    timeText += (startDif.Minutes > 0) ? $"{startDif.Minutes} min " : $"";
+                                                }
+                                                else if (isThisWeek)
+                                                {
+                                                    timeText += $"{startDif.Days} days";
+                                                }
+                                                else
+                                                {
+                                                    timeText += $"{item.StartDate.ToString("yyyy/MM/dd")}";
+                                                }
+                                            }
+                                        }
+                                        <div class="badge @badgeType">
+                                            @statusText
+                                        </div>
+                                        <div class="fw-lighter">
+                                            @timeText
+                                        </div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)"
+                             class="accordion-collapse collapse"
+                             aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)"
+                             data-bs-parent="#courseAccordion">
+                                <div class="accordion-body ps-0 pe-0 border border-3" id="accordion-body@(item.Id)">
+                                    <div id="activityDetails@(item.Id)">
+                                        <div class="ps-3">
+                                            <h5>Duration</h5>
+                                            <p class="fw-light" style="margin: 0 !important;">@item.StartDate.ToString("f")</p>
+                                            <p class="fw-light">@item.EndDate.ToString("f")</p>
+                                            <h5>Name</h5>
+                                            <p class="fw-light">@item.Name</p>
+                                            <h5>Description</h5>
+                                            <p class="fw-light">@item.Description</p>
+                                        </div>
+                                        <hr />
+                                        <div class="form-group d-flex px-3 justify-content-between">
+                                            <div>
+                                                <a class="btn btn-primary">Documents</a>
+                                            </div>
+                                            <div>
+                                                <button type="button" value="@item.Id" class="btn btn-primary editActivityBtn">Edit</button>
+                                                <button type="button"
+                                                    data-ref="@item.Id"
+                                                    data-name="@item.Name"
+                                                    data-delete-id="deleteId1"
+                                                    data-type="Activity"
+                                                    class="btn btn-danger deleter"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal1">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="editActivity@(item.Id)" class="hidden">
+                                        <form class="novalidate">
+                                            <input type="hidden" id="editActivityId@(item.Id)" value="@item.Id">
+                                            <div class="p-3">
+                                                <h5>Duration</h5>
+                                                <p class="fw-light" style="margin: 0 !important;">@item.StartDate.ToString("f")</p>
+                                                <p class="fw-light">@item.EndDate.ToString("f")</p>
+                                                <div class="mb-3">
+                                                    <label for="editActivityName" class="form-label h5">Name</label>
+                                                    <div class="input-group has-validation">
+                                                        <input type="text" class="form-control req req-init" id="editActivityName@(item.Id)" value="@item.Name">
+                                                        <div id="validationEditActivityName" class="invalid-feedback">
+                                                            Please provide a name for the activity.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editActivityDescription" class="form-label h5">Description</label>
+                                                    <div class="input-group has-validation">
+                                                        <textarea class="form-control req req-init" id="editActivityDescription@(item.Id)" rows="3">@item.Description</textarea>
+                                                        <div id="validationEditActivityDescription" class="invalid-feedback">
+                                                            Please provide a description for the module.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr />
+                                            <div class="d-flex px-3 justify-content-between">
+                                                <button type="button" class="btn btn-primary submitEditActivityBtn" value="@item.Id">Save</button>
+                                                <button type="button" class="btn btn-danger cancelEditActivityBtn" value="@item.Id">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="border border-3 rounded-xl p-3" id="multi-container">
+                <div id="moduleDetails">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button type="button"
+                                data-ref="@Model.Id"
+                                data-name="@Model.Name"
+                                data-delete-id="deleteId2"
+                                data-type="Module"
+                                class="btn btn-outline-danger deleter"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal2">
+                                Delete
+                            </button>
+                        </div>
+                        <h2 class="text-center col-md-4">Details</h2>
+                        <div class="col-md-4 align-content-center text-end">
+                            <button type="button" id="editModuleBtn" class="btn btn-outline-primary"> Edit </button>
+                        </div>
+                    </div>
+                    <hr />
+                    <h5>Duration</h5>
+                    <p class="fw-light" style="margin: 0 !important;">@Model.StartTime.ToString("g")</p>
+                    <p class="fw-light">@Model.EndTime.ToString("g")</p>
+                    <h5>Name</h5>
+                    <p class="fw-light">@Html.DisplayFor(modelItem => Model.Name)</p>
+                    <h5>Description</h5>
+                    <p class="fw-light">@Html.DisplayFor(modelItem => Model.Description)</p>
+                </div>
+                <div id="editModule" class="hidden">
+                    <h2 class="text-center">Edit Module</h2>
+                    <hr />
+                    <form class="novalidate">
+                        <input type="hidden" id="editModuleId" value="@Model.Id">
+                        <h5>Duration</h5>
+                        <p class="fw-light" style="margin: 0 !important;">@Model.StartTime.ToString("g")</p>
+                        <p class="fw-light">@Model.EndTime.ToString("g")</p>
+                        <div class="mb-3">
+                            <label for="editModuleName" class="form-label h5">Name</label>
+                            <div class="input-group has-validation">
+                                <input type="text" class="form-control req req-init" id="editModuleName" value="@Model.Name">
+                                <div id="validationModuleName" class="invalid-feedback">
+                                    Please provide a name for the module.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editModuleDescription" class="form-label h5">Description</label>
+                            <div class="input-group has-validation">
+                                <textarea class="form-control req req-init" id="editModuleDescription" rows="3">@Model.Description</textarea>
+                                <div id="validationModuleDescription" class="invalid-feedback">
+                                    Please provide a description for the module.
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="d-flex px-3 justify-content-between">
+                            <button type="button" id="submitEditModuleBtn" class="btn btn-lg btn-primary">Save</button>
+                            <button type="button" class="btn btn-lg btn-danger cancelBtn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div id="addActivity" class="hidden">
+                    <h2 class="text-center">Add Activity</h2>
+                    <hr />
+                    <form class="novalidate">
+                        <input type="hidden" id="addActivityModuleId" value="@Model.Id">
+                        <div class="mb-3">
+                            <label for="addActivtyName" class="form-label h5">Name</label>
+                            <div class="input-group has-validation">
+                                <input type="text" class="form-control req" id="addActivtyName">
+                                <div id="validationAddActivityName" class="invalid-feedback">
+                                    Please provide a name for the activity.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addActivityTypeId" class="form-label h5">Activity Type</label>
+                            <div class="input-group has-validation">
+                                <select class="form-select inputField req" id="addActivityTypeId"
+                                    asp-items="@await activityTypeListService.GetSelectListAsync()">
+                                    <option selected="selected" value="" disabled>Please Select</option>
+                                </select>
+                                <div id="validationAddActivityTypeId" class="invalid-feedback">
+                                    Please select a activity type.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addActivtyDescription" class="form-label h5">Description</label>
+                            <div class="input-group has-validation">
+                                <textarea class="form-control req" id="addActivtyDescription" rows="3"></textarea>
+                                <div id="validationAddActivityDescription" class="invalid-feedback">
+                                    Please provide a description for the activity.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addActivtyStartDate" class="form-label h5">Start Time</label>
+                            <div class="input-group has-validation">
+                                <input type="datetime-local" class="form-control"
+                                    id="addActivtyStartDate" min="@Model.StartTime" max="@Model.EndTime">
+                                <div id="validationAddActivityStartDate" class="invalid-feedback">
+                                    <span>The activity has to start before it ends.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addActivtyEndDate" class="form-label h5">End Time</label>
+                            <div class="input-group has-validation">
+                                <input type="datetime-local" class="form-control"
+                                    id="addActivtyEndDate" min="@Model.StartTime" max="@Model.EndTime">
+                                <div id="validationAddActivityEndDate" class="invalid-feedback">
+                                    <span>The activity has to start before it ends.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="d-flex px-3 justify-content-between">
+                            <button type="button" id="submitAddActivityBtn" class="btn btn-lg btn-primary">Add</button>
+                            <button type="button" class="btn btn-lg btn-danger cancelBtn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="border border border-3 rounded-xl mt-3 p-3">
+                <h2 class="text-center">Documents</h2>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@Html.Hidden("UpdateModuleUrl", Url.Action("UpdateModule", "Modules"))
+@Html.Hidden("UpdateActivityUrl", Url.Action("UpdateActivity", "Activities"))
+@Html.Hidden("AddActivityUrl", Url.Action("PutActivity", "Activities"))
+@Html.Hidden("ModuleStartTime", Model.StartTime)
+@Html.Hidden("LastActivityEndTime", lastActivityEndDateTime)
+
+<vc:delete delete-modal-id="deleteModal1" delete-controller="activities" return-controller="Modules" return-id="@Model.Id"></vc:delete>
+
+<vc:delete delete-modal-id="deleteModal2" delete-controller="modules" return-controller="Courses" return-action="IndexTeacher"></vc:delete>
+
+
+@section Scripts {
+    <script src="~/js/module-details.js"></script>
+    
+    @if (timespan == TimeSpan.Zero){
+        <script>
+            $(document).ready(function(){
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+        </script>
+    }
+}
