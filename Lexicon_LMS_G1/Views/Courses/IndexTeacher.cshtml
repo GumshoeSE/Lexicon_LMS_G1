@@ -36,7 +36,9 @@
                                 <div class="px-3">
                                     <div class ="row">
                                     <h5 class ="col align-self-end">Course description:</h5>
-                                    <a asp-area="Identity" asp-page="/Account/Register" asp-route-id="@item.Id" class="col-4 mb-3 btn btn-primary addSTC">Add student to course</a>
+                                    <div class="col text-end">
+                                    <a asp-area="Identity" asp-page="/Account/Register" asp-route-id="@item.Id" class="px-3 mb-3 btn btn-primary addSTC">Add student</a>
+                                    </div>
                                     </div>
                                     <p>@Html.DisplayFor(modelItem => item.Description)</p>
                                 </div>

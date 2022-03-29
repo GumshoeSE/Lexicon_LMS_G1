@@ -125,9 +125,8 @@ $(document).ready(function () {
     $(".courseclick").click(function () {
         if ($(this).attr("aria-expanded") == "true") {
             activitiesForCourse.classList.remove("d-none");
-            $('html, body').animate({
-                scrollTop: $(this).offset().top
-            }, 500);
+            setTimeout(ScrollTo.bind(null, $(this)), 350);
+           
           //  $('body').scrollTo(this);
             let course = $(this).attr('data-courseId');
             GetActivities(course, "all", false, 1);
@@ -135,9 +134,15 @@ $(document).ready(function () {
         else {
             activitiesForCourse.classList.add("d-none");
         }
+        
     });
 })
 
+function ScrollTo(button) {
+    $('html, body').animate({
+        scrollTop: button.offset().top
+    }, 0);
+}
 
 function pagingClick() {
     let course = $(this).attr("data-course");
