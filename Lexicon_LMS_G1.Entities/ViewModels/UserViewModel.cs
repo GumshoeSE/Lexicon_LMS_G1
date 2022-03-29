@@ -28,6 +28,8 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
 
         [Display(Name ="Attending course")]
         public string CourseName { get; set; } = string.Empty;
+        [Display(Name = "Role")]
+        public string Role { get; set; } = string.Empty;
     }
 }
 

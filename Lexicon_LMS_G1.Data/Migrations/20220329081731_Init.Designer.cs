@@ -4,6 +4,7 @@ using Lexicon_LMS_G1.Data.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lexicon_LMS_G1.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220329081731_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +36,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("UsersId");
 
-                    b.ToTable("ApplicationUserUserRole", (string)null);
+                    b.ToTable("ApplicationUserUserRole");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Activity", b =>
@@ -71,7 +73,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("ModuleId");
 
-                    b.ToTable("Activities", (string)null);
+                    b.ToTable("Activities");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ActivityType", b =>
@@ -88,7 +90,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("ActivitiesTypes", (string)null);
+                    b.ToTable("ActivitiesTypes");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
@@ -190,7 +192,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Courses", (string)null);
+                    b.ToTable("Courses");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Document", b =>
@@ -239,7 +241,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Documents", (string)null);
+                    b.ToTable("Documents");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Module", b =>
@@ -271,7 +273,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Modules", (string)null);
+                    b.ToTable("Modules");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.UserFinishedActivity", b =>
@@ -289,7 +291,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("UserFinishedActivity", (string)null);
+                    b.ToTable("UserFinishedActivity");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.UserRole", b =>
