@@ -11,8 +11,10 @@ namespace Lexicon_LMS_G1.Entities.Entities
         public string ApplicationUserId { get; set; }
         public int ActivityId { get; set; }
         public bool IsCompleted { get; set; }
+        public DateTime FinishedDate { get; set; }
 
         public ApplicationUser ApplicationUser { get; set; }
         public Activity Activity { get; set; }
+
     }
 }

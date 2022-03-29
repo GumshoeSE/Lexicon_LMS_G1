@@ -197,34 +197,29 @@ namespace Lexicon_LMS_G1.Controllers
             return View(@module);
         }
 
-        // GET: Modules/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            
-            var @module = await _context.Modules
-                .Include(c => c.Course)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@module == null)
-            {
-                return NotFound();
-            }
-
-            return View(@module);
-        }
-
         // POST: Modules/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
         {
-            var @module = await _context.Modules.FindAsync(id);
-            _context.Modules.Remove(@module);
+            var module = await _context.Modules
+                .Include(m => m.Course)
+                .Include(m => m.Activities)
+                .FirstOrDefaultAsync(m => m.Id == viewModel.DeleteId);
+
+            if (module == null)
+            {
+                return NotFound();
+            }
+
+            _context.Modules.Remove(module);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            TempData["message"] = $"The module {module.Name} has been removed!";
+
+            return (viewModel.ReturnId is not null) ? 
+                RedirectToAction(viewModel.ReturnAction, viewModel.ReturnController) : 
+                RedirectToAction(viewModel.ReturnAction, viewModel.ReturnController, new { id = viewModel.ReturnId});
         }
 
         [HttpPost]

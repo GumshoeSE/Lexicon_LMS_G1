@@ -5,7 +5,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Lexicon_LMS_G1.Data.Migrations
 {
+<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Migrations/20220329114025_Init.cs
+    public partial class Init : Migration
+========
     public partial class init : Migration
+>>>>>>>> Development:Lexicon_LMS_G1.Data/Migrations/20220328130611_init.cs
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -291,7 +295,8 @@ namespace Lexicon_LMS_G1.Data.Migrations
                 {
                     ApplicationUserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     ActivityId = table.Column<int>(type: "int", nullable: false),
-                    IsCompleted = table.Column<bool>(type: "bit", nullable: false)
+                    IsCompleted = table.Column<bool>(type: "bit", nullable: false),
+                    FinishedDate = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
