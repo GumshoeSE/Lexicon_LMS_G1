@@ -12,6 +12,8 @@ using AutoMapper;
 using Lexicon_LMS_G1.Data.Repositores;
 using Lexicon_LMS_G1.Entities.ViewModels;
 using Lexicon_LMS_G1.Entities.Helpers;
+using Lexicon_LMS_G1.Entities;
+using Microsoft.AspNetCore.Identity;
 using System.Text.Json;
 using Lexicon_LMS_G1.Entities.Dtos;
 
@@ -24,16 +26,18 @@ namespace Lexicon_LMS_G1.Controllers
         private readonly IBaseRepository<Module> _baseModuleRepo;
         private readonly IBaseRepository<Course> _baseCourseRepo;
         private readonly IModuleRepository _moduleRepo;
+        UserManager<ApplicationUser> _userManager;
 
         public ModulesController(ApplicationDbContext context, IMapper mapper,
             IBaseRepository<Module> baseModuleRepo, IBaseRepository<Course> baseCourseRepo,
-            IModuleRepository moduleRepo)
+            IModuleRepository moduleRepo, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _mapper = mapper;
             _baseModuleRepo = baseModuleRepo;
             _baseCourseRepo = baseCourseRepo;
             _moduleRepo = moduleRepo;
+            _userManager = userManager;
         }
 
         // GET: Modules
@@ -51,7 +55,11 @@ namespace Lexicon_LMS_G1.Controllers
                 return NotFound();
             }
 
-            var module = await _moduleRepo.GetModuleByIdAsync(id);
+            var module = await _context.Modules
+                .Include(m => m.Documents)
+                .Include(m => m.Activities).ThenInclude(a => a.ActivityType)
+                .Include(m => m.Activities).ThenInclude(a => a.Documents)
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (module == null)
             {
                 return NotFound();
@@ -134,8 +142,39 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 var module = _mapper.Map<Module>(viewModel);
 
-                _baseModuleRepo.Add(module);
-                await _baseModuleRepo.SaveChangesAsync();
+                if (viewModel.Document != null)
+                {
+                    string file;
+
+                    do
+                    {
+                        file = $"{GlobalStatics.SaveDocumentModule}{Path.DirectorySeparatorChar}{Path.GetRandomFileName()}";
+                    }
+                    while (System.IO.File.Exists(file));
+
+                    var doc = new ModuleDocument()
+                    {
+                        Name = viewModel.Document.FileName,
+                        FileType = viewModel.Document.ContentType,
+                        Description = viewModel.DocumentDescription,
+                        CreatedOn = DateTime.Now,
+                        FilePath = file,
+                        Module = module,
+                        UserId = _userManager.GetUserId(User)
+                    };
+
+                    using (var stream = System.IO.File.Create(file))
+                    {
+                        await viewModel.Document.CopyToAsync(stream);
+                    }
+                    _context.Add(doc);
+
+                    module.Documents.Add(doc);
+                }
+
+                _context.Add(module);
+
+                await _context.SaveChangesAsync();
 
                 TempData["message"] = "Module successfully added!";
                 return RedirectToAction("IndexTeacher", "Courses");
@@ -197,34 +236,29 @@ namespace Lexicon_LMS_G1.Controllers
             return View(@module);
         }
 
-        // GET: Modules/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            
-            var @module = await _context.Modules
-                .Include(c => c.Course)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@module == null)
-            {
-                return NotFound();
-            }
-
-            return View(@module);
-        }
-
         // POST: Modules/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
         {
-            var @module = await _context.Modules.FindAsync(id);
-            _context.Modules.Remove(@module);
+            var module = await _context.Modules
+                .Include(m => m.Course)
+                .Include(m => m.Activities)
+                .FirstOrDefaultAsync(m => m.Id == viewModel.DeleteId);
+
+            if (module == null)
+            {
+                return NotFound();
+            }
+
+            _context.Modules.Remove(module);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            TempData["message"] = $"The module {module.Name} has been removed!";
+
+            return (viewModel.ReturnId is not null) ? 
+                RedirectToAction(viewModel.ReturnAction, viewModel.ReturnController) : 
+                RedirectToAction(viewModel.ReturnAction, viewModel.ReturnController, new { id = viewModel.ReturnId});
         }
 
         [HttpPost]
@@ -254,7 +288,5 @@ namespace Lexicon_LMS_G1.Controllers
         {
             return _context.Modules.Any(e => e.Id == id);
         }
-
-
     }
 }

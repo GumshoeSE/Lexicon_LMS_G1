@@ -12,13 +12,13 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lexicon_LMS_G1.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220317130857_ActivityTypeToActivity.Designer.cs
-    [Migration("20220317130857_ActivityTypeToActivity")]
-    partial class ActivityTypeToActivity
+<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220316143523_Init.Designer.cs
+    [Migration("20220316143523_Init")]
+    partial class Init
 ========
-    [Migration("20220328130949_init2")]
-    partial class init2
->>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220328130949_init2.Designer.cs
+    [Migration("20220329112212_AAAA")]
+    partial class AAAA
+>>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220329112212_AAAA.Designer.cs
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -36,9 +36,6 @@ namespace Lexicon_LMS_G1.Data.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ActivityTypeId")
-                        .HasColumnType("int");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -59,11 +56,52 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityTypeId");
-
                     b.HasIndex("ModuleId");
 
                     b.ToTable("Activities");
+                });
+
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ActivityDocument", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("ActivityId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActivityId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ActivityDocuments");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ActivityType", b =>
@@ -185,7 +223,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
                     b.ToTable("Courses");
                 });
 
-            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Document", b =>
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.CourseDocument", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -193,29 +231,27 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("ActivityId")
+                    b.Property<int>("CourseId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CourseId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ModuleId")
-                        .HasColumnType("int");
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Path")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("TimeOfCreation")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -223,15 +259,11 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ActivityId");
-
                     b.HasIndex("CourseId");
-
-                    b.HasIndex("ModuleId");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Documents");
+                    b.ToTable("CourseDocuments");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Module", b =>
@@ -266,6 +298,114 @@ namespace Lexicon_LMS_G1.Data.Migrations
                     b.ToTable("Modules");
                 });
 
+<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220316143523_Init.Designer.cs
+========
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ModuleDocument", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ModuleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ModuleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ModuleDocuments");
+                });
+
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.StudentDocument", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FilePath")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("StudentDocuments");
+                });
+
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.UserFinishedActivity", b =>
+                {
+                    b.Property<string>("ApplicationUserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<int>("ActivityId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.HasKey("ApplicationUserId", "ActivityId");
+
+                    b.HasIndex("ActivityId");
+
+                    b.ToTable("UserFinishedActivity");
+                });
+
+>>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220329112212_AAAA.Designer.cs
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -405,64 +545,81 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Activity", b =>
                 {
-                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.ActivityType", "ActivityType")
-                        .WithMany()
-                        .HasForeignKey("ActivityTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Module", "Module")
                         .WithMany("Activities")
                         .HasForeignKey("ModuleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("ActivityType");
-
                     b.Navigation("Module");
                 });
 
+<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220316143523_Init.Designer.cs
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
                 {
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
-<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220317130857_ActivityTypeToActivity.Designer.cs
                         .WithMany()
                         .HasForeignKey("CourseId");
-========
-                        .WithMany("AttendingStudents")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade);
->>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220328130949_init2.Designer.cs
 
                     b.Navigation("Course");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Document", b =>
+========
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ActivityDocument", b =>
+>>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220329112212_AAAA.Designer.cs
                 {
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Activity", "Activity")
                         .WithMany("Documents")
                         .HasForeignKey("ActivityId");
 
+<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220316143523_Init.Designer.cs
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
                         .WithMany("Documents")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("CourseId");
 
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Module", "Module")
                         .WithMany("Documents")
                         .HasForeignKey("ModuleId");
 
+========
+>>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220329112212_AAAA.Designer.cs
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "User")
-                        .WithMany("Documents")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Activity");
 
-                    b.Navigation("Course");
+                    b.Navigation("User");
+                });
 
-                    b.Navigation("Module");
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
+                {
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
+                        .WithMany("AttendingStudents")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade);
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.CourseDocument", b =>
+                {
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
+                        .WithMany("Documents")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
 
                     b.Navigation("User");
                 });
@@ -478,8 +635,38 @@ namespace Lexicon_LMS_G1.Data.Migrations
                     b.Navigation("Course");
                 });
 
-<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220317130857_ActivityTypeToActivity.Designer.cs
+<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220316143523_Init.Designer.cs
 ========
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ModuleDocument", b =>
+                {
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.Module", "Module")
+                        .WithMany("Documents")
+                        .HasForeignKey("ModuleId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Module");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.StudentDocument", b =>
+                {
+                    b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "User")
+                        .WithMany("Documents")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.UserFinishedActivity", b =>
                 {
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Activity", "Activity")
@@ -499,7 +686,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
                     b.Navigation("ApplicationUser");
                 });
 
->>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220328130949_init2.Designer.cs
+>>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220329112212_AAAA.Designer.cs
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -554,8 +741,6 @@ namespace Lexicon_LMS_G1.Data.Migrations
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Activity", b =>
                 {
                     b.Navigation("Documents");
-
-                    b.Navigation("FinishedActivities");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
@@ -565,11 +750,6 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Course", b =>
                 {
-<<<<<<<< HEAD:Lexicon_LMS_G1.Data/Data/Migrations/20220317130857_ActivityTypeToActivity.Designer.cs
-========
-                    b.Navigation("AttendingStudents");
-
->>>>>>>> Development:Lexicon_LMS_G1.Data/Data/Migrations/20220328130949_init2.Designer.cs
                     b.Navigation("Documents");
 
                     b.Navigation("Modules");

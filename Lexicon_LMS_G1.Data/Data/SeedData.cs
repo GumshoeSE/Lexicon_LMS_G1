@@ -227,6 +227,8 @@ namespace Lexicon_LMS_G1.Data.Data
             }
         }
 
+
+
         private static async Task<bool> HasTeacherAsync()
         {
             if (!await context.Users.AnyAsync()) return false;
