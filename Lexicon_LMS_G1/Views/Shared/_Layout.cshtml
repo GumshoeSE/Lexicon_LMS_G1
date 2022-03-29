@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Lexicon_LMS_G1.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/font-awesome/css/all.min.css" />
 </head>
 <body>
     <header>
@@ -35,9 +36,12 @@
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Courses" asp-action="IndexTeacher">Courses</a>
-                            </li>                        
+                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Register">Add User</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="users" asp-action="Index">Manage Users</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-controller="Courses" asp-action="Create">Add Course</a>

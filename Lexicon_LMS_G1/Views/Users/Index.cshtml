@@ -1,0 +1,118 @@
+﻿@model Lexicon_LMS_G1.Entities.ViewModels.UsersViewModel
+@{
+    ViewData["Title"] = "Users";
+}
+<div class="container">
+    <h1 class="text-center pb-3">Mange Lexicon LMS Users</h1>
+
+    @if (User.IsInRole("SpecialCaseRole"))
+    {
+        <p>
+            <a class="btn btn-primary" asp-area="Identity" asp-route-returnUrl="~/Users" asp-page="/Account/Register">Add User</a>
+        </p>
+    }
+
+    <div class="row mt-3">
+        @*<div id="usersList" class="col-6 border border-3 rounded">*@
+        <div id="usersList" class="col-12 border border-3 rounded">
+            <div class="row p-2">
+                <h2 class="text-center col-md-4 offset-md-4">Users</h2>
+                <div class="col-md-4 align-content-center text-end">
+                    <a class="btn btn-outline-primary" asp-route-returnUrl="~/Users" asp-area="Identity" asp-page="/Account/Register">Add user</a>
+                </div>
+            </div>
+            <div class="row p-4">
+                <div class="col-md-12">
+                    <form asp-action="Index">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        @* <div class="form-group">
+                            <label asp-for="SearchQuery" class="control-label"></label>
+                            <input asp-for="SearchQuery" class="form-control" />
+                            <span asp-validation-for="SearchQuery" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                            <input type="submit" value="Search" class="btn btn-primary" />
+                            </div>*@
+
+                        <div class="input-group mb-3">
+                            <input asp-for="SearchQuery" type="text" class="form-control" placeholder="Search user" aria-label="Search user" aria-describedby="basic-addon2">
+                            <div class="input-group-append">
+                                <input class="btn  btn-primary" type="submit" value="Search">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Email)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.CourseName)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Role)
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Users)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Email)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.CourseName)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Role)
+                            </td>
+                            <td>
+                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
+                                <span>|</span>
+                                 <a asp-action="Details" asp-route-id="@item.Id">Details</a>
+                                <span>|</span>
+                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @*Paginating puttons*@
+            @{
+                var prevDisabled = !Model.HasPrevious ? "disabled" : "";
+                var nextDisabled = !Model.HasNext ? "disabled" : "";
+            }
+            <div class="text-center p-3">
+                <a asp-action="Index" asp-route-pageIndex="@(Model.CurrentPageIndex - 1)" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary @prevDisabled"><</a>
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    @if (i != Model.CurrentPageIndex)
+                    {
+                        <a asp-action="Index" asp-route-pageIndex="@i" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary">@i</a>
+                    }
+                    else
+                    {
+                        <span class="btn btn-secondary">@i</span>
+                    }
+                }
+                <a asp-action="Index" asp-route-pageIndex="@(Model.CurrentPageIndex + 1)" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary @nextDisabled">></a>
+
+                <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
+            </div>
+        </div>
+    </div>
+</div>
+

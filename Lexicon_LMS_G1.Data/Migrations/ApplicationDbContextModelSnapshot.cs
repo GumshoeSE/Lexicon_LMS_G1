@@ -267,6 +267,9 @@ namespace Lexicon_LMS_G1.Data.Migrations
                     b.Property<int>("ActivityId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("FinishedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
@@ -274,7 +277,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasIndex("ActivityId");
 
-                    b.ToTable("UserFinishedActivity", (string)null);
+                    b.ToTable("UserFinishedActivity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -437,8 +440,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
                 {
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
                         .WithMany("AttendingStudents")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasForeignKey("CourseId");
 
                     b.Navigation("Course");
                 });
@@ -451,8 +453,7 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Course", "Course")
                         .WithMany("Documents")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.NoAction);
+                        .HasForeignKey("CourseId");
 
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Module", "Module")
                         .WithMany("Documents")
@@ -487,15 +488,15 @@ namespace Lexicon_LMS_G1.Data.Migrations
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.UserFinishedActivity", b =>
                 {
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.Activity", "Activity")
-                        .WithMany("FinishedActivities")
+                        .WithMany()
                         .HasForeignKey("ActivityId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", "ApplicationUser")
                         .WithMany("FinishedActivities")
                         .HasForeignKey("ApplicationUserId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Activity");
@@ -557,8 +558,6 @@ namespace Lexicon_LMS_G1.Data.Migrations
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.Activity", b =>
                 {
                     b.Navigation("Documents");
-
-                    b.Navigation("FinishedActivities");
                 });
 
             modelBuilder.Entity("Lexicon_LMS_G1.Entities.Entities.ApplicationUser", b =>
