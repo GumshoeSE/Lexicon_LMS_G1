@@ -10,7 +10,7 @@
 
 $(document).ready(function () {
     $(".deleter").click(function () {
-        $("#deleteId").val(
+        $("#" + $(this).attr("data-delete-id")).val(
             $(this).attr("data-ref")
         );
         var name = $(this).attr("data-name");
