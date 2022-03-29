@@ -178,25 +178,21 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         // BEGIN Download Methods
-        [HttpGet("download")]
         public async Task<IActionResult> DownloadCourse(int id)
         {
             return await DownloadGenericDocument<CourseDocument>(id);
         }
 
-        [HttpGet("download")]
         public async Task<IActionResult> DownloadModule(int id)
         {
             return await DownloadGenericDocument<ModuleDocument>(id);
         }
 
-        [HttpGet("download")]
         public async Task<IActionResult> DownloadActivity(int id)
         {
             return await DownloadGenericDocument<ActivityDocument>(id);
         }
 
-        [HttpGet("download")]
         public async Task<IActionResult> DownloadStudent(int id)
         {
             return await DownloadGenericDocument<StudentDocument>(id);
@@ -211,6 +207,37 @@ namespace Lexicon_LMS_G1.Controllers
 
             return File(System.IO.File.ReadAllBytes(doc.FilePath), doc.FileType, doc.Name);
         }
-        //END Download Methods
+        // END Download Methods
+        // BEGIN Preview File
+        public async Task<IActionResult> PreviewCourse(int id)
+        {
+            return await PreviewGenericDocument<CourseDocument>(id);
+        }
+
+        public async Task<IActionResult> PreviewModule(int id)
+        {
+            return await PreviewGenericDocument<ModuleDocument>(id);
+        }
+
+        public async Task<IActionResult> PreviewActivity(int id)
+        {
+            return await PreviewGenericDocument<ActivityDocument>(id);
+        }
+
+        public async Task<IActionResult> PreviewStudent(int id)
+        {
+            return await PreviewGenericDocument<StudentDocument>(id);
+        }
+
+        private async Task<IActionResult> PreviewGenericDocument<T>(int id) where T : BaseDocument
+        {
+            T doc = await _context.Set<T>().FindAsync(id);
+
+            if (doc == null)
+                return NotFound();
+
+            return new FileContentResult(System.IO.File.ReadAllBytes(doc.FilePath), doc.FileType);
+        }
+        // END Preview File
     }
 }

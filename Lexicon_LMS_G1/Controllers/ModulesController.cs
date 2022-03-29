@@ -23,23 +23,20 @@ namespace Lexicon_LMS_G1.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IBaseRepository<Module> _moduleRepo;
-        private readonly IBaseRepository<Course> _courseRepo;
-        UserManager<ApplicationUser> _userManager;
         private readonly IBaseRepository<Module> _baseModuleRepo;
         private readonly IBaseRepository<Course> _baseCourseRepo;
         private readonly IModuleRepository _moduleRepo;
+        UserManager<ApplicationUser> _userManager;
 
         public ModulesController(ApplicationDbContext context, IMapper mapper,
             IBaseRepository<Module> baseModuleRepo, IBaseRepository<Course> baseCourseRepo,
-            IModuleRepository moduleRepo, IBaseRepository<Module> moduleRepo, IBaseRepository<Course> courseRepo, UserManager<ApplicationUser> userManager)
+            IModuleRepository moduleRepo, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _mapper = mapper;
             _baseModuleRepo = baseModuleRepo;
             _baseCourseRepo = baseCourseRepo;
             _moduleRepo = moduleRepo;
-            _courseRepo = courseRepo;
             _userManager = userManager;
         }
 

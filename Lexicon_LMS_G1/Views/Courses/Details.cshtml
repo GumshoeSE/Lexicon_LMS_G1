@@ -40,6 +40,9 @@
                 <a asp-controller="Documents" asp-action="DownloadCourse" asp-route-id="@item?.Id">
                     Download @item.Name
                 </a>
+                <a target="_blank" asp-controller="Documents" asp-action="PreviewCourse" asp-route-id="@item?.Id">
+                    Preview @item.Name
+                </a>
             }
         </dd>
     </dl>
