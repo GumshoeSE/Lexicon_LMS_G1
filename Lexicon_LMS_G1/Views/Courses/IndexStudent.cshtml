@@ -3,8 +3,9 @@
 @{
     ViewData["Title"] = @Html.DisplayFor(m => m.Name);
 }
-
-<h1 class="text-center pb-3"> @Html.DisplayFor(m => m.Name) </h1>
+@*<div class="  fs-1">*@
+    <h1 class="pb-3 text-center "><a class="btn btn-light fs-1" data-bs-toggle="modal" data-bs-target="#description"> @Html.DisplayFor(m => m.Name)  </a></h1>
+@*</div>*@
 
 <div class="container">
     <div class="row">
@@ -22,7 +23,7 @@
                         </h2>
                         <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#lateAssignments">
                             <div class="accordion-body">
-                                @Html.DisplayFor(a => assignment.Description)
+                                @Html.DisplayFor(a => assignment.Description) <i class="fa-solid fa-circle-info"></i>
                                 <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
                             </div>
                         </div>
@@ -123,6 +124,23 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal" id="description" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Html.DisplayFor(c =>c.Name)</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h6>Description</h6>
+                <p>@Html.DisplayFor(c => c.Description)</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>

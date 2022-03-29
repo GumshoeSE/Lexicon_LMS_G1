@@ -244,6 +244,7 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 Name = (await _context.Courses.FindAsync(courseId)).Name,
                 Id = (int)courseId,
+                Description = (await _context.Courses.FindAsync(courseId)).Description,
                 Assignments = await _context.Activities
                     .Include(a => a.ActivityType)
                     .Include(a => a.Module)
