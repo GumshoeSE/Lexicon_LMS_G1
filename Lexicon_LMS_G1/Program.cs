@@ -55,7 +55,7 @@ using (IServiceScope scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        //throw;
+        throw;
     }
 }
 
