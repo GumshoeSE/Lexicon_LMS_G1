@@ -36,3 +36,18 @@ ul.timeline {
 .rounded-xl {
     border-radius: .5rem !important;
 }
+
+.close {
+    position: absolute;
+    right: 1rem;
+}
+
+.textContainer {
+    height: 45px;
+    line-height: 40px;
+}
+
+.textContainer p {
+    vertical-align: middle;
+    display: inline-block;
+}

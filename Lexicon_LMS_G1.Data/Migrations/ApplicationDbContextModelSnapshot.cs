@@ -391,6 +391,9 @@ namespace Lexicon_LMS_G1.Data.Migrations
                     b.Property<int>("ActivityId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("FinishedDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
 
