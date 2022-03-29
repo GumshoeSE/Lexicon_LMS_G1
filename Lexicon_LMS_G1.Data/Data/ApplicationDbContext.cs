@@ -27,6 +27,32 @@ namespace Lexicon_LMS_G1.Data.Data
             base.OnModelCreating(builder);
 
             builder.Entity<UserFinishedActivity>().HasKey(ufa => new {ufa.ApplicationUserId, ufa.ActivityId});
+
+
+            builder.Entity<Course>()
+                .HasMany(e => e.Documents)
+                .WithOne(s => s.Course)
+                .HasForeignKey(s => s.CourseId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<Course>()
+                .HasMany(c => c.AttendingStudents)
+                .WithOne(s => s.Course)
+                .HasForeignKey(s => s.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.Entity<UserFinishedActivity>()
+                .HasOne(u => u.Activity)
+                .WithMany(a => a.FinishedActivities)
+                .HasForeignKey(a => a.ActivityId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.Entity<UserFinishedActivity>()
+                .HasOne(u => u.ApplicationUser)
+                .WithMany(a => a.FinishedActivities)
+                .HasForeignKey(a => a.ApplicationUserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
         }
 
     }

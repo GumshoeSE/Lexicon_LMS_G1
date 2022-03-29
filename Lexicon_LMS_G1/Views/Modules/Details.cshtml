@@ -126,10 +126,11 @@
                                                 <button type="button"
                                                     data-ref="@item.Id"
                                                     data-name="@item.Name"
+                                                    data-delete-id="deleteId1"
                                                     data-type="Activity"
-                                                    class="btn btn-danger deleter hidden"
+                                                    class="btn btn-danger deleter"
                                                     data-bs-toggle="modal"
-                                                    data-bs-target="#delete">
+                                                    data-bs-target="#deleteModal1">
                                                     Remove
                                                 </button>
                                             </div>
@@ -179,7 +180,19 @@
             <div class="border border-3 rounded-xl p-3" id="multi-container">
                 <div id="moduleDetails">
                     <div class="row">
-                        <h2 class="text-center col-md-4 offset-md-4">Details</h2>
+                        <div class="col-md-4">
+                            <button type="button"
+                                data-ref="@Model.Id"
+                                data-name="@Model.Name"
+                                data-delete-id="deleteId2"
+                                data-type="Module"
+                                class="btn btn-outline-danger deleter"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal2">
+                                Delete
+                            </button>
+                        </div>
+                        <h2 class="text-center col-md-4">Details</h2>
                         <div class="col-md-4 align-content-center text-end">
                             <button type="button" id="editModuleBtn" class="btn btn-outline-primary"> Edit </button>
                         </div>
@@ -328,7 +341,10 @@
 @Html.Hidden("ModuleStartTime", Model.StartTime)
 @Html.Hidden("LastActivityEndTime", lastActivityEndDateTime)
 
-<vc:delete></vc:delete>
+<vc:delete delete-modal-id="deleteModal1" delete-controller="activities" return-controller="Modules" return-id="@Model.Id"></vc:delete>
+
+<vc:delete delete-modal-id="deleteModal2" delete-controller="modules" return-controller="Courses" return-action="IndexTeacher"></vc:delete>
+
 
 @section Scripts {
 <script src="~/js/module-details.js"></script>

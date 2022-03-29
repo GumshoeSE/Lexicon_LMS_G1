@@ -76,9 +76,9 @@ namespace Lexicon_LMS_G1.Data.Data
         {
             ICollection<Course> courses = await context.Courses.ToListAsync();
             
-            courseCol = courses;
-
             if(courses.Any()) return;
+
+            courseCol = courses;
 
             int coursesToAddAmount = faker.Random.Int(14, 27);
 
