@@ -8,11 +8,6 @@
 
     $("#addActivityBtn").on("click", function () {
         showDiv($("#addActivity"));
-
-       // $("#addActivtyStartDate").val($("#LastActivityEndTime").val().substr(0, 16));
-        // $("#addActivtyEndDate").val($("#LastActivityEndTime").val().substr(0, 16));
-        $("#addActivtyStartDate").val("2022-03-30T20:00");
-        $("#addActivtyEndDate").val("2022-03-30T21:00");
     });
 
     $(".editActivityBtn").on("click", function () {
