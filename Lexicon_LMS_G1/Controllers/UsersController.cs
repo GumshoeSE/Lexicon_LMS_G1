@@ -35,7 +35,7 @@ namespace Lexicon_LMS_G1.Controllers
             if (!int.TryParse(_config["LMS:Users:PageSize"], out int pageSize))
                 pageSize = 5;  
             
-            //pageIndex = pageIndex ?? 1;
+            pageIndex = pageIndex ?? 1;
             if (pageIndex < 1) pageIndex = 1;
             if (pageIndex >= int.MaxValue / 2 - (pageSize + 1))
                 pageIndex = int.MaxValue / 2 - 1 - pageSize;
@@ -61,7 +61,6 @@ namespace Lexicon_LMS_G1.Controllers
 
             var totalPages = (int)Math.Ceiling(userCount / (double)pageSize);
 
-            pageIndex ??= 1;
             if (pageIndex < 1) pageIndex = 1;
             if (pageIndex > totalPages) pageIndex = totalPages;
 
@@ -80,11 +79,12 @@ namespace Lexicon_LMS_G1.Controllers
                 var user = mapper.Map<UserViewModel>(usersToReturn[i]);
                 user.Role = (await userManager.GetRolesAsync(usersToReturn[i])).First().ToString();
                 viewUsers.Add(user);
+                logger
             }
 
-            var userCount = users.Count();
+            
 
-            var viewUsers = mapper.Map<List<UserViewModel>>(usersToReturn);
+            //var viewUsers = mapper.Map<List<UserViewModel>>(usersToReturn);
 
             var viewUser = new UsersViewModel
             {

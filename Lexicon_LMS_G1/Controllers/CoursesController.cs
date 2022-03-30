@@ -39,7 +39,7 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 return RedirectToAction(nameof(IndexTeacher));
             }
-            else if(User.IsInRole("Student"))
+            else if (User.IsInRole("Student"))
             {
                 return RedirectToAction(nameof(StudentIndex));
             }
@@ -77,13 +77,13 @@ namespace Lexicon_LMS_G1.Controllers
         //        return NotFound();
         //    }
 
-            var course = await _context.Courses
-                .Include(c => c.Documents)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (course == null)
-            {
-                return NotFound();
-            }
+        //var course = await _context.Courses
+        //    .Include(c => c.Documents)
+        //    .FirstOrDefaultAsync(m => m.Id == id);
+        //if (course == null)
+        //{
+        //    return NotFound();
+        //}
 
         //    return View(course);
         //}
@@ -106,9 +106,9 @@ namespace Lexicon_LMS_G1.Controllers
             if (ModelState.IsValid)
             {
                 var course = _mapper.Map<Course>(viewModel);
-                
 
-                if(viewModel.Document != null)
+
+                if (viewModel.Document != null)
                 {
                     string file;
 
