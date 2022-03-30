@@ -450,7 +450,7 @@
                                             </div>
                                             <div>
                                                 <label class="control-label">Description</label>
-                                                <input type="text" class="form-control" value="description" id="addActivityFileDescription"/>
+                                                <input type="text" class="form-control" id="addActivityFileDescription"/>
                                             </div>
                                         </div>
                                         <div class="modal-footer justify-content-between">
@@ -514,7 +514,7 @@
                             <li class="border border-1 list-group-item">
                                 <div class="row justify-content-between d-flex">
                                     <div class="col-md-6 textContainer">
-                                        <p class="fs-5">@item.Name @docCount</p>
+                                        <p class="fs-5">Document @docCount</p>
                                     </div>
                                     <div class="col-md-6 justify-content-evenly d-inline-flex align-items-center">
                                         <a target="_blank" asp-controller="Documents" asp-action="PreviewModule" asp-route-id="@item?.Id">
