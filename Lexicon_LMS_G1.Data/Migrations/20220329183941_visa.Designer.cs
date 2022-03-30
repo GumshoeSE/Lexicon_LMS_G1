@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Lexicon_LMS_G1.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20220329112212_AAAA")]
-    partial class AAAA
+    [Migration("20220329183941_visa")]
+    partial class visa
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -392,6 +392,9 @@ namespace Lexicon_LMS_G1.Data.Migrations
 
                     b.Property<int>("ActivityId")
                         .HasColumnType("int");
+
+                    b.Property<DateTime>("FinishedDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<bool>("IsCompleted")
                         .HasColumnType("bit");
