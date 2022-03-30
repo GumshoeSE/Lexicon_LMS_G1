@@ -79,7 +79,7 @@ namespace Lexicon_LMS_G1.Controllers
                 var user = mapper.Map<UserViewModel>(usersToReturn[i]);
                 user.Role = (await userManager.GetRolesAsync(usersToReturn[i])).First().ToString();
                 viewUsers.Add(user);
-                logger
+                
             }
 
             
