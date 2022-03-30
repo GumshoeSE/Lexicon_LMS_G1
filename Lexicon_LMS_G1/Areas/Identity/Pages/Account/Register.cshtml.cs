@@ -129,7 +129,7 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
 
                     if(!(await _userManager.AddToRoleAsync(user, Input.Role)).Succeeded) throw new Exception($"Failed to set {Input.FirstName} as a {Input.Role}");
 
-                    return LocalRedirect(returnUrl);
+                    return RedirectToAction("Index","Users");
                     
                 }
                 foreach (var error in result.Errors)
