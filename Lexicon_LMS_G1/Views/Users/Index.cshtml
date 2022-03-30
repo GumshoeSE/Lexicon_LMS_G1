@@ -80,11 +80,9 @@
                                 @Html.DisplayFor(modelItem => item.Role)
                             </td>
                             <td>
-                                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> 
-                                <span>|</span>
-                                 <a asp-action="Details" asp-route-id="@item.Id">Details</a>
-                                <span>|</span>
-                                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary">Edit</a>
+                                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-primary">Details</a>
+
                             </td>
                         </tr>
                     }
@@ -97,15 +95,51 @@
             }
             <div class="text-center p-3">
                 <a asp-action="Index" asp-route-pageIndex="@(Model.CurrentPageIndex - 1)" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary @prevDisabled"><</a>
-                @for (int i = 1; i <= Model.TotalPages; i++)
+                @if (Model.TotalPages > 5)
                 {
-                    @if (i != Model.CurrentPageIndex)
+                    if (Model.CurrentPageIndex == 4)
                     {
-                        <a asp-action="Index" asp-route-pageIndex="@i" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary">@i</a>
+                        <a asp-action="Index" asp-route-pageIndex="1" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary">1</a>
                     }
-                    else
+                    if (Model.CurrentPageIndex > 4)
                     {
-                        <span class="btn btn-secondary">@i</span>
+                        <a asp-action="Index" asp-route-pageIndex="1" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary">1</a>
+
+                        <span>...</span>
+                    }
+                    @for (int i = (@Model.CurrentPageIndex - 2); i <= (@Model.CurrentPageIndex + 2); i++)
+                    {
+                        @if (i != Model.CurrentPageIndex && i > 0 && i <= Model.TotalPages)
+                        {
+                            <a asp-action="Index" asp-route-pageIndex="@i" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary">@i</a>
+                        }
+                        else if (i > 0 && i == Model.CurrentPageIndex)
+                        {
+                            <span class="btn btn-secondary">@i</span>
+                        }
+                    }
+                    @if (Model.TotalPages > Model.CurrentPageIndex + 3)
+                    {
+                        <span>...</span>
+                        <a asp-action="Index" asp-route-pageIndex="@Model.TotalPages" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary">@Model.TotalPages</a>
+                    }
+                    @if (Model.CurrentPageIndex + 3 == Model.TotalPages)
+                    {
+                        <a asp-action="Index" asp-route-pageIndex="@Model.TotalPages" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary">@Model.TotalPages</a>
+                    }
+                }
+                else
+                {
+                    @for (int i = 1; i <= Model.TotalPages; i++)
+                    {
+                        @if (i != Model.CurrentPageIndex)
+                        {
+                            <a asp-action="Index" asp-route-pageIndex="@i" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary">@i</a>
+                        }
+                        else
+                        {
+                            <span class="btn btn-secondary">@i</span>
+                        }
                     }
                 }
                 <a asp-action="Index" asp-route-pageIndex="@(Model.CurrentPageIndex + 1)" asp-route-searchQuery="@Model.SearchQuery" class="btn btn-light border border-secondary @nextDisabled">></a>

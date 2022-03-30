@@ -1,15 +1,28 @@
 ﻿@model Lexicon_LMS_G1.Entities.Entities.Module
 
-<h3 class="px-3">
+
+<h3 class="px-3 text-center">
     @Html.DisplayFor(a => Model.Name)
 </h3>
+    
+
+        <p class="ms-2 mb-1" ><strong>Duration:</strong> @Model.StartTime.ToString("yy/MM/dd") <strong>-</strong> @Model.EndTime.ToString("yy/MM/dd")</p>
+ <h5 class="ps-2">Description:</h5>
 <p class="px-3">
+   
     @Html.DisplayFor(a => Model.Description)
 </p>
 <h5 class="text-center">Activities in the module:</h5>
 <div class="list-group" id="activitiesButtons">
     @foreach (var item in Model.Activities)
     {
-        <button class="list-group-item btn btn-primary activitySelectButton" data-parent="@item.Module.CourseId" data-activity="@item.Id" id="@($"activityButton")@item.Id"> @Html.DisplayFor(a => item.Name) </button>
+        <button class="list-group-item btn btn-primary activitySelectButton" data-parent="@item.Module.CourseId" data-activity="@item.Id" id="@($"activityButton")@item.Id"> 
+            <div class="fs-5">
+            @Html.DisplayFor(a => item.Name)
+            </div>
+            <div>
+               <strong>Duration:</strong> @item.StartDate.ToString("yyyy/MM/dd") <strong>-</strong> @item.EndDate.ToString("yyyy/MM/dd")
+            </div>
+        </button>
     }
 </div>

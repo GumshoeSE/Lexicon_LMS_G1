@@ -174,17 +174,19 @@ namespace Lexicon_LMS_G1.Controllers
         [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id, CourseEditViewModel viewModel)
         {
-            var course = _mapper.Map<Course>(viewModel);
-            if (id != course.Id)
+            
+            if (id != viewModel.Id)
             {
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
+                var course = _mapper.Map<Course>(viewModel);
                 try
                 {
                     courseRepo.Update(course);
+                    
 
                     if (viewModel.Document != null)
                     {
@@ -231,7 +233,7 @@ namespace Lexicon_LMS_G1.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(course);
+            return View(viewModel);
         }
 
         // POST: Courses/Delete/5

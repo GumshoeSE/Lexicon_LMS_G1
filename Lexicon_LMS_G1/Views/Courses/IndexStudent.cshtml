@@ -4,13 +4,13 @@
     ViewData["Title"] = @Html.DisplayFor(m => m.Name);
 }
 @*<div class="  fs-1">*@
-    <h1 class="pb-3 text-center "><a class="btn btn-light fs-1 border border-2" data-bs-toggle="modal" data-bs-target="#description"> @Html.DisplayFor(m => m.Name) <i class="fa-solid fa-circle-info fa-bounce"></i> </a></h1>
+<h1 class="pb-3 text-center "><a class="btn btn-light fs-1 border border-2" data-bs-toggle="modal" data-bs-target="#description"> @Html.DisplayFor(m => m.Name) <i class="fa-solid fa-circle-info fa-bounce"></i> </a></h1>
 @*</div>*@
 
 <div class="container">
     <div class="row">
-        <div class="border rounded col-5 p-0 bg-light">
-            <h2 class="px-3"> Assignments </h2>
+        <div class="border rounded col-6 p-0 bg-light">
+            <h2 class="px-3 text-center"> Assignments </h2>
             <h5 class="px-3">Late Assignments</h5>
             <div class="accordion" id="lateAssignments">
                 @foreach (var assignment in Model!.LateAssignments)
@@ -19,12 +19,13 @@
                         <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
                                 @Html.DisplayFor(a => assignment.Name)
+                                <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
                             </button>
                         </h2>
                         <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#lateAssignments">
                             <div class="accordion-body">
                                 @Html.DisplayFor(a => assignment.Description) <i class="fa-solid fa-circle-info"></i>
-                                <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
+
                                 <button class="btn btn-info uploadAssignment" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
                                     +
                                 </button>
@@ -40,13 +41,17 @@
                     <div class="accordion-item">
                         <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
-                                @Html.DisplayFor(a => assignment.Name)
+                                <div>
+                                    <div class="pb-1 fs-5"> @Html.DisplayFor(a => assignment.Name)</div>
+                                    <div><strong>Time Left:</strong> @((assignment.EndDate - DateTime.Now).Days) days</div>
+                                </div>
                             </button>
                         </h2>
                         <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
                             <div class="accordion-body">
+                                <div>
                                 @Html.DisplayFor(a => assignment.Description)
-                                <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
+                                </div>
                                 <button class="btn btn-info uploadAssignment" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
                                     +
                                 </button>
@@ -63,6 +68,7 @@
                         <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
                                 @Html.DisplayFor(a => assignment.Name)
+
                             </button>
                         </h2>
                         <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
@@ -74,8 +80,8 @@
                 }
             </div>
         </div>
-        <div class="col-2"></div>
-        <div class="col-5 border rounded p-0 bg-light d-flex flex-column" id="modules">
+
+        <div class="col-5 offset-1 border rounded p-0 bg-light d-flex flex-column" id="modules">
             <div class="mb-auto">
                 <nav id="modulesNavBar" class="px-3 py-2" style="--bs-breadcrumb-divider: '>';">
                     <ol class="breadcrumb">
