@@ -19,6 +19,6 @@ namespace Lexicon_LMS_G1.Entities.Entities
 
         public ICollection<Activity> Activities { get; set; } = new List<Activity>();  
 
-        public ICollection<Document> Documents { get; set; } = new List<Document>();
+        public ICollection<ModuleDocument> Documents { get; set; } = new List<ModuleDocument>();
     }
 }

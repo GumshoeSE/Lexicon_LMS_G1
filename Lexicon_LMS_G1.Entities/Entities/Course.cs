@@ -14,7 +14,7 @@ namespace Lexicon_LMS_G1.Entities.Entities
         public DateTime StartTime { get; set; }
 
         public ICollection<Module> Modules { get; set; } = new List<Module>();
-        public ICollection<Document> Documents { get; set; } = new List<Document>();
+        public ICollection<CourseDocument> Documents { get; set; } = new List<CourseDocument>();
         public ICollection<ApplicationUser> AttendingStudents { get; set; } = new List<ApplicationUser>();
     }
 }

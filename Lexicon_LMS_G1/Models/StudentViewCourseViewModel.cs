@@ -6,6 +6,7 @@ namespace Lexicon_LMS_G1.Models
     {
         public string Name { get; set; }
         public int Id { get; set; }
+        public string Description { get; set; }
         public IEnumerable<Activity> Assignments { get; set; }
         public IEnumerable<Activity> FinishedAssignments { get; set; }
         public IEnumerable<ApplicationUser> Attendees { get; set; }

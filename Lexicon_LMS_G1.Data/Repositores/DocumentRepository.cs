@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Lexicon_LMS_G1.Data.Repositores
 {
-    public class DocumentRepository : BaseRepository<Document>
+    public class DocumentRepository : BaseRepository<BaseDocument>
     {
         public DocumentRepository(ApplicationDbContext context) : base(context)
         {
