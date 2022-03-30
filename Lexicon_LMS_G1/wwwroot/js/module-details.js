@@ -83,18 +83,26 @@
 
     });
 
+    $("#addActivityFileCancel").on("click", function () {
+        $("#addActivityFile").val("");
+        $("#addActivityFileDescription").val("");
+    });
+
+    $("#detailsCollapser").on("click", function () {
+        if ($("#documentsCollapser").attr("aria-expanded") == "true" && $(this).attr("aria-expanded") == "true") {
+            $("#collapseDocuments").collapse('hide');
+        }
+    });
+
+    $("#documentsCollapser").on("click", function () {
+        if ($("#detailsCollapser").attr("aria-expanded") == "true" && $(this).attr("aria-expanded") == "true") {
+            $("#collapseDetails").collapse('hide');
+        }
+    });
+
     $("#submitAddActivityBtn").on("click", function () {
 
         if (!validateAddActivityForm()) return;
-
-        //let dto = {
-        //    Name: $("#addActivtyName").val().trim(),
-        //    Description: $("#addActivtyDescription").val().trim(),
-        //    StartDate: $("#addActivtyStartDate").val(),
-        //    EndDate: $("#addActivtyEndDate").val(),
-        //    ModuleId: $("#addActivityModuleId").val(),
-        //    ActivityTypeId: $("#addActivityTypeId").val()
-        //};
 
         let formData = new FormData();
 
