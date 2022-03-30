@@ -167,8 +167,8 @@ namespace Lexicon_LMS_G1.Data.Data
             {
                 Activity activityToAdd = new Activity
                 {
-                    Name = faker.Hacker.Phrase(),
-                    Description = faker.Lorem.Paragraph(),
+                    Name = faker.Hacker.Verb(),
+                    Description = faker.Hacker.Phrase(),
                     StartDate = activities.Last().EndDate,
                     EndDate = activities.Last().EndDate.AddDays(faker.Random.Int(2, 5)),
                     ActivityType = activityTypes.ElementAt(faker.Random.Int(0, activityTypeSize - 1))

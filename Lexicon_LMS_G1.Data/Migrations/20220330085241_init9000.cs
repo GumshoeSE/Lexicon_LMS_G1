@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Lexicon_LMS_G1.Data.Migrations
 {
-    public partial class init : Migration
+    public partial class init9000 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
