@@ -389,9 +389,9 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-3">
+                        <div class="row mb-3">
                             <label for="addActivtyStartDate" class="form-label h5">Start Time</label>
-                            <div class="input-group has-validation">
+                            <div class="input-group has-validation col-auto">
                                 <input type="datetime-local"
                                     class="form-control"
                                     id="addActivtyStartDate"
@@ -401,11 +401,14 @@
                                 <div id="validationAddActivityStartDate" class="invalid-feedback">
                                     <span>The activity has to start before it ends.</span>
                                 </div>
+                                <select class="form-select inputField" asp-items="@Model.TimeSuggestions" id="suggestStartDate" autocomplete="off">
+                                    <option selected="selected" value="">Suggestions</option>
+                                </select>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="addActivtyEndDate" class="form-label h5">End Time</label>
-                            <div class="input-group has-validation">
+                            <div class="input-group has-validation col-auto">
                                 <input type="datetime-local"
                                     class="form-control"
                                     id="addActivtyEndDate"
@@ -415,10 +418,13 @@
                                 <div id="validationAddActivityEndDate" class="invalid-feedback">
                                     <span>The activity has to start before it ends.</span>
                                 </div>
+                                <select class="form-select inputField" asp-items="@Model.TimeSuggestions" id="suggestEndDate" autocomplete="off">
+                                    <option selected="selected" value="">Suggestions</option>
+                                </select>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="addActivtyEndDate" class="form-label h5">Add Document</label>
+                            <label class="form-label h5">Add Document</label>
                             <div class="form-group mb-3">
                                 <button type="button" class="btn btn-primary list-group-item w-100" data-bs-toggle="modal" data-bs-target="#uploadModal">
                                     Add Document

@@ -151,6 +151,20 @@
     $("#addActivtyStartDate").on("change", validateAddActivityDateRange);
     $("#addActivtyEndDate").on("change", validateAddActivityDateRange);
 
+    $("#suggestStartDate").on("change", function () {
+        let val = $(this).val();
+        if (val != "") {
+            $("#addActivtyStartDate").val(val);
+        }
+    });
+
+    $("#suggestEndDate").on("change", function () {
+        let val = $(this).val();
+        if (val != "") {
+            $("#addActivtyEndDate").val(val);
+        }
+    });
+
     function validateAddActivityDateRange() {
 
         let moduleStartTime = $("#ModuleStartTime");
