@@ -244,11 +244,32 @@ namespace Lexicon_LMS_G1.Controllers
             var module = await _context.Modules
                 .Include(m => m.Course)
                 .Include(m => m.Activities)
+                .ThenInclude(a => a.Documents)
+                .Include(m => m.Documents)
                 .FirstOrDefaultAsync(m => m.Id == viewModel.DeleteId);
 
             if (module == null)
             {
                 return NotFound();
+            }
+
+            foreach (var file in module.Documents)
+            {
+                if (System.IO.File.Exists(file.FilePath))
+                    System.IO.File.Delete(file.FilePath);
+            }
+
+            _context.RemoveRange(module.Documents);
+
+            foreach (var activity in module.Activities)
+            {
+                foreach (var file in activity.Documents)
+                {
+                    if (System.IO.File.Exists(file.FilePath))
+                        System.IO.File.Delete(file.FilePath);
+                }
+
+                _context.RemoveRange(activity.Documents);
             }
 
             _context.Modules.Remove(module);
