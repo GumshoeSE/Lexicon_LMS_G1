@@ -361,7 +361,7 @@
                         <div class="mb-3">
                             <label for="addActivtyName" class="form-label h5">Name</label>
                             <div class="input-group has-validation">
-                                <input type="text" class="form-control req" id="addActivtyName">
+                                <input type="text" class="form-control req" id="addActivtyName" value="ActivtyName">
                                 <div id="validationAddActivityName" class="invalid-feedback">
                                     Please provide a name for the activity.
                                 </div>
@@ -372,7 +372,7 @@
                             <div class="input-group has-validation">
                                 <select class="form-select inputField req" id="addActivityTypeId"
                                         asp-items="@await activityTypeListService.GetSelectListAsync()">
-                                    <option selected="selected" value="" disabled>Please Select</option>
+                                    <option selected="selected" value="1" disabled>Please Select</option>
                                 </select>
                                 <div id="validationAddActivityTypeId" class="invalid-feedback">
                                     Please select a activity type.
@@ -382,7 +382,7 @@
                         <div class="mb-3">
                             <label for="addActivtyDescription" class="form-label h5">Description</label>
                             <div class="input-group has-validation">
-                                <textarea class="form-control req" id="addActivtyDescription" rows="3"></textarea>
+                                <textarea class="form-control req" id="addActivtyDescription" rows="3">ActivtyDescription</textarea>
                                 <div id="validationAddActivityDescription" class="invalid-feedback">
                                     Please provide a description for the activity.
                                 </div>
@@ -391,8 +391,12 @@
                         <div class="mb-3">
                             <label for="addActivtyStartDate" class="form-label h5">Start Time</label>
                             <div class="input-group has-validation">
-                                <input type="datetime-local" class="form-control"
-                                       id="addActivtyStartDate" min="@Model.StartTime" max="@Model.EndTime">
+                                <input type="datetime-local"
+                                    class="form-control"
+                                    id="addActivtyStartDate"
+                                    min="@Model.StartTime"
+                                    max="@Model.EndTime"
+                                    value="@(DateTime.Now)">
                                 <div id="validationAddActivityStartDate" class="invalid-feedback">
                                     <span>The activity has to start before it ends.</span>
                                 </div>
@@ -401,8 +405,12 @@
                         <div class="mb-3">
                             <label for="addActivtyEndDate" class="form-label h5">End Time</label>
                             <div class="input-group has-validation">
-                                <input type="datetime-local" class="form-control"
-                                       id="addActivtyEndDate" min="@Model.StartTime" max="@Model.EndTime">
+                                <input type="datetime-local"
+                                    class="form-control"
+                                    id="addActivtyEndDate"
+                                    min="@Model.StartTime"
+                                    max="@Model.EndTime"
+                                    value="@(DateTime.Now.AddHours(1))">
                                 <div id="validationAddActivityEndDate" class="invalid-feedback">
                                     <span>The activity has to start before it ends.</span>
                                 </div>
@@ -426,15 +434,14 @@
                                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                     <div class="modal-content">
                                         <div>
-                                            <label asp-for="Document" class="control-label"></label>
-                                            <input asp-for="Document" type="file" class="form-control" />
+                                            <label class="control-label"></label>
+                                            <input type="file" class="form-control" id="addActivityFile" />
                                         </div>
                                         <div>
-                                            <label asp-for="DocumentDescription" class="control-label"></label>
-                                            <input asp-for="DocumentDescription" type="text" class="form-control" />
+                                            <label class="control-label"></label>
+                                            <input type="text" class="form-control" value="description" id="addActivityFileDescription"/>
                                         </div>
                                         <button type="button" data-bs-toggle="modal" data-bs-target="#uploadModal">Close</button>
-                                        <input type="submit" value="Done" />
                                     </div>
                                 </div>
                             </div>

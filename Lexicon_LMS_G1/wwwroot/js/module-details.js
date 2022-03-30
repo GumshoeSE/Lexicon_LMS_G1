@@ -9,8 +9,10 @@
     $("#addActivityBtn").on("click", function () {
         showDiv($("#addActivity"));
 
-        $("#addActivtyStartDate").val($("#LastActivityEndTime").val().substr(0, 16));
-        $("#addActivtyEndDate").val($("#LastActivityEndTime").val().substr(0, 16));
+       // $("#addActivtyStartDate").val($("#LastActivityEndTime").val().substr(0, 16));
+        // $("#addActivtyEndDate").val($("#LastActivityEndTime").val().substr(0, 16));
+        $("#addActivtyStartDate").val("2022-03-30T20:00");
+        $("#addActivtyEndDate").val("2022-03-30T21:00");
     });
 
     $(".editActivityBtn").on("click", function () {
@@ -85,20 +87,36 @@
 
         if (!validateAddActivityForm()) return;
 
-        let dto = {
-            Name: $("#addActivtyName").val().trim(),
-            Description: $("#addActivtyDescription").val().trim(),
-            StartDate: $("#addActivtyStartDate").val(),
-            EndDate: $("#addActivtyEndDate").val(),
-            ModuleId: $("#addActivityModuleId").val(),
-            ActivityTypeId: $("#addActivityTypeId").val()
-        };
+        //let dto = {
+        //    Name: $("#addActivtyName").val().trim(),
+        //    Description: $("#addActivtyDescription").val().trim(),
+        //    StartDate: $("#addActivtyStartDate").val(),
+        //    EndDate: $("#addActivtyEndDate").val(),
+        //    ModuleId: $("#addActivityModuleId").val(),
+        //    ActivityTypeId: $("#addActivityTypeId").val()
+        //};
+
+        let formData = new FormData();
+
+        formData.append('Name', $("#addActivtyName").val().trim());
+        formData.append('Description', $("#addActivtyDescription").val().trim());
+        formData.append('StartDate', $("#addActivtyStartDate").val());
+        formData.append('EndDate', $("#addActivtyEndDate").val());
+        formData.append('ModuleId', $("#addActivityModuleId").val());
+        formData.append('ActivityTypeId', $("#addActivityTypeId").val());
+
+        let activityDoc = $("#addActivityFile").get(0);
+        let documents = activityDoc.files;
+
+        formData.append('Document', documents[0])
+        formData.append('DocumentDescription', $("#addActivityFileDescription").val().trim())
 
         $.ajax({
             url: $("#AddActivityUrl").val(),
             type: "PUT",
-            data: JSON.stringify(dto),
-            contentType: "application/json",
+            data: formData,
+            contentType: false,
+            processData: false,
             success: function (reply) {
                 if (!reply.success) {
                     let errors = reply.errors;
