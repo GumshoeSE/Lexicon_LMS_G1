@@ -119,89 +119,109 @@
                                         <hr />
                                         <div class="form-group d-flex px-3 justify-content-between">
                                             <div>
-                                                <button type="button" class="btn btn-primary list-group-item w-100" data-bs-toggle="modal"
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                                     data-bs-target="#activityModal@(item.Id)">
                                                     Documents
                                                 </button>
                                             </div>
                                             <div class="modal fade" id="activityModal@(item.Id)" tabindex="-1">
                                                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <h1>FILES for @item.Name</h1>
-                                                            <button type="button" data-bs-toggle="modal" data-bs-target="#activityModal@(item.Id)">X</button>
+                                                    <div class="modal-content" id="modalToggleContentA@(item.Id)">
+                                                        <div class="modal-header text-center d-block">
+                                                            <h4 class="d-inline-block align-self-center">Documents for activity </h4>
+                                                            <button type="button" 
+                                                                class="btn btn-outline-danger close btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#activityModal@(item.Id)">
+                                                                <i class="fa-solid fa-xmark"></i>
+                                                            </button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            @*
-                                                                <div>
-                                                                <label asp-for="Document" class="control-label"></label>
-                                                                <input asp-for="Document" type="file" class="form-control" />
-                                                                </div>
-                                                                <div>
-                                                                <label asp-for="DocumentDescription" class="control-label"></label>
-                                                                <input asp-for="DocumentDescription" type="text" class="form-control" />
-                                                                </div>
-                                                                <input type="submit" value="Done" />
-                                                            *@
                                                             @if (item.Documents.Count == 0)
                                                             {
-                                                                <p>no files lmao :D</p>
+                                                                <p>This activity currently has no documents</p>
                                                             }
-                                                            <ul>
+                                                            @{
+                                                                var actDocCount = 0;
+                                                            }
+                                                            <ul class="list-group">
                                                                 @foreach (var doc in item.Documents)
                                                                 {
-                                                                    <li>
-                                                                        <a asp-controller="Documents" asp-action="DownloadActivity" asp-route-id="@doc?.Id">
-                                                                            Download @doc.Name
-                                                                        </a>
-                                                                        <a target="_blank" asp-controller="Documents" asp-action="PreviewActivity" asp-route-id="@doc?.Id">
-                                                                            Preview @doc.Name
-                                                                        </a>
-                                                                        <form asp-controller="Documents" asp-action="DeleteActivity">
-                                                                            <input type="hidden" name="id" value="@doc.Id" />
-                                                                            <button>
-                                                                                Yeet
-                                                                            </button>
-                                                                        </form>
+                                                                    actDocCount++;   
+                                                                    <li class="border border-1 list-group-item">
+                                                                        <div class="row justify-content-between d-flex">
+                                                                            <div class="col-md-6 textContainer">
+                                                                                <p class="fs-5">@doc.Name @actDocCount</p>
+                                                                            </div>
+                                                                            <div class="col-md-6 justify-content-evenly d-inline-flex align-items-center">
+                                                                                <a target="_blank" asp-controller="Documents" asp-action="PreviewActivity" asp-route-id="@doc?.Id">
+                                                                                    <i class="fa-solid fa-eye"></i>
+                                                                                </a>
+                                                                                <a asp-controller="Documents" asp-action="DownloadActivity" asp-route-id="@doc?.Id">
+                                                                                    <i class="fa-solid fa-download"></i>
+                                                                                </a>
+                                                                                <form asp-controller="Documents" asp-action="DeleteActivity">
+                                                                                    <input type="hidden" name="id" value="@doc?.Id" />
+                                                                                    <button class="btn btn-sm">
+                                                                                        <i class="fa-solid fa-trash-can" style="color: red !important;"></i>
+                                                                                    </button>
+                                                                                </form>
+                                                                            </div>
+                                                                        </div>
                                                                     </li>
                                                                 }
                                                             </ul>
                                                         </div>
-                                                        <div class="modal-footer">
-
-                                                            <button type="button" data-bs-toggle="modal" data-bs-target="#uploadActivityModal@(item.Id)">
+                                                        <div class="modal-footer justify-content-between">
+                                                            <button type="button"
+                                                                class="btn btn-primary tg1"
+                                                                value="@item.Id">
                                                                 Upload
                                                             </button>
-                                                            <button type="button" data-bs-toggle="modal" data-bs-target="#activityModal@(item.Id)">Close</button>
+                                                            <button type="button"
+                                                                class="btn btn-danger"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#activityModal@(item.Id)">
+                                                                Close
+                                                            </button>
                                                         </div>
                                                     </div>
                                                     <!-- CODE HERE! -->
-                                            </div>
-                                                <div class="modal fade" id="uploadActivityModal@(item.Id)" tabindex="-1">
-                                                    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                                                        <div class="modal-content">
-                                                            <form asp-controller="Documents" asp-action="UploadActivityDocument" enctype="multipart/form-data">
+                                                    <div class="modal-content hidden" id="modalToggleContentB@(item.Id)">
+                                                        <div class="modal-header text-center d-block">
+                                                            <h4 class="d-inline-block align-self-center">Upload a document</h4>
+                                                            <button type="button" 
+                                                                class="btn btn-outline-danger close btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#activityModal@(item.Id)">
+                                                                <i class="fa-solid fa-xmark"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form id="formDocumentModules" asp-controller="Documents" asp-action="UploadActivityDocument" enctype="multipart/form-data">
                                                                 <div>
-                                                                    <label class="control-label">Filé</label>
-                                                                    <input name="document" type="file" class="form-control" />
+                                                                    <label asp-for="Document" class="control-label"></label>
+                                                                    <input asp-for="Document" name="document" type="file" class="form-control" />
                                                                 </div>
-                                                                <div>
-                                                                    <label class="control-label">Decrpton</label>
-                                                                    <input name="description" type="text" class="form-control" />
+                                                                <div class="mt-2">
+                                                                    <label class="control-label">Description</label>
+                                                                    <input asp-for="DocumentDescription" name="description" type="text" class="form-control" />
                                                                 </div>
                                                                 <div>
                                                                     <input type="hidden" name="activityId" value="@item.Id" />
                                                                     <input type="hidden" name="moduleId" value="@Model.Id" />
                                                                 </div>
-
-                                                                <button type="button" data-bs-toggle="modal" data-bs-target="#uploadActivityModal@(item.Id)">Close</button>
-                                                                <input type="submit" value="Done" />
                                                             </form>
+                                                        </div>
+                                                        <div class="modal-footer justify-content-between">
+                                                            <input type="submit" class="btn btn-primary" form="formDocumentModules" value="Done" />
+                                                            <button type="button" class="btn btn-danger tg2" value="@(item.Id)">
+                                                                Back
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-
                                             <div>
                                                 <button type="button" value="@item.Id" class="btn btn-primary editActivityBtn">Edit</button>
                                                 <button type="button"
@@ -258,10 +278,10 @@
             </div>
         </div>
         <div class="col-md-6">
-            <div class="border border-3 rounded-xl p-3" id="multi-container">
+            <div class="border border-3 rounded-xl ps-3 pe-3 pt-2 pb-2" id="multi-container">
                 <div id="moduleDetails">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-4 align-self-center">
                             <button type="button"
                                     data-ref="@Model.Id"
                                     data-name="@Model.Name"
@@ -273,19 +293,32 @@
                                 Delete
                             </button>
                         </div>
-                        <h2 class="text-center col-md-4">Details</h2>
-                        <div class="col-md-4 align-content-center text-end">
+                        <div class="col-md-4">
+                            <button
+                                data-bs-toggle="collapse"
+                                data-bs-target=".multi-collapse"
+                                class="btn btn-sm"
+                                type="button"
+                                aria-expanded="false"
+                                aria-controls="collapseDetails collapseDocuments">
+                                <h2 class="">Details <i class="fa-solid fa-angle-down"></i></h2>
+                            </button>
+                        </div>
+                       
+                        <div class="col-md-4 align-self-center text-end">
                             <button type="button" id="editModuleBtn" class="btn btn-outline-primary"> Edit </button>
                         </div>
                     </div>
-                    <hr />
-                    <h5>Duration</h5>
-                    <p class="fw-light" style="margin: 0 !important;">@Model.StartTime.ToString("g")</p>
-                    <p class="fw-light">@Model.EndTime.ToString("g")</p>
-                    <h5>Name</h5>
-                    <p class="fw-light">@Html.DisplayFor(modelItem => Model.Name)</p>
-                    <h5>Description</h5>
-                    <p class="fw-light">@Html.DisplayFor(modelItem => Model.Description)</p>
+                    <div class="collapse show multi-collapse" id="collapseDetails">
+                        <hr />
+                        <h5>Duration</h5>
+                        <p class="fw-light" style="margin: 0 !important;">@Model.StartTime.ToString("g")</p>
+                        <p class="fw-light">@Model.EndTime.ToString("g")</p>
+                        <h5>Name</h5>
+                        <p class="fw-light">@Html.DisplayFor(modelItem => Model.Name)</p>
+                        <h5>Description</h5>
+                        <p class="fw-light">@Html.DisplayFor(modelItem => Model.Description)</p>
+                    </div>
                 </div>
                 <div id="editModule" class="hidden">
                     <h2 class="text-center">Edit Module</h2>
@@ -409,53 +442,93 @@
                     </form>
                 </div>
             </div>
-            <div class="border border border-3 rounded-xl mt-3 p-3">
-                <h2 class="text-center">Documents</h2>
-
-                <div class="form-group mb-3">
-                    <button type="button" class="btn btn-primary list-group-item w-100" data-bs-toggle="modal" data-bs-target="#uploadModalModule">
-                        Add Document
-                    </button>
-                </div>
-
-                <ul>
-                    @foreach (var item in Model.Documents)
-                    {
-                        <li>
-                            <a target="_blank" asp-controller="Documents" asp-action="PreviewModule" asp-route-id="@item?.Id">
-                                @Html.DisplayFor(modelItem => item.Name)
-                            </a>
-                            <form asp-controller="Documents" asp-action="DeleteModule">
-                                <input type="hidden" name="id" value="@item.Id" />
-                                <button>
-                                    Yeet the file
-                                </button>
-                            </form>
-                            <a asp-controller="Documents" asp-action="DownloadModule" asp-route-id="@item?.Id">
-                                Download @item.Name
-                            </a>
-                        </li>
+            
+            <div class="border border-3 rounded-xl ps-3 pe-3 pt-2 pb-2 mt-3">
+                <div class="collapse multi-collapse" id="collapseDocuments">
+                    @{
+                        int docCount = 0;
                     }
-                </ul>
-                <div class="col-5 p-0">
-                    <div class="modal fade" id="uploadModalModule" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                            <div class="modal-content">
-                                <form asp-controller="Documents" asp-action="UploadModuleDocument" enctype="multipart/form-data">
-                                    <div>
-                                        <label asp-for="Document" class="control-label"></label>
-                                        <input asp-for="Document" name="document" type="file" class="form-control" />
+                    @if (Model.Documents.Count == 0)
+                        {
+                            <p class="text-center fw-light">This module currently has no documents</p>
+                        }
+                    <ul class="list-group">
+                        @foreach (var item in Model.Documents)
+                        {
+                            docCount++;   
+                            <li class="border border-1 list-group-item">
+                                <div class="row justify-content-between d-flex">
+                                    <div class="col-md-6 textContainer">
+                                        <p class="fs-5">@item.Name @docCount</p>
                                     </div>
-                                    <div>
-                                        <label asp-for="DocumentDescription" class="control-label"></label>
-                                        <input asp-for="DocumentDescription" name="description" type="text" class="form-control" />
+                                    <div class="col-md-6 justify-content-evenly d-inline-flex align-items-center">
+                                        <a target="_blank" asp-controller="Documents" asp-action="PreviewModule" asp-route-id="@item?.Id">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <a asp-controller="Documents" asp-action="DownloadModule" asp-route-id="@item?.Id">
+                                            <i class="fa-solid fa-download"></i>
+                                        </a>
+                                        <form asp-controller="Documents" asp-action="DeleteModule">
+                                            <input type="hidden" name="id" value="@item?.Id" />
+                                            <button class="btn btn-sm">
+                                                <i class="fa-solid fa-trash-can" style="color: red !important;"></i>
+                                            </button>
+                                        </form>
                                     </div>
-                                    <div>
-                                        <input type="hidden" name="moduleId" value="@Model.Id" />
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                    <hr />
+                </div>
+                <div class="row">
+                    <div class="offset-md-3 col-md-6 text-center">
+                        <button
+                            data-bs-toggle="collapse"
+                            data-bs-target=".multi-collapse"
+                            class="btn text-nowrap"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="collapseDocuments collapseDetails">
+                            <span class="h2">Documents <i class="fa-solid fa-angle-up"></i></span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 text-end align-self-center">
+                        <button type="button"
+                            class="btn btn-outline-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#uploadModalModule">
+                            Upload
+                        </button>
+                    </div>
+                    <div class="col-5 p-0">
+                        <div class="modal fade" id="uploadModalModule" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header text-center d-block">
+                                        <h4 class="d-inline-block align-self-center">Upload a document</h4>
+                                        <button type="button" class="btn btn-outline-danger close btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModalModule"><i class="fa-solid fa-xmark"></i></button>
                                     </div>
-                                    <button type="button" data-bs-toggle="modal" data-bs-target="#uploadModal">Close</button>
-                                    <input type="submit" value="Done" />
-                                </form>
+                                    <div class="modal-body">
+                                        <form id="formDocumentModules" asp-controller="Documents" asp-action="UploadModuleDocument" enctype="multipart/form-data">
+                                            <div>
+                                                <label asp-for="Document" class="control-label"></label>
+                                                <input asp-for="Document" name="document" type="file" class="form-control" />
+                                            </div>
+                                            <div class="mt-2">
+                                                <label class="control-label">Description</label>
+                                                <input asp-for="DocumentDescription" name="description" type="text" class="form-control" />
+                                            </div>
+                                            <div>
+                                                <input type="hidden" name="moduleId" value="@Model.Id" />
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <input type="submit" class="btn btn-primary" form="formDocumentModules" value="Done" />
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#uploadModalModule">Close</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -480,10 +553,17 @@
 <script src="~/js/module-details.js"></script>
 
     @if (timespan == TimeSpan.Zero){
-<script>
-    $(document).ready(function(){
-        $('[data-toggle="tooltip"]').tooltip();
-    });
-</script>
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $('.tg1, .tg2').on('click', function () {
+                let id = $(this).val();
+                $('#modalToggleContentA' + id).toggleClass('hidden');
+                $('#modalToggleContentB' + id).toggleClass('hidden');
+            });
+        });
+
+    </script>
     }
 }
