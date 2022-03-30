@@ -198,14 +198,14 @@
                                                             </button>
                                                         </div>
                                                         <div class="modal-body">
-                                                            <form id="formDocumentModules" asp-controller="Documents" asp-action="UploadActivityDocument" enctype="multipart/form-data">
+                                                            <form id="formDocumentActivities@(item.Id)" asp-controller="Documents" asp-action="UploadActivityDocument" enctype="multipart/form-data">
                                                                 <div>
-                                                                    <label asp-for="Document" class="control-label"></label>
-                                                                    <input asp-for="Document" name="document" type="file" class="form-control" />
+                                                                    <label class="control-label"></label>
+                                                                    <input name="document" type="file" class="form-control" />
                                                                 </div>
                                                                 <div class="mt-2">
                                                                     <label class="control-label">Description</label>
-                                                                    <input asp-for="DocumentDescription" name="description" type="text" class="form-control" />
+                                                                    <input name="description" type="text" class="form-control" />
                                                                 </div>
                                                                 <div>
                                                                     <input type="hidden" name="activityId" value="@item.Id" />
@@ -214,7 +214,7 @@
                                                             </form>
                                                         </div>
                                                         <div class="modal-footer justify-content-between">
-                                                            <input type="submit" class="btn btn-primary" form="formDocumentModules" value="Done" />
+                                                            <input type="submit" class="btn btn-primary" form="formDocumentActivities@(item.Id)" value="Done" />
                                                             <button type="button" class="btn btn-danger tg2" value="@(item.Id)">
                                                                 Back
                                                             </button>
@@ -512,12 +512,12 @@
                                     <div class="modal-body">
                                         <form id="formDocumentModules" asp-controller="Documents" asp-action="UploadModuleDocument" enctype="multipart/form-data">
                                             <div>
-                                                <label asp-for="Document" class="control-label"></label>
-                                                <input asp-for="Document" name="document" type="file" class="form-control" />
+                                                <label class="control-label"></label>
+                                                <input name="document" type="file" class="form-control" />
                                             </div>
                                             <div class="mt-2">
                                                 <label class="control-label">Description</label>
-                                                <input asp-for="DocumentDescription" name="description" type="text" class="form-control" />
+                                                <input name="description" type="text" class="form-control" />
                                             </div>
                                             <div>
                                                 <input type="hidden" name="moduleId" value="@Model.Id" />
@@ -556,14 +556,17 @@
     <script>
         $(document).ready(function(){
             $('[data-toggle="tooltip"]').tooltip();
-
+        });
+    </script>
+    }
+    <script>
+        $(document).ready(function(){
             $('.tg1, .tg2').on('click', function () {
                 let id = $(this).val();
                 $('#modalToggleContentA' + id).toggleClass('hidden');
                 $('#modalToggleContentB' + id).toggleClass('hidden');
             });
         });
-
     </script>
     }
 }
