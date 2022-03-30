@@ -246,7 +246,45 @@ namespace Lexicon_LMS_G1.Controllers
             var course = await _context.Courses
                 .Include(c => c.AttendingStudents)
                 .ThenInclude(s => s.FinishedActivities)
+                .Include(c => c.Modules)
+                .ThenInclude(m => m.Documents)
+                .Include(c => c.Modules)
+                .ThenInclude(m => m.Activities)
+                .ThenInclude(a => a.Documents)
+                .Include(c => c.Documents)
                 .FirstOrDefaultAsync(c => c.Id == viewModel.DeleteId);
+
+
+            foreach (var file in course.Documents)
+            {
+                if (System.IO.File.Exists(file.FilePath))
+                    System.IO.File.Delete(file.FilePath);
+            }
+
+            _context.RemoveRange(course.Documents);
+
+            foreach (var module in course.Modules)
+            {
+                foreach (var file in module.Documents)
+                {
+                    if (System.IO.File.Exists(file.FilePath))
+                        System.IO.File.Delete(file.FilePath);
+                }
+                    
+                _context.RemoveRange(module.Documents);
+
+                foreach (var activity in module.Activities)
+                {
+                    foreach (var file in activity.Documents)
+                    {
+                        if (System.IO.File.Exists(file.FilePath))
+                            System.IO.File.Delete(file.FilePath);
+                    }
+
+                    _context.RemoveRange(activity.Documents);
+                }
+
+            }
 
             if (repo.Delete(viewModel.DeleteId))
             {

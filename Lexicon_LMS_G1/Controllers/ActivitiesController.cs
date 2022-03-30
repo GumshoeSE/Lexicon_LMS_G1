@@ -144,7 +144,19 @@ namespace Lexicon_LMS_G1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
         {
-            var activity = await _context.Activities.FindAsync(viewModel.DeleteId);
+            var activity = await _context.Activities
+                .Include(a => a.Documents)
+                .FirstOrDefaultAsync(v => v.Id == viewModel.DeleteId);
+
+            foreach(var file in activity.Documents)
+            {
+                if (System.IO.File.Exists(file.FilePath))
+                    System.IO.File.Delete(file.FilePath);
+            }
+
+            _context.RemoveRange(activity.Documents);
+            await _context.SaveChangesAsync();
+
             _context.Activities.Remove(activity);
             await _context.SaveChangesAsync();
 
