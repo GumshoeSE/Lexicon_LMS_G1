@@ -15,6 +15,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddSingleton<IBorderColorService, BorderColorService>();
+builder.Services.AddSingleton<ITimeLeftSevice, TimeLeftSevice>();
 
 builder.Services.AddTransient<ICourseRepository, CourseRepository>();
 builder.Services.AddTransient<IModuleRepository, ModuleRepository>();

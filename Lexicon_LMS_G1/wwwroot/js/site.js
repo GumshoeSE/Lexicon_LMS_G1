@@ -127,7 +127,6 @@ $(document).ready(function () {
             activitiesForCourse.classList.remove("d-none");
             setTimeout(ScrollTo.bind(null, $(this)), 350);
            
-          //  $('body').scrollTo(this);
             let course = $(this).attr('data-courseId');
             GetActivities(course, "all", false, 1);
         }
@@ -155,7 +154,7 @@ function pagingClick() {
 function typechoice() {
     let course = $(this).attr("data-course");
     let activityType = $('.atypes option:selected').val();
-    let history = $(this).is(':checked');
+    let history = $('#showHistory').is(':checked');
     GetActivities(course, activityType, history, 1);
 }
 
