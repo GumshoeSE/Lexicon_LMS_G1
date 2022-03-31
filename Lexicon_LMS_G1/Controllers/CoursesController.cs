@@ -339,11 +339,14 @@ namespace Lexicon_LMS_G1.Controllers
             */
             string userId = (await userManager.GetUserAsync(User)).Id;
 
-            var finishedAssignments = (await _context.Users
-                    .Include(u => u.FinishedActivities)
-                    .FirstOrDefaultAsync(u => u.Id == userId))
-                    .FinishedActivities
-                    .Select(f => f.Activity);
+            var finishedActivities = _context.UserFinishedActivity.Include(a => a.Activity).Where(u => u.ApplicationUserId == userId).Select(f => f.Activity);
+            //var finishedAssignments = (await _context.Users
+            //        .Include(u => u.FinishedActivities)
+            //        .FirstOrDefaultAsync(u => u.Id == userId))
+            //        .FinishedActivities
+            //        .Select(f => f.Activity)
+            //        .ToList();
+                    
 
             StudentViewCourseViewModel viewModel = new StudentViewCourseViewModel
             {
@@ -357,7 +360,7 @@ namespace Lexicon_LMS_G1.Controllers
                     .Where(a => a.Module.CourseId == courseId)
                     .Where(a => a.ActivityType.Name == "Assignment")
                     .ToListAsync(),
-                FinishedAssignments = finishedAssignments,
+                FinishedAssignments = finishedActivities,
                 Attendees = (await _context.Courses
                     .Include(c => c.AttendingStudents)
                     .FirstOrDefaultAsync(a => a.Id == courseId))
