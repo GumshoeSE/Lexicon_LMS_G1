@@ -1,5 +1,6 @@
 using Lexicon_LMS_G1.Entities.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Lexicon_LMS_G1.Entities.ViewModels
 {
@@ -25,5 +26,6 @@ namespace Lexicon_LMS_G1.Entities.ViewModels
         public IFormFile? Document { get; set; }
         public string? DocumentDescription { get; set; }
 
+        public List<SelectListItem> TimeSuggestions { get; set; } = new List<SelectListItem>();
     }
 }

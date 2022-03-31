@@ -1,4 +1,5 @@
 using Lexicon_LMS_G1.Entities.Entities;
+using Microsoft.AspNetCore.Http;
 using System.ComponentModel.DataAnnotations;
 
 namespace Lexicon_LMS_G1.Entities.Dtos
@@ -23,6 +24,9 @@ namespace Lexicon_LMS_G1.Entities.Dtos
         [Required]
         public int ActivityTypeId { get; set; }
 
-        //public ICollection<Document> Documents { get; set; } = new List<Document>();
+        public IFormFile? Document { get; set; }
+
+        [Display(Name = "Description")]
+        public string? DocumentDescription { get; set; }
     }
 }

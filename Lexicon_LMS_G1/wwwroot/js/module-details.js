@@ -8,9 +8,6 @@
 
     $("#addActivityBtn").on("click", function () {
         showDiv($("#addActivity"));
-
-        $("#addActivtyStartDate").val($("#LastActivityEndTime").val().substr(0, 16));
-        $("#addActivtyEndDate").val($("#LastActivityEndTime").val().substr(0, 16));
     });
 
     $(".editActivityBtn").on("click", function () {
@@ -81,24 +78,48 @@
 
     });
 
+    $("#addActivityFileCancel").on("click", function () {
+        $("#addActivityFile").val("");
+        $("#addActivityFileDescription").val("");
+    });
+
+    $("#detailsCollapser").on("click", function () {
+        if ($("#documentsCollapser").attr("aria-expanded") == "true" && $(this).attr("aria-expanded") == "true") {
+            $("#collapseDocuments").collapse('hide');
+        }
+    });
+
+    $("#documentsCollapser").on("click", function () {
+        if ($("#detailsCollapser").attr("aria-expanded") == "true" && $(this).attr("aria-expanded") == "true") {
+            $("#collapseDetails").collapse('hide');
+        }
+    });
+
     $("#submitAddActivityBtn").on("click", function () {
 
         if (!validateAddActivityForm()) return;
 
-        let dto = {
-            Name: $("#addActivtyName").val().trim(),
-            Description: $("#addActivtyDescription").val().trim(),
-            StartDate: $("#addActivtyStartDate").val(),
-            EndDate: $("#addActivtyEndDate").val(),
-            ModuleId: $("#addActivityModuleId").val(),
-            ActivityTypeId: $("#addActivityTypeId").val()
-        };
+        let formData = new FormData();
+
+        formData.append('Name', $("#addActivtyName").val().trim());
+        formData.append('Description', $("#addActivtyDescription").val().trim());
+        formData.append('StartDate', $("#addActivtyStartDate").val());
+        formData.append('EndDate', $("#addActivtyEndDate").val());
+        formData.append('ModuleId', $("#addActivityModuleId").val());
+        formData.append('ActivityTypeId', $("#addActivityTypeId").val());
+
+        let activityDoc = $("#addActivityFile").get(0);
+        let documents = activityDoc.files;
+
+        formData.append('Document', documents[0])
+        formData.append('DocumentDescription', $("#addActivityFileDescription").val().trim())
 
         $.ajax({
             url: $("#AddActivityUrl").val(),
             type: "PUT",
-            data: JSON.stringify(dto),
-            contentType: "application/json",
+            data: formData,
+            contentType: false,
+            processData: false,
             success: function (reply) {
                 if (!reply.success) {
                     let errors = reply.errors;
@@ -129,6 +150,20 @@
     $(".req").on("change", requiredFieldNotEmpty);
     $("#addActivtyStartDate").on("change", validateAddActivityDateRange);
     $("#addActivtyEndDate").on("change", validateAddActivityDateRange);
+
+    $("#suggestStartDate").on("change", function () {
+        let val = $(this).val();
+        if (val != "") {
+            $("#addActivtyStartDate").val(val);
+        }
+    });
+
+    $("#suggestEndDate").on("change", function () {
+        let val = $(this).val();
+        if (val != "") {
+            $("#addActivtyEndDate").val(val);
+        }
+    });
 
     function validateAddActivityDateRange() {
 
