@@ -89,8 +89,22 @@
                                 <div class="p-3 row">
                                     <div class="col">
                                         <a asp-controller="" asp-action="" class="btn btn-primary d-none">View Documents</a>
-                                        <a asp-controller="Modules" asp-route-id="@item.Id" asp-action="Create" class="btn btn-primary">Add Module</a>
-
+                                        <a asp-controller="Modules"
+                                            asp-route-id="@item.Id"
+                                            asp-action="Create"
+                                            data-toggle="tooltip"
+                                            title="Add module"
+                                            class="btn btn-primary">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </a>
+                                        <button type="button"
+                                            class="btn btn-dark"
+                                            data-toggle="tooltip"
+                                            title="Add document"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#uploadModal@(item.Id)">
+                                            <i class="fa-solid fa-upload"></i>
+                                        </button>
                                     </div>
                                     <div class="text-end col">
                                         <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
@@ -100,8 +114,48 @@
                                 </div>
                             </div>
                         </div>
-
                     </div>
+                    <div class="modal fade" id="uploadModal@(item.Id)" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header text-center d-block">
+                                    <h4 class="d-inline-block align-self-center">Upload a document</h4>
+                                    <button type="button"
+                                        class="btn btn-outline-danger close btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#uploadModal@(item.Id)">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="formDocumentModules"
+                                        asp-controller="Documents"
+                                        asp-action="UploadCourseDocument"
+                                        enctype="multipart/form-data">
+                                        <div>
+                                            <label class="control-label"></label>
+                                            <input name="document" type="file" class="form-control" />
+                                        </div>
+                                        <div class="mt-2">
+                                            <label class="control-label">Description</label>
+                                            <input name="description" type="text" class="form-control" />
+                                        </div>
+                                        <div>
+                                            <input type="hidden" name="courseId" value="@item.Id" />
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                    <input type="submit" class="btn btn-primary" form="formDocumentModules" value="Done" />
+                                    <button type="button" class="btn btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#uploadModal@(item.Id)">
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+</div>
                 }
             </div>
 
@@ -137,3 +191,11 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}

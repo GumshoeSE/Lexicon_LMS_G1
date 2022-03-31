@@ -110,7 +110,7 @@ namespace Lexicon_LMS_G1.Controllers
             _context.Add(courseDocument);
             await _context.SaveChangesAsync();
 
-            return UploadDocumentReturnTo();
+            return RedirectToAction("IndexTeacher", "Courses");
         }
 
         [HttpPost]
