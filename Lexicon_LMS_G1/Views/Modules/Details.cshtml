@@ -151,7 +151,7 @@
                                                                     <li class="border border-1 list-group-item">
                                                                         <div class="row justify-content-between d-flex">
                                                                             <div class="col-md-6 textContainer">
-                                                                                <p class="fs-5">@doc.Name @actDocCount</p>
+                                                                                <p class="fs-5">Document @actDocCount</p>
                                                                             </div>
                                                                             <div class="col-md-6 justify-content-evenly d-inline-flex align-items-center">
                                                                                 <a target="_blank" asp-controller="Documents" asp-action="PreviewActivity" asp-route-id="@doc?.Id">
@@ -295,11 +295,12 @@
                         </div>
                         <div class="col-md-4">
                             <button
+                                id="detailsCollapser"
                                 data-bs-toggle="collapse"
-                                data-bs-target=".multi-collapse"
+                                data-bs-target="#collapseDetails"
                                 class="btn btn-sm"
                                 type="button"
-                                aria-expanded="false"
+                                aria-expanded="true"
                                 aria-controls="collapseDetails collapseDocuments">
                                 <h2 class="">Details <i class="fa-solid fa-angle-down"></i></h2>
                             </button>
@@ -388,28 +389,42 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-3">
+                        <div class="row mb-3">
                             <label for="addActivtyStartDate" class="form-label h5">Start Time</label>
-                            <div class="input-group has-validation">
-                                <input type="datetime-local" class="form-control"
-                                       id="addActivtyStartDate" min="@Model.StartTime" max="@Model.EndTime">
+                            <div class="input-group has-validation col-auto">
+                                <input type="datetime-local"
+                                    class="form-control"
+                                    id="addActivtyStartDate"
+                                    min="@Model.StartTime"
+                                    max="@Model.EndTime"
+                                    value="@(lastActivityEndDateTime)">
                                 <div id="validationAddActivityStartDate" class="invalid-feedback">
                                     <span>The activity has to start before it ends.</span>
                                 </div>
+                                <select class="form-select inputField" asp-items="@Model.TimeSuggestions" id="suggestStartDate" autocomplete="off">
+                                    <option selected="selected" value="">Suggestions</option>
+                                </select>
                             </div>
                         </div>
                         <div class="mb-3">
                             <label for="addActivtyEndDate" class="form-label h5">End Time</label>
-                            <div class="input-group has-validation">
-                                <input type="datetime-local" class="form-control"
-                                       id="addActivtyEndDate" min="@Model.StartTime" max="@Model.EndTime">
+                            <div class="input-group has-validation col-auto">
+                                <input type="datetime-local"
+                                    class="form-control"
+                                    id="addActivtyEndDate"
+                                    min="@Model.StartTime"
+                                    max="@Model.EndTime"
+                                    value="@(lastActivityEndDateTime.AddHours(1))">
                                 <div id="validationAddActivityEndDate" class="invalid-feedback">
                                     <span>The activity has to start before it ends.</span>
                                 </div>
+                                <select class="form-select inputField" asp-items="@Model.TimeSuggestions" id="suggestEndDate" autocomplete="off">
+                                    <option selected="selected" value="">Suggestions</option>
+                                </select>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="addActivtyEndDate" class="form-label h5">Add Document</label>
+                            <label class="form-label h5">Add Document</label>
                             <div class="form-group mb-3">
                                 <button type="button" class="btn btn-primary list-group-item w-100" data-bs-toggle="modal" data-bs-target="#uploadModal">
                                     Add Document
@@ -425,16 +440,40 @@
                             <div class="modal fade" id="uploadModal" tabindex="-1">
                                 <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
                                     <div class="modal-content">
-                                        <div>
-                                            <label asp-for="Document" class="control-label"></label>
-                                            <input asp-for="Document" type="file" class="form-control" />
+                                        <div class="modal-header text-center d-block">
+                                            <h4 class="d-inline-block align-self-center">Add a document</h4>
+                                            <button type="button"
+                                                class="btn btn-outline-danger close btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#uploadModal">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
                                         </div>
-                                        <div>
-                                            <label asp-for="DocumentDescription" class="control-label"></label>
-                                            <input asp-for="DocumentDescription" type="text" class="form-control" />
+                                        <div class="modal-body">
+                                            <div>
+                                                <label class="control-label">Document</label>
+                                                <input type="file" class="form-control" id="addActivityFile" />
+                                            </div>
+                                            <div>
+                                                <label class="control-label">Description</label>
+                                                <input type="text" class="form-control" id="addActivityFileDescription"/>
+                                            </div>
                                         </div>
-                                        <button type="button" data-bs-toggle="modal" data-bs-target="#uploadModal">Close</button>
-                                        <input type="submit" value="Done" />
+                                        <div class="modal-footer justify-content-between">
+                                            <button type="button"
+                                                class="btn btn-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#uploadModal">
+                                                Add
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-danger"
+                                                id="addActivityFileCancel"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#uploadModal">
+                                                Cancel
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -442,9 +481,31 @@
                     </form>
                 </div>
             </div>
-            
             <div class="border border-3 rounded-xl ps-3 pe-3 pt-2 pb-2 mt-3">
-                <div class="collapse multi-collapse" id="collapseDocuments">
+                
+                <div class="row">
+                    <div class="offset-md-3 col-md-6 text-center">
+                        <button
+                            id="documentsCollapser"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseDocuments"
+                            class="btn text-nowrap"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="collapseDocuments">
+                            <span class="h2">Documents <i class="fa-solid fa-angle-down"></i></span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 text-end align-self-center">
+                        <button type="button"
+                            class="btn btn-outline-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#uploadModalModule">
+                            Upload
+                        </button>
+                    </div>
+                    <div class="collapse multi-collapse" id="collapseDocuments">
+                        <hr />
                     @{
                         int docCount = 0;
                     }
@@ -459,7 +520,7 @@
                             <li class="border border-1 list-group-item">
                                 <div class="row justify-content-between d-flex">
                                     <div class="col-md-6 textContainer">
-                                        <p class="fs-5">@item.Name @docCount</p>
+                                        <p class="fs-5">Document @docCount</p>
                                     </div>
                                     <div class="col-md-6 justify-content-evenly d-inline-flex align-items-center">
                                         <a target="_blank" asp-controller="Documents" asp-action="PreviewModule" asp-route-id="@item?.Id">
@@ -479,28 +540,7 @@
                             </li>
                         }
                     </ul>
-                    <hr />
                 </div>
-                <div class="row">
-                    <div class="offset-md-3 col-md-6 text-center">
-                        <button
-                            data-bs-toggle="collapse"
-                            data-bs-target=".multi-collapse"
-                            class="btn text-nowrap"
-                            type="button"
-                            aria-expanded="false"
-                            aria-controls="collapseDocuments collapseDetails">
-                            <span class="h2">Documents <i class="fa-solid fa-angle-up"></i></span>
-                        </button>
-                    </div>
-                    <div class="col-md-3 text-end align-self-center">
-                        <button type="button"
-                            class="btn btn-outline-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#uploadModalModule">
-                            Upload
-                        </button>
-                    </div>
                     <div class="col-5 p-0">
                         <div class="modal fade" id="uploadModalModule" tabindex="-1">
                             <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
