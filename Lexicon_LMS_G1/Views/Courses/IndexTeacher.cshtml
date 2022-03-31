@@ -12,8 +12,10 @@
         <div id="courseList" class="col-6 border border-3 rounded">
             <div class="row p-2">
                 <h2 class="text-center col-md-4 offset-md-4">Courses</h2>
-                <div class="col-md-4 align-content-center text-end">
-                    <a asp-action="Create" class="btn btn-outline-primary">Add</a>
+                <div class="col-md-4 align-content-center text-end mt-2">
+                    <span data-toggle="tooltip" data-bs-placement="top" title="Add course">
+                        <a asp-action="Create" type="button" class=""><i class="fa-solid fa-circle-plus fa-2xl"></i></a>
+                    </span>
                 </div>
             </div>
             <div class="accordion" id="courseAccordion">
@@ -34,11 +36,11 @@
                                     <div class="col offset-2 text-end me-3"><strong>Number of attendees:</strong><br>@item.AttendingStudents.Count</div>
                                 </div>
                                 <div class="px-3">
-                                    <div class ="row">
-                                    <h5 class ="col align-self-end">Course description:</h5>
-                                    <div class="col text-end">
-                                    <a asp-area="Identity" asp-page="/Account/Register" asp-route-id="@item.Id" class="px-3 mb-3 btn btn-primary addSTC">Add student</a>
-                                    </div>
+                                    <div class="row">
+                                        <h5 class="col align-self-end">Course description:</h5>
+                                        <div class="col-2 text-end mb-4" data-toggle="tooltip" data-bs-placement="top" title="Add student to course">
+                                            <a asp-area="Identity" asp-page="/Account/Register" asp-route-id="@item.Id" class="px-3  addSTC text-success"><i class="fa-solid fa-user-plus fa-2xl"></i></a>
+                                        </div>
                                     </div>
                                     <p>@Html.DisplayFor(modelItem => item.Description)</p>
                                 </div>
@@ -57,23 +59,24 @@
                                                 <div>
                                                     <strong>Module @num:</strong> @Html.DisplayFor(m => module.Name)
                                                 </div>
-                                                <div>
+                                                <div class="">
                                                     <a asp-controller="Modules"
-                                                        asp-action="Details"
-                                                        asp-route-id="@module.Id"
-                                                        class="btn btn-sm btn-outline-primary">
-                                                        Details
+                                           asp-action="Details"
+                                           asp-route-id="@module.Id"
+                                           class="" data-toggle="tooltip" data-bs-placement="top" title="Details">
+                                                        <i class="fa-solid fa-circle-info fa-2xl"></i>
                                                     </a>
-                                                    <button type="button"
-                                                        data-ref="@module.Id"
-                                                        data-name="@module.Name"
-                                                        data-delete-id="deleteId1"
-                                                        data-type="Module"
-                                                        class="btn btn-sm btn-outline-danger deleter"
-                                                        data-bs-toggle="modal"
-                                                        data-bs-target="#deleteModal1">
-                                                        Delete
-                                                    </button>
+                                                    <a type="button"
+                                                data-ref="@module.Id"
+                                                data-name="@module.Name"
+                                                data-delete-id="deleteId1"
+                                                data-type="Module"
+                                                class=""
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal1" data-toggle="tooltip" data-bs-placement="top" title="Delete module">
+                                                       <img src="~/css/yeet.png" alt="picture of a baseball player dunking a ball" 
+                                                       width="30" height="30" >
+                                                    </a>
                                                 </div>
                                             </div>
                                             <div class="col">
@@ -87,14 +90,15 @@
 
                                 }
                                 <div class="p-3 row">
-                                    <div class="col">
+                                    <div class="col align-self-center">
                                         <a asp-controller="" asp-action="" class="btn btn-primary d-none">View Documents</a>
-                                        <a asp-controller="Modules" asp-route-id="@item.Id" asp-action="Create" class="btn btn-primary">Add Module</a>
+                                        <a asp-controller="Modules" asp-route-id="@item.Id" asp-action="Create" class="btn btn-success">Add Module</a>
 
                                     </div>
-                                    <div class="text-end col">
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
-                                        <button type="button" data-ref="@item.Id" data-name="@item.Name" data-delete-id="deleteId2" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#deleteModal2">Delete</button>
+                                    <div class="text-end col fs-1">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="text-warning" data-toggle="tooltip" data-bs-placement="top" title="Edit course"><i class="fa-solid fa-pen-to-square"></i></a>
+                                        <a type="button" data-ref="@item.Id" data-name="@item.Name" data-delete-id="deleteId2" data-type="Course" class="" data-bs-toggle="modal" data-bs-target="#deleteModal2" data-toggle="tooltip" data-bs-placement="top" title="Delete course"><img src="~/css/yeet.png" alt="picture of a baseball player dunking a ball" 
+                                                       width="40" height="40" ></a>
 
                                     </div>
                                 </div>
@@ -106,7 +110,7 @@
             </div>
 
             <vc:delete delete-controller="modules" return-controller="courses"
-                return-action="IndexTeacher" delete-modal-id="deleteModal1"></vc:delete>
+                       return-action="IndexTeacher" delete-modal-id="deleteModal1"></vc:delete>
 
             <vc:delete delete-controller="courses" delete-modal-id="deleteModal2"></vc:delete>
 
@@ -137,3 +141,10 @@
         </div>
     </div>
 </div>
+@section Scripts{
+     <script>
+         $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}
