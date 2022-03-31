@@ -1,5 +1,5 @@
 ﻿@model Lexicon_LMS_G1.Models.StudentViewCourseViewModel
-
+@inject ITimeLeftSevice timeleft
 @{
     ViewData["Title"] = @Html.DisplayFor(m => m.Name);
 }
@@ -43,7 +43,7 @@
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
                                 <div>
                                     <div class="pb-1 fs-5"> @Html.DisplayFor(a => assignment.Name)</div>
-                                    <div><strong>Time Left:</strong> @((assignment.EndDate - DateTime.Now).Days) days</div>
+                                    <div><strong>Time Left:</strong> @timeleft.GetTimeLeft(@assignment.EndDate)</div>
                                 </div>
                             </button>
                         </h2>
