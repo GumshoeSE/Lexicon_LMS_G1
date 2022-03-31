@@ -131,7 +131,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    <form id="formDocumentModules"
+                                    <form id="formDocumentModules@(item.Id)"
                                         asp-controller="Documents"
                                         asp-action="UploadCourseDocument"
                                         enctype="multipart/form-data">
@@ -149,7 +149,7 @@
                                     </form>
                                 </div>
                                 <div class="modal-footer justify-content-between">
-                                    <input type="submit" class="btn btn-primary" form="formDocumentModules" value="Done" />
+                                    <input type="submit" class="btn btn-primary" form="formDocumentModules@(item.Id)" value="Done" />
                                     <button type="button" class="btn btn-danger"
                                         data-bs-toggle="modal"
                                         data-bs-target="#uploadModal@(item.Id)">
