@@ -43,62 +43,7 @@
                                     data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)"
                                     aria-expanded="false"
                                     aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
-                                    <div class="text-start" style="width:100%">
-                                        @item.ActivityType.Name
-                                    </div>
-                                    <div class="me-3 d-flex fw-light justify-content-between" style="width:100%">
-                                        @{
-                                            var startDif = item.StartDate - DateTime.Now;
-                                            var endDif = item.EndDate - DateTime.Now;
-
-                                            var hasStarted = startDif.CompareTo(TimeSpan.Zero) < 0;
-                                            var hasEnded = endDif.CompareTo(TimeSpan.Zero) < 0;
-                                            var isOngoing = hasStarted && !hasEnded;
-
-                                            var isToday = startDif.TotalDays < 1;
-                                            var isThisWeek = startDif.TotalDays <= 7;
-                                            var timeText = "";
-                                            var statusText = "";
-                                            var badgeType = "";
-
-                                            if (hasEnded)
-                                            {
-                                                statusText += "finished";
-                                                badgeType += "bg-success";
-                                                timeText += $"{item.EndDate.ToString("yyyy/MM/dd")}";
-                                            }
-                                            else if (isOngoing)
-                                            {
-                                                statusText += "current";
-                                                badgeType += "bg-warning text-dark";
-                                            }
-                                            else
-                                            {
-                                                statusText += "planned";
-                                                badgeType += "bg-info text-dark";
-
-                                                if (isToday)
-                                                {
-                                                    timeText += (startDif.Hours > 0) ? $"{startDif.Hours} h " : $"";
-                                                    timeText += (startDif.Minutes > 0) ? $"{startDif.Minutes} min " : $"";
-                                                }
-                                                else if (isThisWeek)
-                                                {
-                                                    timeText += $"{startDif.Days} days";
-                                                }
-                                                else
-                                                {
-                                                    timeText += $"{item.StartDate.ToString("yyyy/MM/dd")}";
-                                                }
-                                            }
-                                        }
-                                        <div class="badge @badgeType">
-                                            @statusText
-                                        </div>
-                                        <div class="fw-lighter">
-                                            @timeText
-                                        </div>
-                                    </div>
+                                    <time title="@item.ActivityType.Name" start-date="@item.StartDate" end-date="@item.EndDate"></time>
                                 </button>
                             </h2>
                             <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)"

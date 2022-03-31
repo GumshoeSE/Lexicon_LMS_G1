@@ -72,9 +72,9 @@
                             <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
                                 <div class="accordion-body">
                                     <div>
-                                    @Html.DisplayFor(a => assignment.Description)
+                                        @Html.DisplayFor(a => assignment.Description)
                                     </div>
-                                    <button class="btn btn-sm btn-outline-success uploadAssignment" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal@(assignment.Id)" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
+                                    <button class="btn btn-sm btn-outline-primary uploadAssignment mt-2" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal@(assignment.Id)" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
                                         Upload Solution
                                     </button>
                                 </div>
