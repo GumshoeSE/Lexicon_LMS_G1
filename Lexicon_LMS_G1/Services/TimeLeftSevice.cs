@@ -9,12 +9,12 @@
                 return (timeleft.Minutes.ToString() + " min", "border-warning");
             else if (timeleft.TotalDays < 1)
             {
-                return timeleft.Hours.ToString() + " h";
+                return (timeleft.Hours.ToString() + " h", "border-warning");
             }
             else if (timeleft.Days < 8)
-                return timeleft.Days.ToString() + " days";
+                return (timeleft.Days.ToString() + " days", "border-primary");
             else
-                return (timeleft.Days / 7).ToString() + " weeks";
+                return (timeleft.Days / 7).ToString() + " weeks", "border-primary");
         }
     }
 }
