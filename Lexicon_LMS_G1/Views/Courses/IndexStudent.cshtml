@@ -38,13 +38,12 @@
             <div class="accordion" id="assignments">
                 @foreach (var assignment in Model!.UpcomingAssignments)
                 {
-                    @time = @timeleft.GetTimeLeft(@assignment.EndDate);
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
-                                <div>
+                        <h2 class="accordion-header row " id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
+                            <button class="col accordion-button collapsed mb-1 border border-2 @timeleft.GetTimeLeft(assignment.EndDate, true)" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
+                                <div class="col">
                                     <div class="pb-1 fs-5"> @Html.DisplayFor(a => assignment.Name)</div>
-                                    <div><strong>Time Left:</strong> @time[0]</div>
+                                    <div class=""><strong>Time Left:</strong> @timeleft.GetTimeLeft(assignment.EndDate, false)</div>
                                 </div>
                             </button>
                         </h2>
