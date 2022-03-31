@@ -48,7 +48,14 @@
                         <span asp-validation-for="Input.CourseId" class="text-danger"></span>
                     </div>
                     <div>
-                        <a asp-controller="Users" asp-action="Index" class="btn btn-lg btn-danger float-start">Cancel</a>
+                        @if(Model.ReturnUrl != "")
+                        {
+                            <a asp-controller="Courses" asp-action="IndexTeacher" class="btn btn-lg btn-danger float-start">Cancel</a>
+                        }
+                        else
+                        {
+                            <a asp-controller="Users" asp-action="Index" class="btn btn-lg btn-danger float-start">Cancel</a>
+                        }
                         <button id="registerSubmit" type="submit" class="btn btn-lg btn-primary float-end">Add</button>
                     </div>
                 </div>
