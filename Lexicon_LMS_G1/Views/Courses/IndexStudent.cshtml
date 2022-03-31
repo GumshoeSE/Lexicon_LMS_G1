@@ -3,110 +3,129 @@
 @{
     ViewData["Title"] = @Html.DisplayFor(m => m.Name);
 }
-@*<div class="  fs-1">*@
-<h1 class="pb-3 text-center "><a class="btn btn-light fs-1 border border-2" data-bs-toggle="modal" data-bs-target="#description"> @Html.DisplayFor(m => m.Name) <i class="fa-solid fa-circle-info fa-bounce"></i> </a></h1>
-@*</div>*@
 
 <div class="container">
     <div class="row">
-        <div class="border rounded col-6 p-0 bg-light">
-            <h2 class="px-3 text-center"> Assignments </h2>
-            <h5 class="px-3">Late Assignments</h5>
-            <div class="accordion" id="lateAssignments">
-                @foreach (var assignment in Model!.LateAssignments)
-                {
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
-                                @Html.DisplayFor(a => assignment.Name)
-                                <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
-                            </button>
-                        </h2>
-                        <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#lateAssignments">
-                            <div class="accordion-body">
-                                @Html.DisplayFor(a => assignment.Description) <i class="fa-solid fa-circle-info"></i>
+        <div class="col-12">
+            <h1 class="pb-3 text-center">
+                <a class="btn btn-light fs-1 border border-2 col-12" data-bs-toggle="modal" data-bs-target="#description">
+                    @Html.DisplayFor(m => m.Name) 
+                    <i class="fa-solid fa-circle-info" id="boundcyHover"></i>
+                </a>
+            </h1>
+        </div>
+    </div>
+</div>
 
-                                <button class="btn btn-info uploadAssignment" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
-                                    +
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-            <h5 class="px-3">Upcomming</h5>
-            <div class="accordion" id="assignments">
-                @foreach (var assignment in Model!.UpcomingAssignments)
-                {
-                    <div class="accordion-item">
-                        <h2 class="accordion-header row " id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
-                            <button class="col accordion-button collapsed mb-1 border border-2 @timeleft.GetTimeLeft(assignment.EndDate, true)" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
-                                <div class="col">
-                                    <div class="pb-1 fs-5"> @Html.DisplayFor(a => assignment.Name)</div>
-                                    <div class=""><strong>Time Left:</strong> @timeleft.GetTimeLeft(assignment.EndDate, false)</div>
-                                </div>
-                            </button>
-                        </h2>
-                        <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
-                            <div class="accordion-body">
-                                <div>
-                                @Html.DisplayFor(a => assignment.Description)
-                                </div>
-                                <button class="btn btn-info uploadAssignment" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
-                                    +
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-            <h5 class="px-3">Finished</h5>
-            <div class="accordion" id="finishedAssignments">
-                @foreach (var assignment in Model!.FinishedAssignments)
-                {
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
-                                @Html.DisplayFor(a => assignment.Name)
 
-                            </button>
-                        </h2>
-                        <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
-                            <div class="accordion-body">
-                                @Html.DisplayFor(a => assignment.Description)
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <div class="p-0 bg-light border rounded">
+            
+                <h2 class="px-3 text-center"> Assignments </h2>
+                <h5 class="px-3">Late Assignments</h5>
+                <div class="accordion" id="lateAssignments">
+                    @foreach (var assignment in Model!.LateAssignments)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
+                                    @Html.DisplayFor(a => assignment.Name)
+                                    <p>Due to @Html.DisplayFor(a => assignment.EndDate)</p>
+                                </button>
+                            </h2>
+                            <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#lateAssignments">
+                                <div class="accordion-body">
+                                    @Html.DisplayFor(a => assignment.Description) <i class="fa-solid fa-circle-info"></i>
+
+                                    <button class="btn btn-info uploadAssignment" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
+                                        +
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
+                <h5 class="px-3">Upcomming</h5>
+                <div class="overflow-auto" style="max-height: 45vh">
+                    <div class="accordion" id="assignments">
+                    @foreach (var assignment in Model!.UpcomingAssignments)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
+                                    <div>
+                                        <div class="pb-1 fs-5"> @Html.DisplayFor(a => assignment.Name)</div>
+                                        <div><strong>Time Left:</strong> @((assignment.EndDate - DateTime.Now).Days) days</div>
+                                    </div>
+                                </button>
+                            </h2>
+                            <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
+                                <div class="accordion-body">
+                                    <div>
+                                    @Html.DisplayFor(a => assignment.Description)
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-success uploadAssignment" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
+                                        Upload Solution
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                </div>
+                
+                <h5 class="px-3">Finished</h5>
+                <div class="accordion" id="finishedAssignments">
+                    @foreach (var assignment in Model!.FinishedAssignments)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(a => assignment.Id)">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(a => assignment.Id)">
+                                    @Html.DisplayFor(a => assignment.Name)
+
+                                </button>
+                            </h2>
+                            <div class="accordion-collapse collapse" id="@($"collapse")@Html.DisplayFor(a => assignment.Id)" data-bs-parent="#assignments">
+                                <div class="accordion-body">
+                                    @Html.DisplayFor(a => assignment.Description)
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
 
-        <div class="col-5 offset-1 border rounded p-0 bg-light d-flex flex-column" id="modules">
-            <div class="mb-auto">
-                <nav id="modulesNavBar" class="px-3 py-2" style="--bs-breadcrumb-divider: '>';">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item active" id="breadcrumbModule" style="cursor: pointer" data-course="@Model.Id">
-                            Modules
-                        </li>
-                        <li class="breadcrumb-item hidden" id="breadcrumbActivity" style="cursor: pointer">
-                            Activities
-                        </li>
-                        <li class="breadcrumb-item hidden" id="breadcrumbDetail" style="cursor: pointer">
-                            Details
-                        </li>
-                    </ol>
-                </nav>
-                <div id="moduleview" class="overflow-auto">
+        <div class="col-6 " id="modules">
+            <div class="p-0 d-flex flex-column">
+                <div class="mb-auto border rounded bg-light">
+                    <nav id="modulesNavBar" class="px-3 py-2" style="--bs-breadcrumb-divider: '>';">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item active" id="breadcrumbModule" style="cursor: pointer" data-course="@Model.Id">
+                                Modules
+                            </li>
+                            <li class="breadcrumb-item hidden" id="breadcrumbActivity" style="cursor: pointer">
+                                Activities
+                            </li>
+                            <li class="breadcrumb-item hidden" id="breadcrumbDetail" style="cursor: pointer">
+                                Details
+                            </li>
+                        </ol>
+                    </nav>
+                    <div id="moduleview">
 
-                    <partial name="ModulePartialView" model="@Model.Modules" />
+                        <partial name="ModulePartialView" model="@Model.Modules" />
+                    </div>
+
                 </div>
-
-            </div>
-            <div class="">
-                <button class="btn btn-primary list-group-item w-100" data-bs-toggle="modal" data-bs-target="#attendeesModal">
-                    View Attendees
-                </button>
-
+                <div class="border rounded bg-light mt-3">
+                    <button class="btn btn-primary list-group-item w-100" data-bs-toggle="modal" data-bs-target="#attendeesModal">
+                        View Attendees
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -148,35 +167,65 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <h6>Description</h6>
-                <p>@Html.DisplayFor(c => c.Description)</p>
+                <h5>Description</h5>
+                <p class="fw-light">@Html.DisplayFor(c => c.Description)</p>
+                <h5>Documents</h5>
+                @if (Model.Documents.Count() == 0)
+                {
+                    <p class="fw-light">This course currently has no documents</p>
+                }
+                @{
+                    var actDocCount = 0;
+                }
+                
+                <ul class="list-group">
+                    @foreach (var doc in Model.Documents)
+                    {
+                        actDocCount++;   
+                        <li class="border border-1 list-group-item">
+                            <div class="row justify-content-between d-flex">
+                                <div class="col-md-6 textContainer">
+                                    <p class="fs-5 fw-light">Document @actDocCount</p>
+                                </div>
+                                <div class="col-md-6 justify-content-evenly d-inline-flex align-items-center">
+                                    <a target="_blank" asp-controller="Documents" asp-action="PreviewActivity" asp-route-id="@doc?.Id">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </a>
+                                    <a asp-controller="Documents" asp-action="DownloadActivity" asp-route-id="@doc?.Id">
+                                        <i class="fa-solid fa-download"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
-    <div class="col-5 p-0">
-        <div class="modal fade" id="uploadModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-                <div class="modal-content">
-                    <form asp-action="UploadStudentDocument" enctype="multipart/form-data" asp-controller="Documents">
-                        <div>
-                            <label class="control-label">UPLOLOAD FILÈ</label>
-                            <input name="document" type="file" class="form-control" required />
-                        </div>
-                        <div>
-                            <label class="control-label">DESCRPTION</label>
-                            <input name="description" type="text" class="form-control" />
-                        </div>
-                        <div class="hidden">
-                            <label class="control-label">Don't look, I'm dressing!</label>
-                            <input id="-R��������Ξft" name="activityId" type="number" value="0" class="form-control" />
-                        </div>
+</div>
+<div class="col-5 p-0">
+    <div class="modal fade" id="uploadModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content">
+                <form asp-action="UploadStudentDocument" enctype="multipart/form-data" asp-controller="Documents">
+                    <div>
+                        <label class="control-label">UPLOLOAD FILÈ</label>
+                        <input name="document" type="file" class="form-control" required />
+                    </div>
+                    <div>
+                        <label class="control-label">DESCRPTION</label>
+                        <input name="description" type="text" class="form-control" />
+                    </div>
+                    <div class="hidden">
+                        <label class="control-label">Don't look, I'm dressing!</label>
+                        <input id="-R��������Ξft" name="activityId" type="number" value="0" class="form-control" />
+                    </div>
 
-                        <button type="submit" class="btn btn-primary">Upload File</button>
-                    </form>
-                </div>
+                    <button type="submit" class="btn btn-primary">Upload File</button>
+                </form>
             </div>
         </div>
     </div>
@@ -185,4 +234,15 @@
 
 @section Scripts{
 <script src="~/js/index-student.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $("#boundcyHover").hover(function() {
+                $(this).addClass("fa-bounce");
+            })
+            $("#boundcyHover").mouseleave(function() {
+                $(this).removeClass("fa-bounce");
+            })
+        });
+    </script>
 }
