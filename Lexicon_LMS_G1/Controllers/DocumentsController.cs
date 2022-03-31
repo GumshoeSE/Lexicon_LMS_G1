@@ -174,6 +174,7 @@ namespace Lexicon_LMS_G1.Controllers
             _context.Add(studentDocument);
             await _context.SaveChangesAsync();
 
+            TempData["message"] = $"Assignment received at {studentDocument.CreatedOn}";
             return RedirectToAction("StudentIndex", "Courses");
         }
         // END Upload Methods
@@ -281,7 +282,8 @@ namespace Lexicon_LMS_G1.Controllers
         public async Task<JsonResult> ApproveStudentDocument(int id, bool isApproved, string userId, int activityId)
         {
             var finishedActivity = await _context.UserFinishedActivity.FirstOrDefaultAsync(f => f.ActivityId == activityId);
-            var allStudentDocumentsForActivity = await _context.StudentDocuments.Where(s => s.UserId == userId).ToListAsync();
+            var allStudentDocumentsForActivity = await _context.StudentDocuments
+                .Where(s => s.UserId == userId && s.ActivityId == activityId).ToListAsync();
             var studentDocument = allStudentDocumentsForActivity.First(s => s.Id == id);
             
             studentDocument.IsApproved = isApproved;

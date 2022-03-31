@@ -74,9 +74,53 @@
                                     <div>
                                     @Html.DisplayFor(a => assignment.Description)
                                     </div>
-                                    <button class="btn btn-sm btn-outline-success uploadAssignment" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
+                                    <button class="btn btn-sm btn-outline-success uploadAssignment" value="@(assignment.Id)" data-bs-toggle="modal" data-bs-target="#uploadModal@(assignment.Id)" id="uploadAssignment@(assignment.Id)" data-activity-id="@(assignment.Id)">
                                         Upload Solution
                                     </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-5 p-0">
+                            <div class="modal fade" id="uploadModal@(assignment.Id)" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header text-center d-block">
+                                            <h4 class="d-inline-block align-self-center">Hand in assignment</h4>
+                                            <button type="button"
+                                                class="btn btn-outline-danger close btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#uploadModal@(assignment.Id)"><i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form asp-action="UploadStudentDocument"
+                                                id="UploadStudentDocument@(assignment.Id)"
+                                                enctype="multipart/form-data"
+                                                asp-controller="Documents">
+                                                <div>
+                                                    <label class="control-label h6">File</label>
+                                                    <input name="document" type="file" class="form-control" required />
+                                                </div>
+                                                <div>
+                                                    <label class="control-label h6 mt-3">Description</label>
+                                                    <input name="description" type="text" class="form-control" />
+                                                </div>
+                                                <div class="hidden">
+                                                    <label class="control-label">Don't look, I'm dressing!</label>
+                                                    <input id="-R��������Ξft" name="activityId" type="number" value="0" class="form-control" />
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer justify-content-between">
+                                            <input type="submit" class="btn btn-primary" form="UploadStudentDocument@(assignment.Id)" value="Done" />
+                                            <button type="button"
+                                                class="btn btn-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#uploadModal@(assignment.Id)">
+                                                Close
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -212,30 +256,6 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="col-5 p-0">
-    <div class="modal fade" id="uploadModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
-            <div class="modal-content">
-                <form asp-action="UploadStudentDocument" enctype="multipart/form-data" asp-controller="Documents">
-                    <div>
-                        <label class="control-label">UPLOLOAD FILÈ</label>
-                        <input name="document" type="file" class="form-control" required />
-                    </div>
-                    <div>
-                        <label class="control-label">DESCRPTION</label>
-                        <input name="description" type="text" class="form-control" />
-                    </div>
-                    <div class="hidden">
-                        <label class="control-label">Don't look, I'm dressing!</label>
-                        <input id="-R��������Ξft" name="activityId" type="number" value="0" class="form-control" />
-                    </div>
-
-                    <button type="submit" class="btn btn-primary">Upload File</button>
-                </form>
             </div>
         </div>
     </div>
