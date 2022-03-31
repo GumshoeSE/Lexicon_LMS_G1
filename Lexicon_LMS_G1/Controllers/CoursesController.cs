@@ -363,7 +363,13 @@ namespace Lexicon_LMS_G1.Controllers
                     .FirstOrDefaultAsync(a => a.Id == courseId))
                     .AttendingStudents,
                 Modules = await _context.Modules
+                    .Include(m => m.Documents)
+                    .Include(m => m.Activities)
+                    .ThenInclude(a => a.Documents)
                     .Where(m => m.CourseId == courseId)
+                    .ToListAsync(),
+                Documents = await _context.CourseDocuments
+                    .Where(d => d.CourseId == courseId)
                     .ToListAsync()
             };
 
@@ -378,13 +384,13 @@ namespace Lexicon_LMS_G1.Controllers
 
         public IActionResult GetActionsForModule(int moduleId)
         {
-            Module module = _context.Modules.Include(m => m.Activities).FirstOrDefault(m => m.Id == moduleId);
+            Module module = _context.Modules.Include(m => m.Activities).Include(m => m.Documents).FirstOrDefault(m => m.Id == moduleId);
             return PartialView("ModuleDetailsPartialView", module);
         }
 
         public IActionResult GetActionsForActivity(int activityId)
         {
-            Activity activity = _context.Activities.FirstOrDefault(a => a.Id == activityId);
+            Activity activity = _context.Activities.Include(a => a.Documents).FirstOrDefault(a => a.Id == activityId);
             return PartialView("ActivityDetailsPartialView", activity);
         }
     }
