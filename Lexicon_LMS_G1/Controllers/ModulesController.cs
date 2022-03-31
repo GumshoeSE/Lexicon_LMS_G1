@@ -69,6 +69,19 @@ namespace Lexicon_LMS_G1.Controllers
 
             var viewModel = _mapper.Map<ModuleDetailsViewModel>(module);
 
+            viewModel.TimeSuggestions.Add(new SelectListItem { Text = "Module Starts", Value = module.StartTime.ToString() });
+
+            var counter = 1;
+
+            foreach (var activity in module.Activities)
+            {
+                viewModel.TimeSuggestions.Add(new SelectListItem { Text = $"Activity {counter} starts", Value = activity.StartDate.ToString() });
+                viewModel.TimeSuggestions.Add(new SelectListItem { Text = $"Activity {counter} ends", Value = activity.EndDate.ToString() });
+                counter++;
+            }
+
+            viewModel.TimeSuggestions.Add(new SelectListItem { Text = "Module Ends", Value = module.EndTime.ToString() });
+            
             return View(viewModel);
         }
 

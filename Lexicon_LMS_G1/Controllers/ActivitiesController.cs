@@ -17,6 +17,8 @@ using System.Net;
 using Lexicon_LMS_G1.Entities.Paging;
 using Lexicon_LMS_G1.Entities.ViewModels;
 using AutoMapper;
+using Lexicon_LMS_G1.Entities;
+using Microsoft.AspNetCore.Identity;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -26,14 +28,16 @@ namespace Lexicon_LMS_G1.Controllers
         private readonly IBaseRepository<Activity> _repo;
         private readonly IBaseRepository<Module> _baseModuleRepo;
         private readonly IMapper _mapper;
+        private readonly UserManager<ApplicationUser> _userManager;
 
         public ActivitiesController(ApplicationDbContext context, IBaseRepository<Activity> repo,
-            IBaseRepository<Module> baseModuleRepo, IMapper mapper)
+            IBaseRepository<Module> baseModuleRepo, IMapper mapper, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _repo = repo;
             _baseModuleRepo = baseModuleRepo;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
         // GET: Activities
@@ -189,7 +193,7 @@ namespace Lexicon_LMS_G1.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> PutActivity([FromBody] ActivityCreateDto dto)
+        public async Task<IActionResult> PutActivity(ActivityCreateDto dto)
         {
             var activity = _mapper.Map<Activity>(dto);
             var module = await _baseModuleRepo.GetByIdWithIncludedAsync(m => m.Activities, m => m.Id == activity.ModuleId);
@@ -229,6 +233,37 @@ namespace Lexicon_LMS_G1.Controllers
 
             if (ModelState.IsValid)
             {
+
+                if (dto.Document != null)
+                {
+                    string file;
+
+                    do
+                    {
+                        file = $"{GlobalStatics.SaveDocumentModule}{Path.DirectorySeparatorChar}{Path.GetRandomFileName()}";
+                    }
+                    while (System.IO.File.Exists(file));
+
+                    var doc = new ActivityDocument()
+                    {
+                        Name = dto.Document.FileName,
+                        FileType = dto.Document.ContentType,
+                        Description = dto.DocumentDescription,
+                        CreatedOn = DateTime.Now,
+                        FilePath = file,
+                        Activity = activity,
+                        UserId = _userManager.GetUserId(User)
+                    };
+
+                    using (var stream = System.IO.File.Create(file))
+                    {
+                        await dto.Document.CopyToAsync(stream);
+                    }
+                    _context.Add(doc);
+
+                    activity.Documents.Add(doc);
+                }
+
                 _repo.Add(activity);
                 await _repo.SaveChangesAsync();
 
