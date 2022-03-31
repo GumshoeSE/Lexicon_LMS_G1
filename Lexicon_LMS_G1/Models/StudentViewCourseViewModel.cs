@@ -15,5 +15,7 @@ namespace Lexicon_LMS_G1.Models
         public IEnumerable<Activity> LateAssignments => Assignments.Where(a => a.EndDate < DateTime.Now).Where(a => !FinishedAssignments.Contains(a)).OrderBy(a => a.EndDate);
         public IEnumerable<Activity> UpcomingAssignments => Assignments.Where(a => !(a.EndDate < DateTime.Now)).Where(a => !FinishedAssignments.Contains(a)).OrderBy(a => a.EndDate);
         public IEnumerable<ApplicationUser> OrderedAttendees => Attendees.OrderBy(a => a.LastName);
+
+        public IEnumerable<CourseDocument> Documents { get; set; } = new List<CourseDocument>();
     }
 }

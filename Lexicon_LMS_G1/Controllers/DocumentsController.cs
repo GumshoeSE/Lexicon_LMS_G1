@@ -174,16 +174,16 @@ namespace Lexicon_LMS_G1.Controllers
             _context.Add(studentDocument);
             await _context.SaveChangesAsync();
 
-            return UploadDocumentReturnTo();
+            return RedirectToAction("StudentIndex", "Courses");
         }
         // END Upload Methods
-        // BEGIN Save Files
+       
         private IActionResult UploadDocumentReturnTo()
         {
             return Ok();
         }
-        // END Save Files
 
+        // BEGIN Save Files
         private async Task<string> SaveFileGetPath(IFormFile file, string folder = "default")
         {
             string directory = $"{documentBasePath}{Path.DirectorySeparatorChar}{folder}";
@@ -208,6 +208,7 @@ namespace Lexicon_LMS_G1.Controllers
             TempData["message"] = $"Document added";
             return whereToSave;
         }
+        // END Save Files
 
         // BEGIN Download Methods
         public async Task<IActionResult> DownloadCourse(int id)

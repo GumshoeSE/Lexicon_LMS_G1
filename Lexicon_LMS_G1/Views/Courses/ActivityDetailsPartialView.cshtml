@@ -1,8 +1,41 @@
 ﻿@model Lexicon_LMS_G1.Entities.Entities.Activity
 
-<h3 class="px-3">
+<h3 class="px-3 text-center">
     @Html.DisplayFor(a => Model.Name)
 </h3>
-<p class="px-3">
-    @Html.DisplayFor(a => Model.Description)
-</p>
+    
+<p class="ms-2 mb-1" ><strong>Duration:</strong> @Model.StartDate.ToString("yy/MM/dd") <strong>-</strong> @Model.EndDate.ToString("yy/MM/dd")</p>
+
+<h5 class="ps-2 mb-1">Description:</h5>
+<p class="px-3"> @Html.DisplayFor(a => Model.Description)</p>
+
+<h5 class="ps-2">Documents</h5>
+@if (Model.Documents.Count() == 0)
+{
+    <p class="px-3">This activity currently has no documents</p>
+}
+@{
+    var actDocCount = 0;
+}
+                
+<ul class="list-group">
+    @foreach (var doc in Model.Documents)
+    {
+        actDocCount++;   
+        <li class="border border-1 list-group-item">
+            <div class="row justify-content-between d-flex">
+                <div class="col-md-6 textContainer">
+                    <p class="fs-5 fw-light">Document @actDocCount</p>
+                </div>
+                <div class="col-md-6 justify-content-evenly d-inline-flex align-items-center">
+                    <a target="_blank" asp-controller="Documents" asp-action="PreviewActivity" asp-route-id="@doc?.Id">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+                    <a asp-controller="Documents" asp-action="DownloadActivity" asp-route-id="@doc?.Id">
+                        <i class="fa-solid fa-download"></i>
+                    </a>
+                </div>
+            </div>
+        </li>
+    }
+</ul>
