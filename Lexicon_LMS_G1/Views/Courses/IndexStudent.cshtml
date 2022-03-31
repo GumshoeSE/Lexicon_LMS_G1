@@ -24,8 +24,11 @@
         <div class="col-6">
             <div class="p-0 bg-light border rounded">
             
-                <h2 class="px-3 text-center"> Assignments </h2>
-                <h5 class="px-3">Late Assignments</h5>
+                <h2 class="px-3 mt-2 text-center align-self-center"> Assignments </h2>
+                @if(Model!.LateAssignments.Count() > 0){
+                    <hr/>
+                    <h5 class="px-3">Late Assignments</h5>
+                }
                 <div class="accordion" id="lateAssignments">
                     @foreach (var assignment in Model!.LateAssignments)
                     {
@@ -48,8 +51,12 @@
                         </div>
                     }
                 </div>
-                <h5 class="px-3">Upcomming</h5>
-                <div class="overflow-auto" style="max-height: 45vh">
+                @if (Model!.UpcomingAssignments.Count() > 0)
+                {
+                    <hr/>
+                    <h5 class="px-3 mt-3">Upcomming</h5>
+                }
+                <div class="overflow-auto" style="max-height: 42vh">
                     <div class="accordion" id="assignments">
                     @foreach (var assignment in Model!.UpcomingAssignments)
                     {
@@ -76,8 +83,11 @@
                     }
                 </div>
                 </div>
-                
-                <h5 class="px-3">Finished</h5>
+                @if (Model!.FinishedAssignments.Count() > 0)
+                {
+                    <hr/>
+                    <h5 class="px-3 mt-3">Finished</h5>
+                }
                 <div class="accordion" id="finishedAssignments">
                     @foreach (var assignment in Model!.FinishedAssignments)
                     {

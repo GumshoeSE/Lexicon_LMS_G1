@@ -59,6 +59,7 @@ namespace Lexicon_LMS_G1.Controllers
                 .Include(m => m.Documents)
                 .Include(m => m.Activities).ThenInclude(a => a.ActivityType)
                 .Include(m => m.Activities).ThenInclude(a => a.Documents)
+                .Include(m => m.Activities).ThenInclude(a => a.StudentDocuments).ThenInclude(d => d.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (module == null)
             {

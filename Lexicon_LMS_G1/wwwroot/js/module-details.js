@@ -165,6 +165,46 @@
         }
     });
 
+    $('.tg1, .tg2').on('click', function () {
+        let id = $(this).val();
+        $('#modalToggleContentA' + id).toggleClass('hidden');
+        $('#modalToggleContentB' + id).toggleClass('hidden');
+    });
+
+    $(".approve-check-box").on('click', function () {
+        let val = $(this).val();
+        let isChecked = $(this).is(":checked");
+        let userId = $(this).attr("data-user-id");
+        let activityId = $(this).attr("data-activity-id");
+
+        let dto = {
+            Id: val,
+            IsApproved: isChecked,
+            UserId: userId,
+            ActivityId: activityId
+        }
+
+        let urlWithQueryParams = $("#ApproveAssignmentUrl").val() +
+            "?id=" + val +
+            "&IsApproved=" + isChecked +
+            "&UserId=" + userId +
+            "&ActivityId=" + activityId
+
+        $.ajax({
+            url: urlWithQueryParams,
+            type: "GET",
+            data: dto,
+            contentType: "application/json",
+            success: function (reply) {
+                //~dance~
+            },
+            error: function (req, status, error) {
+                console.log(error);
+                alert('error: ' + error);
+            }
+        });
+    });
+
     function validateAddActivityDateRange() {
 
         let moduleStartTime = $("#ModuleStartTime");

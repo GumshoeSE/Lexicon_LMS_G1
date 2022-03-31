@@ -236,6 +236,43 @@
                                                 </button>
                                             </div>
                                         </div>
+                                        @if(item.ActivityType.Name == "Assignment")
+                                        {
+                                            <hr/>
+                                            <h5 class="px-3">Submitted Assignments</h5>
+                                            <ul class="list-group px-3 fw-light">
+                                                @foreach(var doc in item.StudentDocuments)
+                                                {
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        @doc.User?.UserName
+                                                        <a target="_blank"
+                                                            asp-controller="Documents"
+                                                            asp-action="PreviewStudent"
+                                                            asp-route-id="@doc.Id">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                        </a>
+                                                        <a asp-controller="Documents"
+                                                            asp-action="DownloadStudent"
+                                                            asp-route-id="@doc.Id">
+                                                            <i class="fa-solid fa-download"></i>
+                                                        </a>
+                                                        <span>@doc.CreatedOn</span>
+                                                        <div>
+                                                          <label class="form-check-label" for="approveAssignment@(doc.Id)">
+                                                            Approve
+                                                          </label>
+                                                          <input class="form-check-input approve-check-box"
+                                                            type="checkbox"
+                                                            value="@(doc.Id)"
+                                                            data-activity-id="@(item.Id)"
+                                                            data-user-id="@(doc.User?.Id)"
+                                                            id="approveAssignment@(doc.Id)"
+                                                            @(doc.IsApproved ? "checked='checked'":"")>
+                                                        </div>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
                                     </div>
                                     <div id="editActivity@(item.Id)" class="hidden">
                                         <form class="novalidate">
@@ -581,6 +618,7 @@
 @Html.Hidden("UpdateModuleUrl", Url.Action("UpdateModule", "Modules"))
 @Html.Hidden("UpdateActivityUrl", Url.Action("UpdateActivity", "Activities"))
 @Html.Hidden("AddActivityUrl", Url.Action("PutActivity", "Activities"))
+@Html.Hidden("ApproveAssignmentUrl", Url.Action("ApproveStudentDocument", "Documents"))
 @Html.Hidden("ModuleStartTime", Model.StartTime)
 @Html.Hidden("LastActivityEndTime", lastActivityEndDateTime)
 
@@ -590,7 +628,7 @@
 
 
 @section Scripts {
-<script src="~/js/module-details.js"></script>
+    <script src="~/js/module-details.js"></script>
 
     @if (timespan == TimeSpan.Zero){
     <script>
@@ -599,13 +637,4 @@
         });
     </script>
     }
-    <script>
-        $(document).ready(function(){
-            $('.tg1, .tg2').on('click', function () {
-                let id = $(this).val();
-                $('#modalToggleContentA' + id).toggleClass('hidden');
-                $('#modalToggleContentB' + id).toggleClass('hidden');
-            });
-        });
-    </script>
 }

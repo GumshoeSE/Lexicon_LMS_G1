@@ -277,5 +277,48 @@ namespace Lexicon_LMS_G1.Controllers
             return new FileContentResult(System.IO.File.ReadAllBytes(doc.FilePath), doc.FileType);
         }
         // END Preview File
+
+        public async Task<JsonResult> ApproveStudentDocument(int id, bool isApproved, string userId, int activityId)
+        {
+            var finishedActivity = await _context.UserFinishedActivity.FirstOrDefaultAsync(f => f.ActivityId == activityId);
+            var allStudentDocumentsForActivity = await _context.StudentDocuments.Where(s => s.UserId == userId).ToListAsync();
+            var studentDocument = allStudentDocumentsForActivity.First(s => s.Id == id);
+            
+            studentDocument.IsApproved = isApproved;
+            _context.Update(studentDocument);
+            await _context.SaveChangesAsync();
+
+            var isFinished = allStudentDocumentsForActivity.FirstOrDefault(d => !d.IsApproved) == null;
+
+            if (isFinished && finishedActivity == null)
+            {
+                finishedActivity ??= new UserFinishedActivity
+                {
+                    ApplicationUserId = userId,
+                    ActivityId = activityId,
+                    IsCompleted = isFinished,
+                    FinishedDate = DateTime.Now
+                };
+
+                _context.Add(finishedActivity);
+                await _context.SaveChangesAsync();
+            }
+            else if(isFinished && finishedActivity != null)
+            {
+                finishedActivity.IsCompleted = isFinished;
+                finishedActivity.FinishedDate = DateTime.Now;
+
+                _context.Update(finishedActivity);
+                await _context.SaveChangesAsync();
+            }
+
+            else if(finishedActivity != null)
+            {
+                _context.Remove(finishedActivity);
+                await _context.SaveChangesAsync();
+            }
+
+            return Json(true);
+        }
     }
 }
