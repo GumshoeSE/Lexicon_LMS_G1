@@ -88,15 +88,13 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
 
-            
-
         }
 
 
-        public async Task OnGetAsync(int? id, string returnUrl = null)
+        public async Task OnGetAsync(int? id, string name = null, string returnUrl = null)
         {
             var id1 = id;
-            ReturnUrl = returnUrl;
+            ReturnUrl = name == "addUser" ? Url.Action("IndexTeacher", "Courses") : returnUrl;
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
         }
 
@@ -131,8 +129,8 @@ namespace Lexicon_LMS_G1.Areas.Identity.Pages.Account
 
                     if(!(await _userManager.AddToRoleAsync(user, Input.Role)).Succeeded) throw new Exception($"Failed to set {Input.FirstName} as a {Input.Role}");
 
-                    return RedirectToAction("Index","Users");
-                    
+                    return LocalRedirect(returnUrl);
+
                 }
                 foreach (var error in result.Errors)
                 {

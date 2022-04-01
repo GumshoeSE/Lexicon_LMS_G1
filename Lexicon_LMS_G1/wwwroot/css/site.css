@@ -51,6 +51,11 @@ ul.timeline {
     vertical-align: middle;
     display: inline-block;
 }
+
+.left, .right {
+    flex-grow: 1;
+    flex-basis: 0;
+}
 .ISA .accordion-button::after {
     margin-left: 10px;
 }

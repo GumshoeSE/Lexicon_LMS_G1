@@ -46,13 +46,8 @@
 <div class="list-group" id="activitiesButtons">
     @foreach (var item in Model.Activities)
     {
-        <button class="list-group-item btn btn-primary activitySelectButton" data-parent="@item.Module.CourseId" data-activity="@item.Id" id="@($"activityButton")@item.Id"> 
-            <div class="fs-5">
-            @Html.DisplayFor(a => item.Name)
-            </div>
-            <div>
-               <strong>Duration:</strong> @item.StartDate.ToString("yyyy/MM/dd") <strong>-</strong> @item.EndDate.ToString("yyyy/MM/dd")
-            </div>
+        <button class="list-group-item btn btn-primary activitySelectButton justify-content-around d-inline-flex" data-parent="@item.Module.CourseId" data-activity="@item.Id" id="@($"activityButton")@item.Id">
+            <time title="@item.Name" start-date="@item.StartDate" end-date="@item.EndDate"></time>
         </button>
     }
 </div>

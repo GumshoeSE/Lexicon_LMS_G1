@@ -24,6 +24,7 @@ namespace Lexicon_LMS_G1.Entities.Entities
 
         public ICollection<ActivityDocument> Documents { get; set; } = new List<ActivityDocument>();
         public ICollection<UserFinishedActivity> FinishedActivities { get; set; } = new List<UserFinishedActivity>();
+        public ICollection<StudentDocument> StudentDocuments { get; set; } = new List<StudentDocument>();
 
     }
 }
