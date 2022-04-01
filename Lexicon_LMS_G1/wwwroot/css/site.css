@@ -26,3 +26,36 @@ ul.timeline {
     position: relative;
     max-height: 58vh
 }
+
+.test {
+    padding: 0em 0em 0.5em 0em;
+    position: sticky;
+    top: 30px
+}
+
+.rounded-xl {
+    border-radius: .5rem !important;
+}
+
+.close {
+    position: absolute;
+    right: 1rem;
+}
+
+.textContainer {
+    height: 45px;
+    line-height: 40px;
+}
+
+.textContainer p {
+    vertical-align: middle;
+    display: inline-block;
+}
+
+.left, .right {
+    flex-grow: 1;
+    flex-basis: 0;
+}
+.ISA .accordion-button::after {
+    margin-left: 10px;
+}

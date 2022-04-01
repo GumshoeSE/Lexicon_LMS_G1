@@ -12,16 +12,18 @@
         <div id="courseList" class="col-6 border border-3 rounded">
             <div class="row p-2">
                 <h2 class="text-center col-md-4 offset-md-4">Courses</h2>
-                <div class="col-md-4 align-content-center text-end">
-                    <a asp-action="Create" class="btn btn-outline-primary">Add</a>
+                <div class="col-md-4 align-content-center text-end mt-2">
+                    <span data-toggle="tooltip" data-bs-placement="top" title="Add course">
+                        <a asp-action="Create" type="button" class=""><i class="fa-solid fa-circle-plus fa-2xl"></i></a>
+                    </span>
                 </div>
             </div>
             <div class="accordion" id="courseAccordion">
                 @foreach (var item in Model)
                 {
                     <div class="accordion-item">
-                        <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)" aria-expanded="false" aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
+                        <h2 class="accordion-header " id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
+                            <button class="accordion-button collapsed courseclick" type="button" id="@item.Id" data-courseId="@item.Id" data-bs-toggle="collapse" data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)" aria-expanded="false" aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
                                 <div class="text-center ps-4" style="width:100%">
                                     @Html.DisplayFor(modelItem => item.Name)
                                 </div>
@@ -30,11 +32,22 @@
                         <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)" class="accordion-collapse collapse" aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)" data-bs-parent="#courseAccordion">
                             <div class="accordion-body p-0 pt-3">
                                 <div class="row">
-                                    <div class="col ms-3"><h5 class="mb-1">Course Start:</h5><p>@item.StartTime.ToString("yy/MM/dd hh:mm")</p></div>
+                                    <div class="col ms-3"><h5 class="">Course Start:</h5><p class="mb-1">@item.StartTime.ToString("yy/MM/dd hh:mm")</p></div>
                                     <div class="col offset-2 text-end me-3"><strong>Number of attendees:</strong><br>@item.AttendingStudents.Count</div>
                                 </div>
                                 <div class="px-3">
-                                    <h5>Course description:</h5>
+                                    <div class="row">
+                                        <h5 class="col align-self-end">Course description:</h5>
+                                        <div class="col-2 text-end mb-4" data-toggle="tooltip" data-bs-placement="top" title="Add student to course">
+                                            <a asp-area="Identity"
+                                                asp-page="/Account/Register"
+                                                asp-route-id="@item.Id"
+                                                asp-route-name="addUser"
+                                                class="px-3  addSTC text-success">
+                                                <i class="fa-solid fa-user-plus fa-2xl"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                     <p>@Html.DisplayFor(modelItem => item.Description)</p>
                                 </div>
                                 <hr class="mb-0" />
@@ -48,8 +61,30 @@
                                     @foreach (var module in item.Modules)
                                     {
                                         <div class="row bg-light py-3 mx-0">
-                                            <div class="col-12"><strong>Module @num:</strong> @Html.DisplayFor(m => module.Name)</div>
-                                            <div class="col ">
+                                            <div class="col-12 d-flex justify-content-between">
+                                                <div>
+                                                    <strong>Module @num:</strong> @Html.DisplayFor(m => module.Name)
+                                                </div>
+                                                <div class="">
+                                                    <a asp-controller="Modules"
+                                           asp-action="Details"
+                                           asp-route-id="@module.Id"
+                                           class="" data-toggle="tooltip" data-bs-placement="top" title="Details">
+                                                        <i class="fa-solid fa-circle-info fa-2xl"></i></a>
+                                                    <a type="button"
+                                                data-ref="@module.Id"
+                                                data-name="@module.Name"
+                                                data-delete-id="deleteId1"
+                                                data-type="Module"
+                                                class=""
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#deleteModal1" data-toggle="tooltip" data-bs-placement="top" title="Delete module">
+                                                       <img src="~/css/yeet.png" alt="picture of a baseball player dunking a ball" 
+                                                       width="30" height="30" >
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="col">
                                                 <strong>Duration:</strong> @module.StartTime.ToString("yy/MM/dd")
                                                 <strong>-</strong> @module.EndTime.ToString("yy/MM/dd")
                                             </div>
@@ -60,24 +95,83 @@
 
                                 }
                                 <div class="p-3 row">
-                                    <div class="col">
+                                    <div class="col align-self-center">
                                         <a asp-controller="" asp-action="" class="btn btn-primary d-none">View Documents</a>
-                                        <a asp-controller="Modules" asp-route-id="@item.Id" asp-action="Create" class="btn btn-primary">Add Module</a>
-
+                                        <a asp-controller="Modules"
+                                            asp-route-id="@item.Id"
+                                            asp-action="Create"
+                                            data-toggle="tooltip"
+                                            title="Add module"
+                                            class="btn btn-primary">
+                                            <i class="fa-solid fa-plus"></i>
+                                        </a>
+                                        <button type="button"
+                                            class="btn btn-dark"
+                                            data-toggle="tooltip"
+                                            title="Add document"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#uploadModal@(item.Id)">
+                                            <i class="fa-solid fa-upload"></i>
+                                        </button>
                                     </div>
-                                    <div class="text-end col">
-                                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-primary offset-4">Edit</a>
-                                        @*<button type="button" data-ref="@item.Id" data-name="@item.Name" data-type="Course" class="btn btn-danger deleter" data-bs-toggle="modal" data-bs-target="#delete" disabled>Delete</button>*@
+                                    <div class="text-end col fs-1">
+                                        <a asp-action="Edit" asp-route-id="@item.Id" class="text-warning" data-toggle="tooltip" data-bs-placement="top" title="Edit course"><i class="fa-solid fa-pen-to-square"></i></a>
+                                        <a type="button" data-ref="@item.Id" data-name="@item.Name" data-delete-id="deleteId2" data-type="Course" class="" data-bs-toggle="modal" data-bs-target="#deleteModal2" data-toggle="tooltip" data-bs-placement="top" title="Delete course"><img src="~/css/yeet.png" alt="picture of a baseball player dunking a ball" 
+                                                       width="40" height="40" ></a>
+
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
+                    <div class="modal fade" id="uploadModal@(item.Id)" tabindex="-1">
+                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header text-center d-block">
+                                    <h4 class="d-inline-block align-self-center">Upload a document</h4>
+                                    <button type="button"
+                                        class="btn btn-outline-danger close btn-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#uploadModal@(item.Id)">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="formDocumentModules@(item.Id)"
+                                        asp-controller="Documents"
+                                        asp-action="UploadCourseDocument"
+                                        enctype="multipart/form-data">
+                                        <div>
+                                            <label class="control-label"></label>
+                                            <input name="document" type="file" class="form-control" />
+                                        </div>
+                                        <div class="mt-2">
+                                            <label class="control-label">Description</label>
+                                            <input name="description" type="text" class="form-control" />
+                                        </div>
+                                        <div>
+                                            <input type="hidden" name="courseId" value="@item.Id" />
+                                        </div>
+                                    </form>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                    <input type="submit" class="btn btn-primary" form="formDocumentModules@(item.Id)" value="Done" />
+                                    <button type="button" class="btn btn-danger"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#uploadModal@(item.Id)">
+                                        Close
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+</div>
                 }
             </div>
 
-            <vc:delete></vc:delete>
+            <vc:delete delete-controller="modules" return-controller="courses"
+                       return-action="IndexTeacher" delete-modal-id="deleteModal1"></vc:delete>
+
+            <vc:delete delete-controller="courses" delete-modal-id="deleteModal2"></vc:delete>
 
             @*Paginating puttons*@
             @{
@@ -102,7 +196,15 @@
                 <input type="hidden" id="hfCurrentPageIndex" name="currentPageIndex" />
             </div>
         </div>
-        <div id="activitiesList" class="col-6">
+        <div id="activitiesList" class="col-5 offset-1 d-none">
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+}

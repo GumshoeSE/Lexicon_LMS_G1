@@ -1,48 +1,585 @@
-﻿@model Lexicon_LMS_G1.Entities.Entities.Module
+﻿@model ModuleDetailsViewModel
+@inject IActivityTypeSelectListService activityTypeListService
 
 @{
-    ViewData["Title"] = "Details";
+    var lastActivityEndDateTime = (Model.Activities.Count() > 0) ? Model.Activities.Last().EndDate : Model.StartTime;
+
+    var timespan = Model.EndTime - Model.StartTime;
+    foreach (var activity in Model.Activities)
+    {
+        timespan -= (activity.EndDate - activity.StartDate);
+    }
+    var moduleIsFull = (timespan == TimeSpan.Zero) ? "disabled" : "";
 }
 
-<h1>Details</h1>
+<h1 class="text-center mb-4">Module '@Model.Name'</h1>
 
-<div>
-    <h4>Module</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Course)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Course.Description)
-        </dd>
-    </dl>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="border border-3 rounded-xl p-3">
+                <div class="row">
+                    <h2 class="text-center col-md-4 offset-md-4">Activities</h2>
+                    <div class="col-md-4 align-content-center text-end">
+                        <span data-toggle="tooltip" title="The module can't fit more activities">
+                            <button type="button" id="addActivityBtn" class="btn btn-outline-primary" @moduleIsFull>
+                                Add
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="accordion mt-2" id="courseAccordion">
+                    @if (Model.Activities.Count == 0)
+                    {
+                        <p class="ps-3 text-center">This module currently has no activities</p>
+                    }
+                    @foreach (var item in Model.Activities)
+                    {
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="@($"heading")@Html.DisplayFor(modelItem => item.Id)">
+                                <button class="accordion-button collapsed"
+                                    type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="@($"#collapse")@Html.DisplayFor(modelItem => item.Id)"
+                                    aria-expanded="false"
+                                    aria-controls="@($"collapse")@Html.DisplayFor(modelItem => item.Id)">
+                                    <time title="@item.ActivityType.Name" start-date="@item.StartDate" end-date="@item.EndDate"></time>
+                                </button>
+                            </h2>
+                            <div id="@($"collapse")@Html.DisplayFor(modelItem => item.Id)"
+                             class="accordion-collapse collapse"
+                             aria-labelledby="@($"heading")@Html.DisplayFor(modelItem => item.Id)"
+                             data-bs-parent="#courseAccordion">
+                                <div class="accordion-body ps-0 pe-0 border border-3" id="accordion-body@(item.Id)">
+                                    <div id="activityDetails@(item.Id)">
+                                        <div class="ps-3">
+                                            <h5>Duration</h5>
+                                            <p class="fw-light" style="margin: 0 !important;">@item.StartDate.ToString("f")</p>
+                                            <p class="fw-light">@item.EndDate.ToString("f")</p>
+                                            <h5>Name</h5>
+                                            <p class="fw-light">@item.Name</p>
+                                            <h5>Description</h5>
+                                            <p class="fw-light">@item.Description</p>
+                                        </div>
+                                        <hr />
+                                        <div class="form-group d-flex px-3 justify-content-between">
+                                            <div>
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#activityModal@(item.Id)">
+                                                    Documents
+                                                </button>
+                                            </div>
+                                            <div class="modal fade" id="activityModal@(item.Id)" tabindex="-1">
+                                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                                    <div class="modal-content" id="modalToggleContentA@(item.Id)">
+                                                        <div class="modal-header text-center d-block">
+                                                            <h4 class="d-inline-block align-self-center">Documents for activity </h4>
+                                                            <button type="button" 
+                                                                class="btn btn-outline-danger close btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#activityModal@(item.Id)">
+                                                                <i class="fa-solid fa-xmark"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            @if (item.Documents.Count == 0)
+                                                            {
+                                                                <p>This activity currently has no documents</p>
+                                                            }
+                                                            @{
+                                                                var actDocCount = 0;
+                                                            }
+                                                            <ul class="list-group">
+                                                                @foreach (var doc in item.Documents)
+                                                                {
+                                                                    actDocCount++;   
+                                                                    <li class="border border-1 list-group-item">
+                                                                        <div class="row justify-content-between d-flex">
+                                                                            <div class="col-md-6 textContainer">
+                                                                                <p class="fs-5">Document @actDocCount</p>
+                                                                            </div>
+                                                                            <div class="col-md-6 justify-content-evenly d-inline-flex align-items-center">
+                                                                                <a target="_blank" asp-controller="Documents" asp-action="PreviewActivity" asp-route-id="@doc?.Id">
+                                                                                    <i class="fa-solid fa-eye"></i>
+                                                                                </a>
+                                                                                <a asp-controller="Documents" asp-action="DownloadActivity" asp-route-id="@doc?.Id">
+                                                                                    <i class="fa-solid fa-download"></i>
+                                                                                </a>
+                                                                                <form asp-controller="Documents" asp-action="DeleteActivity">
+                                                                                    <input type="hidden" name="id" value="@doc?.Id" />
+                                                                                    <button class="btn btn-sm">
+                                                                                        <img src="~/css/yeet.png" style="height: 32px; width: 32px;"/>
+                                                                                    </button>
+                                                                                </form>
+                                                                            </div>
+                                                                        </div>
+                                                                    </li>
+                                                                }
+                                                            </ul>
+                                                        </div>
+                                                        <div class="modal-footer justify-content-between">
+                                                            <button type="button"
+                                                                class="btn btn-primary tg1"
+                                                                value="@item.Id">
+                                                                Upload
+                                                            </button>
+                                                            <button type="button"
+                                                                class="btn btn-danger"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#activityModal@(item.Id)">
+                                                                Close
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <!-- CODE HERE! -->
+                                                    <div class="modal-content hidden" id="modalToggleContentB@(item.Id)">
+                                                        <div class="modal-header text-center d-block">
+                                                            <h4 class="d-inline-block align-self-center">Upload a document</h4>
+                                                            <button type="button" 
+                                                                class="btn btn-outline-danger close btn-sm"
+                                                                data-bs-toggle="modal"
+                                                                data-bs-target="#activityModal@(item.Id)">
+                                                                <i class="fa-solid fa-xmark"></i>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <form id="formDocumentActivities@(item.Id)" asp-controller="Documents" asp-action="UploadActivityDocument" enctype="multipart/form-data">
+                                                                <div>
+                                                                    <label class="control-label"></label>
+                                                                    <input name="document" type="file" class="form-control" />
+                                                                </div>
+                                                                <div class="mt-2">
+                                                                    <label class="control-label">Description</label>
+                                                                    <input name="description" type="text" class="form-control" />
+                                                                </div>
+                                                                <div>
+                                                                    <input type="hidden" name="activityId" value="@item.Id" />
+                                                                    <input type="hidden" name="moduleId" value="@Model.Id" />
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                        <div class="modal-footer justify-content-between">
+                                                            <input type="submit" class="btn btn-primary" form="formDocumentActivities@(item.Id)" value="Done" />
+                                                            <button type="button" class="btn btn-danger tg2" value="@(item.Id)">
+                                                                Back
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <button type="button" value="@item.Id" class="btn btn-primary editActivityBtn">Edit</button>
+                                                <button type="button"
+                                                    data-ref="@item.Id"
+                                                    data-name="@item.Name"
+                                                    data-delete-id="deleteId1"
+                                                    data-type="Activity"
+                                                    class="btn btn-danger deleter"
+                                                    data-bs-toggle="modal"
+                                                    data-bs-target="#deleteModal1">
+                                                    Remove
+                                                </button>
+                                            </div>
+                                        </div>
+                                        @if(item.ActivityType.Name == "Assignment")
+                                        {
+                                            <hr/>
+                                            <h5 class="px-3">Submitted Assignments</h5>
+                                            <ul class="list-group px-3 fw-light">
+                                                @foreach(var doc in item.StudentDocuments)
+                                                {
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        @doc.User?.UserName
+                                                        <a target="_blank"
+                                                            asp-controller="Documents"
+                                                            asp-action="PreviewStudent"
+                                                            asp-route-id="@doc.Id">
+                                                            <i class="fa-solid fa-eye"></i>
+                                                        </a>
+                                                        <a asp-controller="Documents"
+                                                            asp-action="DownloadStudent"
+                                                            asp-route-id="@doc.Id">
+                                                            <i class="fa-solid fa-download"></i>
+                                                        </a>
+                                                        <span>@doc.CreatedOn</span>
+                                                        <div>
+                                                          <label class="form-check-label" for="approveAssignment@(doc.Id)">
+                                                            Approve
+                                                          </label>
+                                                          <input class="form-check-input approve-check-box"
+                                                            type="checkbox"
+                                                            value="@(doc.Id)"
+                                                            data-activity-id="@(item.Id)"
+                                                            data-user-id="@(doc.User?.Id)"
+                                                            id="approveAssignment@(doc.Id)"
+                                                            @(doc.IsApproved ? "checked='checked'":"")>
+                                                        </div>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                    </div>
+                                    <div id="editActivity@(item.Id)" class="hidden">
+                                        <form class="novalidate">
+                                            <input type="hidden" id="editActivityId@(item.Id)" value="@item.Id">
+                                            <div class="p-3">
+                                                <h5>Duration</h5>
+                                                <p class="fw-light" style="margin: 0 !important;">@item.StartDate.ToString("f")</p>
+                                                <p class="fw-light">@item.EndDate.ToString("f")</p>
+                                                <div class="mb-3">
+                                                    <label for="editActivityName" class="form-label h5">Name</label>
+                                                    <div class="input-group has-validation">
+                                                        <input type="text" class="form-control req req-init" id="editActivityName@(item.Id)" value="@item.Name">
+                                                        <div id="validationEditActivityName" class="invalid-feedback">
+                                                            Please provide a name for the activity.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="editActivityDescription" class="form-label h5">Description</label>
+                                                    <div class="input-group has-validation">
+                                                        <textarea class="form-control req req-init" id="editActivityDescription@(item.Id)" rows="3">@item.Description</textarea>
+                                                        <div id="validationEditActivityDescription" class="invalid-feedback">
+                                                            Please provide a description for the module.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr />
+                                            <div class="d-flex px-3 justify-content-between">
+                                                <button type="button" class="btn btn-primary submitEditActivityBtn" value="@item.Id">Save</button>
+                                                <button type="button" class="btn btn-danger cancelEditActivityBtn" value="@item.Id">Cancel</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="border border-3 rounded-xl ps-3 pe-3 pt-2 pb-2" id="multi-container">
+                <div id="moduleDetails">
+                    <div class="row">
+                        <div class="col-md-4 align-self-center">
+                            <button type="button"
+                                    data-ref="@Model.Id"
+                                    data-name="@Model.Name"
+                                    data-delete-id="deleteId2"
+                                    data-type="Module"
+                                    class="btn btn-outline-danger deleter"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#deleteModal2">
+                                Delete
+                            </button>
+                        </div>
+                        <div class="col-md-4">
+                            <button
+                                id="detailsCollapser"
+                                data-bs-toggle="collapse"
+                                data-bs-target="#collapseDetails"
+                                class="btn btn-sm"
+                                type="button"
+                                aria-expanded="true"
+                                aria-controls="collapseDetails collapseDocuments">
+                                <h2 class="">Details <i class="fa-solid fa-angle-down"></i></h2>
+                            </button>
+                        </div>
+                       
+                        <div class="col-md-4 align-self-center text-end">
+                            <button type="button" id="editModuleBtn" class="btn btn-outline-primary"> Edit </button>
+                        </div>
+                    </div>
+                    <div class="collapse show multi-collapse" id="collapseDetails">
+                        <hr />
+                        <h5>Duration</h5>
+                        <p class="fw-light" style="margin: 0 !important;">@Model.StartTime.ToString("g")</p>
+                        <p class="fw-light">@Model.EndTime.ToString("g")</p>
+                        <h5>Name</h5>
+                        <p class="fw-light">@Html.DisplayFor(modelItem => Model.Name)</p>
+                        <h5>Description</h5>
+                        <p class="fw-light">@Html.DisplayFor(modelItem => Model.Description)</p>
+                    </div>
+                </div>
+                <div id="editModule" class="hidden">
+                    <h2 class="text-center">Edit Module</h2>
+                    <hr />
+                    <form class="novalidate">
+                        <input type="hidden" id="editModuleId" value="@Model.Id">
+                        <h5>Duration</h5>
+                        <p class="fw-light" style="margin: 0 !important;">@Model.StartTime.ToString("g")</p>
+                        <p class="fw-light">@Model.EndTime.ToString("g")</p>
+                        <div class="mb-3">
+                            <label for="editModuleName" class="form-label h5">Name</label>
+                            <div class="input-group has-validation">
+                                <input type="text" class="form-control req req-init" id="editModuleName" value="@Model.Name">
+                                <div id="validationModuleName" class="invalid-feedback">
+                                    Please provide a name for the module.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editModuleDescription" class="form-label h5">Description</label>
+                            <div class="input-group has-validation">
+                                <textarea class="form-control req req-init" id="editModuleDescription" rows="3">@Model.Description</textarea>
+                                <div id="validationModuleDescription" class="invalid-feedback">
+                                    Please provide a description for the module.
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="d-flex px-3 justify-content-between">
+                            <button type="button" id="submitEditModuleBtn" class="btn btn-lg btn-primary">Save</button>
+                            <button type="button" class="btn btn-lg btn-danger cancelBtn">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                <div id="addActivity" class="hidden">
+                    <h2 class="text-center">Add Activity</h2>
+                    <hr />
+                    <form class="novalidate" enctype="multipart/form-data">
+                        <input type="hidden" id="addActivityModuleId" value="@Model.Id">
+                        <div class="mb-3">
+                            <label for="addActivtyName" class="form-label h5">Name</label>
+                            <div class="input-group has-validation">
+                                <input type="text" class="form-control req" id="addActivtyName">
+                                <div id="validationAddActivityName" class="invalid-feedback">
+                                    Please provide a name for the activity.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addActivityTypeId" class="form-label h5">Activity Type</label>
+                            <div class="input-group has-validation">
+                                <select class="form-select inputField req" id="addActivityTypeId"
+                                        asp-items="@await activityTypeListService.GetSelectListAsync()">
+                                    <option selected="selected" value="" disabled>Please Select</option>
+                                </select>
+                                <div id="validationAddActivityTypeId" class="invalid-feedback">
+                                    Please select a activity type.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addActivtyDescription" class="form-label h5">Description</label>
+                            <div class="input-group has-validation">
+                                <textarea class="form-control req" id="addActivtyDescription" rows="3"></textarea>
+                                <div id="validationAddActivityDescription" class="invalid-feedback">
+                                    Please provide a description for the activity.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <label for="addActivtyStartDate" class="form-label h5">Start Time</label>
+                            <div class="input-group has-validation col-auto">
+                                <input type="datetime-local"
+                                    class="form-control"
+                                    id="addActivtyStartDate"
+                                    min="@Model.StartTime"
+                                    max="@Model.EndTime"
+                                    value="@(lastActivityEndDateTime)">
+                                <div id="validationAddActivityStartDate" class="invalid-feedback">
+                                    <span>The activity has to start before it ends.</span>
+                                </div>
+                                <select class="form-select inputField" asp-items="@Model.TimeSuggestions" id="suggestStartDate" autocomplete="off">
+                                    <option selected="selected" value="">Suggestions</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addActivtyEndDate" class="form-label h5">End Time</label>
+                            <div class="input-group has-validation col-auto">
+                                <input type="datetime-local"
+                                    class="form-control"
+                                    id="addActivtyEndDate"
+                                    min="@Model.StartTime"
+                                    max="@Model.EndTime"
+                                    value="@(lastActivityEndDateTime.AddHours(1))">
+                                <div id="validationAddActivityEndDate" class="invalid-feedback">
+                                    <span>The activity has to start before it ends.</span>
+                                </div>
+                                <select class="form-select inputField" asp-items="@Model.TimeSuggestions" id="suggestEndDate" autocomplete="off">
+                                    <option selected="selected" value="">Suggestions</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label h5">Add Document</label>
+                            <div class="form-group mb-3">
+                                <button type="button" class="btn btn-primary list-group-item w-100" data-bs-toggle="modal" data-bs-target="#uploadModal">
+                                    Add Document
+                                </button>
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="d-flex px-3 justify-content-between">
+                            <button type="button" id="submitAddActivityBtn" class="btn btn-lg btn-primary">Add</button>
+                            <button type="button" class="btn btn-lg btn-danger cancelBtn">Cancel</button>
+                        </div>
+                        <div class="col-5 p-0">
+                            <div class="modal fade" id="uploadModal" tabindex="-1">
+                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header text-center d-block">
+                                            <h4 class="d-inline-block align-self-center">Add a document</h4>
+                                            <button type="button"
+                                                class="btn btn-outline-danger close btn-sm"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#uploadModal">
+                                                <i class="fa-solid fa-xmark"></i>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div>
+                                                <label class="control-label">Document</label>
+                                                <input type="file" class="form-control" id="addActivityFile" />
+                                            </div>
+                                            <div>
+                                                <label class="control-label">Description</label>
+                                                <input type="text" class="form-control" id="addActivityFileDescription"/>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer justify-content-between">
+                                            <button type="button"
+                                                class="btn btn-primary"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#uploadModal">
+                                                Add
+                                            </button>
+                                            <button type="button"
+                                                class="btn btn-danger"
+                                                id="addActivityFileCancel"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#uploadModal">
+                                                Cancel
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="border border-3 rounded-xl ps-3 pe-3 pt-2 pb-2 mt-3">
+                
+                <div class="row">
+                    <div class="offset-md-3 col-md-6 text-center">
+                        <button
+                            id="documentsCollapser"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#collapseDocuments"
+                            class="btn text-nowrap"
+                            type="button"
+                            aria-expanded="false"
+                            aria-controls="collapseDocuments">
+                            <span class="h2">Documents <i class="fa-solid fa-angle-down"></i></span>
+                        </button>
+                    </div>
+                    <div class="col-md-3 text-end align-self-center">
+                        <button type="button"
+                            class="btn btn-outline-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#uploadModalModule">
+                            Upload
+                        </button>
+                    </div>
+                    <div class="collapse multi-collapse" id="collapseDocuments">
+                        <hr />
+                    @{
+                        int docCount = 0;
+                    }
+                    @if (Model.Documents.Count == 0)
+                        {
+                            <p class="text-center fw-light">This module currently has no documents</p>
+                        }
+                    <ul class="list-group">
+                        @foreach (var item in Model.Documents)
+                        {
+                            docCount++;   
+                            <li class="border border-1 list-group-item">
+                                <div class="row justify-content-between d-flex">
+                                    <div class="col-md-6 textContainer">
+                                        <p class="fs-5">Document @docCount</p>
+                                    </div>
+                                    <div class="col-md-6 justify-content-evenly d-inline-flex align-items-center">
+                                        <a target="_blank" asp-controller="Documents" asp-action="PreviewModule" asp-route-id="@item?.Id">
+                                            <i class="fa-solid fa-eye"></i>
+                                        </a>
+                                        <a asp-controller="Documents" asp-action="DownloadModule" asp-route-id="@item?.Id">
+                                            <i class="fa-solid fa-download"></i>
+                                        </a>
+                                        <form asp-controller="Documents" asp-action="DeleteModule">
+                                            <input type="hidden" name="id" value="@item?.Id" />
+                                            <button class="btn btn-sm">
+                                                <img src="~/css/yeet.png" style="height: 32px; width: 32px;"/>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+                    <div class="col-5 p-0">
+                        <div class="modal fade" id="uploadModalModule" tabindex="-1">
+                            <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                <div class="modal-content">
+                                    <div class="modal-header text-center d-block">
+                                        <h4 class="d-inline-block align-self-center">Upload a document</h4>
+                                        <button type="button" class="btn btn-outline-danger close btn-sm" data-bs-toggle="modal" data-bs-target="#uploadModalModule"><i class="fa-solid fa-xmark"></i></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="formDocumentModules" asp-controller="Documents" asp-action="UploadModuleDocument" enctype="multipart/form-data">
+                                            <div>
+                                                <label class="control-label"></label>
+                                                <input name="document" type="file" class="form-control" />
+                                            </div>
+                                            <div class="mt-2">
+                                                <label class="control-label">Description</label>
+                                                <input name="description" type="text" class="form-control" />
+                                            </div>
+                                            <div>
+                                                <input type="hidden" name="moduleId" value="@Model.Id" />
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="modal-footer justify-content-between">
+                                        <input type="submit" class="btn btn-primary" form="formDocumentModules" value="Done" />
+                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#uploadModalModule">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
+@Html.Hidden("UpdateModuleUrl", Url.Action("UpdateModule", "Modules"))
+@Html.Hidden("UpdateActivityUrl", Url.Action("UpdateActivity", "Activities"))
+@Html.Hidden("AddActivityUrl", Url.Action("PutActivity", "Activities"))
+@Html.Hidden("ApproveAssignmentUrl", Url.Action("ApproveStudentDocument", "Documents"))
+@Html.Hidden("ModuleStartTime", Model.StartTime)
+@Html.Hidden("LastActivityEndTime", lastActivityEndDateTime)
+
+<vc:delete delete-modal-id="deleteModal1" delete-controller="activities" return-controller="Modules" return-id="@Model.Id"></vc:delete>
+
+<vc:delete delete-modal-id="deleteModal2" delete-controller="modules" return-controller="Courses" return-action="IndexTeacher"></vc:delete>
+
+
+@section Scripts {
+    <script src="~/js/module-details.js"></script>
+
+    @if (timespan == TimeSpan.Zero){
+    <script>
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+    </script>
+    }
+}

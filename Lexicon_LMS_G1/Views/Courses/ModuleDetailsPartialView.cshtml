@@ -1,15 +1,53 @@
 ﻿@model Lexicon_LMS_G1.Entities.Entities.Module
 
-<h3 class="px-3">
+<h3 class="px-3 text-center">
     @Html.DisplayFor(a => Model.Name)
 </h3>
-<p class="px-3">
-    @Html.DisplayFor(a => Model.Description)
-</p>
+    
+<p class="ms-2 mb-1" ><strong>Duration:</strong> @Model.StartTime.ToString("yy/MM/dd") <strong>-</strong> @Model.EndTime.ToString("yy/MM/dd")</p>
+
+<h5 class="ps-2 mb-1">Description:</h5>
+<p class="px-3"> @Html.DisplayFor(a => Model.Description)</p>
+
+<h5 class="ps-2">Documents</h5>
+@if (Model.Documents.Count() == 0)
+{
+    <p class="px-3">This module currently has no documents</p>
+}
+@{
+    var actDocCount = 0;
+}
+                
+<ul class="list-group">
+    @foreach (var doc in Model.Documents)
+    {
+        actDocCount++;   
+        <li class="border border-1 list-group-item">
+            <div class="row justify-content-between d-flex">
+                <div class="col-md-6 textContainer">
+                    <p class="fs-5 fw-light">Document @actDocCount</p>
+                </div>
+                <div class="col-md-6 justify-content-evenly d-inline-flex align-items-center">
+                    <a target="_blank" asp-controller="Documents" asp-action="PreviewActivity" asp-route-id="@doc?.Id">
+                        <i class="fa-solid fa-eye"></i>
+                    </a>
+                    <a asp-controller="Documents" asp-action="DownloadActivity" asp-route-id="@doc?.Id">
+                        <i class="fa-solid fa-download"></i>
+                    </a>
+                </div>
+            </div>
+        </li>
+    }
+</ul>
+
+<hr/>
+
 <h5 class="text-center">Activities in the module:</h5>
 <div class="list-group" id="activitiesButtons">
     @foreach (var item in Model.Activities)
     {
-        <button class="list-group-item btn btn-primary activitySelectButton" data-parent="@item.Module.CourseId" data-activity="@item.Id" id="@($"activityButton")@item.Id"> @Html.DisplayFor(a => item.Name) </button>
+        <button class="list-group-item btn btn-primary activitySelectButton justify-content-around d-inline-flex" data-parent="@item.Module.CourseId" data-activity="@item.Id" id="@($"activityButton")@item.Id">
+            <time title="@item.Name" start-date="@item.StartDate" end-date="@item.EndDate"></time>
+        </button>
     }
 </div>

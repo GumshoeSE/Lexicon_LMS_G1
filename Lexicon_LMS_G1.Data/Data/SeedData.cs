@@ -76,9 +76,9 @@ namespace Lexicon_LMS_G1.Data.Data
         {
             ICollection<Course> courses = await context.Courses.ToListAsync();
             
-            courseCol = courses;
-
             if(courses.Any()) return;
+
+            courseCol = courses;
 
             int coursesToAddAmount = faker.Random.Int(14, 27);
 
@@ -167,8 +167,8 @@ namespace Lexicon_LMS_G1.Data.Data
             {
                 Activity activityToAdd = new Activity
                 {
-                    Name = faker.Hacker.Phrase(),
-                    Description = faker.Lorem.Paragraph(),
+                    Name = faker.Hacker.Verb(),
+                    Description = faker.Hacker.Phrase(),
                     StartDate = activities.Last().EndDate,
                     EndDate = activities.Last().EndDate.AddDays(faker.Random.Int(2, 5)),
                     ActivityType = activityTypes.ElementAt(faker.Random.Int(0, activityTypeSize - 1))
@@ -226,6 +226,8 @@ namespace Lexicon_LMS_G1.Data.Data
                 if (!(await userManager.AddToRoleAsync(student, "Student")).Succeeded) throw new Exception($"Failed to set {student.FirstName} as a student");
             }
         }
+
+
 
         private static async Task<bool> HasTeacherAsync()
         {

@@ -1,0 +1,59 @@
+﻿
+@model Lexicon_LMS_G1.Entities.ViewModels.UserEditViewModel
+@inject ICourseSelectListService courseListService
+
+@{
+    ViewData["Title"] = "EditUser";
+}
+
+<h1 class="text-center">Edit @Model.FirstName @Model.LastName</h1>
+
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="FirstName" class="control-label"></label>
+                <input asp-for="FirstName" class="form-control" />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="LastName" class="control-label"></label>
+                <input asp-for="LastName" class="form-control" />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PhoneNumber" class="control-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="form-floating my-3" id="courseSelectEdit" >
+                <select class="form-select inputField" id="courseSelected" name="CourseId"
+                        asp-items="@await courseListService.GetSelectListAsync()" data-id="@Model.CourseId">
+                    <option selected="selected" value="">None</option>
+                </select>
+                <label asp-for="CourseId"></label>
+            </div>
+            <div class="form-group row">
+                <a asp-action="Index" class="col-3 ms-3 btn btn-danger">Back to list</a>
+                <div class="text-end col">
+                <input type="submit" value="Save" class="btn btn-primary" />
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+@section Scripts {
+<script>
+    $(document).ready(function() {
+        let course = $('#courseSelected').attr('data-id');
+        $('#courseSelected').val(course);
+    })
+</script>
+}

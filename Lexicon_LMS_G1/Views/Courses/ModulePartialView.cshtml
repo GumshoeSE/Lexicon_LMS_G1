@@ -5,6 +5,17 @@
 <div class="list-group" id="modulesButtons">
     @foreach (var item in Model)
     {
-        <button class="list-group-item btn btn-primary moduleSelectButton" data-parent="@item.CourseId" data-module="@item.Id" id="@($"moduleButton")@item.Id"> @Html.DisplayFor(a => item.Name) </button>
+        <button class="list-group-item btn btn-primary moduleSelectButton" data-parent="@item.CourseId" data-module="@item.Id" id="@($"moduleButton")@item.Id">
+        <div class="row">
+            <div class=" fs-5">
+            @Html.DisplayFor(a => item.Name)
+            </div>
+            <div class="">
+               <strong>Duration:</strong> @item.StartTime.ToString("yyyy/MM/dd") <strong>-</strong> @item.EndTime.ToString("yyyy/MM/dd")
+            </div>
+        </div>    
+            
+        </button>
     }
 </div>
+

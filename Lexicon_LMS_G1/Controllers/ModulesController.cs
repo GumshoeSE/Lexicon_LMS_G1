@@ -12,6 +12,10 @@ using AutoMapper;
 using Lexicon_LMS_G1.Data.Repositores;
 using Lexicon_LMS_G1.Entities.ViewModels;
 using Lexicon_LMS_G1.Entities.Helpers;
+using Lexicon_LMS_G1.Entities;
+using Microsoft.AspNetCore.Identity;
+using System.Text.Json;
+using Lexicon_LMS_G1.Entities.Dtos;
 
 namespace Lexicon_LMS_G1.Controllers
 {
@@ -19,16 +23,21 @@ namespace Lexicon_LMS_G1.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
-        private readonly IBaseRepository<Module> _moduleRepo;
-        private readonly IBaseRepository<Course> _courseRepo;
+        private readonly IBaseRepository<Module> _baseModuleRepo;
+        private readonly IBaseRepository<Course> _baseCourseRepo;
+        private readonly IModuleRepository _moduleRepo;
+        UserManager<ApplicationUser> _userManager;
 
         public ModulesController(ApplicationDbContext context, IMapper mapper,
-            IBaseRepository<Module> moduleRepo, IBaseRepository<Course> courseRepo)
+            IBaseRepository<Module> baseModuleRepo, IBaseRepository<Course> baseCourseRepo,
+            IModuleRepository moduleRepo, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _mapper = mapper;
+            _baseModuleRepo = baseModuleRepo;
+            _baseCourseRepo = baseCourseRepo;
             _moduleRepo = moduleRepo;
-            _courseRepo = courseRepo;
+            _userManager = userManager;
         }
 
         // GET: Modules
@@ -46,15 +55,35 @@ namespace Lexicon_LMS_G1.Controllers
                 return NotFound();
             }
 
-            var @module = await _context.Modules
-                .Include(c => c.Course)
+            var module = await _context.Modules
+                .Include(m => m.Documents)
+                .Include(m => m.Activities).ThenInclude(a => a.ActivityType)
+                .Include(m => m.Activities).ThenInclude(a => a.Documents)
+                .Include(m => m.Activities).ThenInclude(a => a.StudentDocuments).ThenInclude(d => d.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (@module == null)
+            if (module == null)
             {
                 return NotFound();
             }
 
-            return View(@module);
+            module.Activities = module.Activities.OrderBy(a => a.StartDate).ToList();
+
+            var viewModel = _mapper.Map<ModuleDetailsViewModel>(module);
+
+            viewModel.TimeSuggestions.Add(new SelectListItem { Text = "Module Starts", Value = module.StartTime.ToString() });
+
+            var counter = 1;
+
+            foreach (var activity in module.Activities)
+            {
+                viewModel.TimeSuggestions.Add(new SelectListItem { Text = $"Activity {counter} starts", Value = activity.StartDate.ToString() });
+                viewModel.TimeSuggestions.Add(new SelectListItem { Text = $"Activity {counter} ends", Value = activity.EndDate.ToString() });
+                counter++;
+            }
+
+            viewModel.TimeSuggestions.Add(new SelectListItem { Text = "Module Ends", Value = module.EndTime.ToString() });
+            
+            return View(viewModel);
         }
 
         // GET: Modules/Create
@@ -65,7 +94,7 @@ namespace Lexicon_LMS_G1.Controllers
                 return NotFound();
             }
 
-            var course = await _courseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == id);
+            var course = await _baseCourseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == id);
 
             if (course == null)
             {
@@ -74,6 +103,7 @@ namespace Lexicon_LMS_G1.Controllers
 
             course.Modules = course.Modules.OrderBy(m => m.StartTime).ToList();
 
+            // ToDo: Check if seconds is needed or not (validation)
             // set default start time to the when the last module ends and remove seconds.
             var lastModuleEndDateTime = (course.Modules.Count > 0) ? course.Modules.Last().EndTime : course.StartTime;
             var defaultStartTime = lastModuleEndDateTime.Date.Add(
@@ -97,7 +127,7 @@ namespace Lexicon_LMS_G1.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ModuleCreateViewModel viewModel)
         {
-            var course = await _courseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == viewModel.CourseId);
+            var course = await _baseCourseRepo.GetByIdWithIncludedAsync(c => c.Modules, c => c.Id == viewModel.CourseId);
             viewModel.Course = course;
 
             if (viewModel.StartTime.Ticks < course.StartTime.Ticks)
@@ -126,8 +156,39 @@ namespace Lexicon_LMS_G1.Controllers
             {
                 var module = _mapper.Map<Module>(viewModel);
 
-                _moduleRepo.Add(module);
-                await _moduleRepo.SaveChangesAsync();
+                if (viewModel.Document != null)
+                {
+                    string file;
+
+                    do
+                    {
+                        file = $"{GlobalStatics.SaveDocumentModule}{Path.DirectorySeparatorChar}{Path.GetRandomFileName()}";
+                    }
+                    while (System.IO.File.Exists(file));
+
+                    var doc = new ModuleDocument()
+                    {
+                        Name = viewModel.Document.FileName,
+                        FileType = viewModel.Document.ContentType,
+                        Description = viewModel.DocumentDescription,
+                        CreatedOn = DateTime.Now,
+                        FilePath = file,
+                        Module = module,
+                        UserId = _userManager.GetUserId(User)
+                    };
+
+                    using (var stream = System.IO.File.Create(file))
+                    {
+                        await viewModel.Document.CopyToAsync(stream);
+                    }
+                    _context.Add(doc);
+
+                    module.Documents.Add(doc);
+                }
+
+                _context.Add(module);
+
+                await _context.SaveChangesAsync();
 
                 TempData["message"] = "Module successfully added!";
                 return RedirectToAction("IndexTeacher", "Courses");
@@ -189,34 +250,73 @@ namespace Lexicon_LMS_G1.Controllers
             return View(@module);
         }
 
-        // GET: Modules/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-            
-            var @module = await _context.Modules
-                .Include(c => c.Course)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (@module == null)
-            {
-                return NotFound();
-            }
-
-            return View(@module);
-        }
-
         // POST: Modules/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(DeleteViewModel viewModel)
         {
-            var @module = await _context.Modules.FindAsync(id);
-            _context.Modules.Remove(@module);
+            var module = await _context.Modules
+                .Include(m => m.Course)
+                .Include(m => m.Activities)
+                .ThenInclude(a => a.Documents)
+                .Include(m => m.Documents)
+                .FirstOrDefaultAsync(m => m.Id == viewModel.DeleteId);
+
+            if (module == null)
+            {
+                return NotFound();
+            }
+
+            foreach (var file in module.Documents)
+            {
+                if (System.IO.File.Exists(file.FilePath))
+                    System.IO.File.Delete(file.FilePath);
+            }
+
+            _context.RemoveRange(module.Documents);
+
+            foreach (var activity in module.Activities)
+            {
+                foreach (var file in activity.Documents)
+                {
+                    if (System.IO.File.Exists(file.FilePath))
+                        System.IO.File.Delete(file.FilePath);
+                }
+
+                _context.RemoveRange(activity.Documents);
+            }
+
+            _context.Modules.Remove(module);
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+
+            TempData["message"] = $"The module {module.Name} has been removed!";
+
+            return (viewModel.ReturnId is not null) ? 
+                RedirectToAction(viewModel.ReturnAction, viewModel.ReturnController) : 
+                RedirectToAction(viewModel.ReturnAction, viewModel.ReturnController, new { id = viewModel.ReturnId});
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateModule([FromBody] ModuleUpdateDto dto)
+        {
+            var orginialModule = _baseModuleRepo.GetById(dto.Id);
+
+            if (orginialModule == null)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var module = _mapper.Map(dto, orginialModule);
+                _baseModuleRepo.Update(module);
+                await _baseModuleRepo.SaveChangesAsync();
+
+                TempData["message"] = "Module successfully updated!";
+                return Json(new { redirectToUrl = Url.Action("Details", "Modules", new { id = module.Id }) });
+            }
+
+            return Json(false);
         }
 
         private bool ModuleExists(int id)
