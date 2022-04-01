@@ -51,3 +51,6 @@ ul.timeline {
     vertical-align: middle;
     display: inline-block;
 }
+.ISA .accordion-button::after {
+    margin-left: 10px;
+}
