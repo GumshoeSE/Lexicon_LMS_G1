@@ -339,7 +339,9 @@ namespace Lexicon_LMS_G1.Controllers
             */
             string userId = (await userManager.GetUserAsync(User)).Id;
 
-            var finishedActivities = _context.UserFinishedActivity.Include(a => a.Activity).Where(u => u.ApplicationUserId == userId).Select(f => f.Activity);
+            var finishedActivities = _context.UserFinishedActivity.Include(a => a.Activity)
+                                                                  .Where(u => u.ApplicationUserId == userId)
+                                                                  .Select(f => f.Activity);
             //var finishedAssignments = (await _context.Users
             //        .Include(u => u.FinishedActivities)
             //        .FirstOrDefaultAsync(u => u.Id == userId))
